@@ -10,10 +10,6 @@ import re
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
 
-# Initialize session state for the save button
-if 'last_saved_word' not in st.session_state:
-    st.session_state.last_saved_word = ""
-
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
 def get_sheet():
@@ -36,7 +32,7 @@ def clean_mw_text(text):
     clean = re.sub(r'\{.*?\}', '', text)
     return clean.replace(":", "").strip()
 
-# --- 3. THE MERRIAM-WEBSTER ENGINE (UPDATED) ---
+# --- 3. THE MERRIAM-WEBSTER ENGINE (FILTERED) ---
 def get_mw_data(word):
     try:
         api_key = st.secrets["merriam_key"]
@@ -50,47 +46,56 @@ def get_mw_data(word):
     if response.status_code == 200:
         data = response.json()
         
-        # Validation: If word not found, MW returns a list of suggested strings
         if not data or isinstance(data[0], str):
             return None
         
-        # COLLECTION: We loop through ALL entries (Noun, Verb, etc.)
         combined_results = []
         
+        # HEADWORD FILTERING:
+        # We clean the headword (e.g., "swim*1") to ensure it matches the user's search.
+        # This prevents "swim bladder" from showing up when you search "swim".
+        target_word = word.lower().strip()
+        
         for entry in data:
-            # We only want full entries (ignoring partials if they exist)
-            if 'shortdef' in entry:
-                part_of_speech = entry.get('fl', 'unknown')
-                definitions = entry.get('shortdef', [])
+            if 'hwi' in entry and 'hw' in entry['hwi']:
+                # MW Headwords often have asterisks (e.g., "swim*") or numbers. Remove them.
+                raw_headword = entry['hwi']['hw']
+                clean_headword = re.sub(r'[^a-zA-Z\-\s]', '', raw_headword).lower()
                 
-                # Get Etymology (only from the first entry usually, but we check all)
-                etymology = "Etymology not available."
-                try:
-                    if entry.get('et'):
-                        raw_et = entry['et'][0][1]
-                        etymology = clean_mw_text(raw_et)
-                except:
-                    pass
-                
-                # Audio (First valid one found wins)
-                audio_url = None
-                try:
-                    if entry.get('hwi') and entry['hwi'].get('prs'):
-                        sound_name = entry['hwi']['prs'][0]['sound']['audio']
-                        subdir = sound_name[0]
-                        if sound_name.startswith("bix"): subdir = "bix"
-                        elif sound_name.startswith("gg"): subdir = "gg"
-                        elif sound_name[0].isdigit(): subdir = "number"
-                        audio_url = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{sound_name}.mp3"
-                except:
-                    pass
+                # STRICT MATCH: Only keep if the headword matches the search
+                if clean_headword == target_word:
+                    part_of_speech = entry.get('fl', 'unknown')
+                    definitions = entry.get('shortdef', [])
+                    
+                    # Etymology
+                    etymology = "Etymology not available."
+                    try:
+                        if entry.get('et'):
+                            raw_et = entry['et'][0][1]
+                            etymology = clean_mw_text(raw_et)
+                    except:
+                        pass
+                    
+                    # Audio
+                    audio_url = None
+                    try:
+                        if entry.get('hwi') and entry['hwi'].get('prs'):
+                            sound_name = entry['hwi']['prs'][0]['sound']['audio']
+                            subdir = sound_name[0]
+                            if sound_name.startswith("bix"): subdir = "bix"
+                            elif sound_name.startswith("gg"): subdir = "gg"
+                            elif sound_name[0].isdigit(): subdir = "number"
+                            audio_url = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{sound_name}.mp3"
+                    except:
+                        pass
 
-                combined_results.append({
-                    "pos": part_of_speech,
-                    "defs": definitions,
-                    "et": etymology,
-                    "audio": audio_url
-                })
+                    if definitions: # Only add if there are actual definitions
+                        combined_results.append({
+                            "pos": part_of_speech,
+                            "defs": definitions,
+                            "et": etymology,
+                            "audio": audio_url
+                        })
                 
         return combined_results
     return None
@@ -105,79 +110,66 @@ mode = st.radio("Mode:", ["Dictionary", "Translator"], horizontal=True)
 if mode == "Dictionary":
     with st.form("dict_form"):
         word_input = st.text_input("Look up:", placeholder="e.g. Swim").strip()
-        # Create two columns for the buttons
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            submitted = st.form_submit_button("Search")
-        with col2:
-            pass # Spacer
+        submitted = st.form_submit_button("Search")
 
     if word_input and submitted:
-        # Reset save state on new search
-        st.session_state.last_saved_word = ""
-        
         results = get_mw_data(word_input)
         
         if results:
             st.divider()
-            
-            # 1. Main Header (Title)
             st.markdown(f"# {word_input.title()}")
 
-            # 2. Audio (From the first valid entry)
-            first_entry = results[0]
-            if first_entry['audio']:
-                st.audio(first_entry['audio'], format="audio/mp3")
-            else:
-                # Fallback System Audio
+            # 1. Audio (Use the first valid audio found)
+            audio_found = False
+            for res in results:
+                if res['audio']:
+                    st.audio(res['audio'], format="audio/mp3")
+                    audio_found = True
+                    break
+            
+            if not audio_found:
+                # Fallback
                 safe_word = word_input.replace("'", "\\'")
                 components.html(f"""<button onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('{safe_word}'))">🔊 Listen (System)</button>""", height=40)
 
-            # 3. Dynamic Definitions (Looping through Noun, Verb, etc.)
-            all_definitions_text = [] # For saving later
+            # 2. Definitions (Grouped by Part of Speech)
+            all_definitions_text = [] 
+            all_pos = set() # To store "noun, verb" etc.
             
             for i, res in enumerate(results):
-                # Sub-header for Part of Speech (e.g., "verb")
                 st.markdown(f"### *{res['pos']}*")
+                all_pos.add(res['pos'])
                 
-                # List definitions
                 for j, d in enumerate(res['defs']):
                     st.markdown(f"{j+1}. {d}")
                     all_definitions_text.append(f"({res['pos']}) {d}")
                 
-                # Show Etymology only on the first entry to avoid clutter
-                if i == 0 and res['et'] != "Etymology not available.":
-                    st.markdown(f"**Origin:** *{res['et']}*")
+                # Show Etymology (Only show once if it's the same, or show for each entry)
+                if res['et'] != "Etymology not available.":
+                    st.caption(f"**Origin:** {res['et']}")
 
             st.divider()
 
-            # 4. SAVE SECTION
-            # We use a session state check to prevent the 'disappearing' bug
+            # 3. DIRECT SAVE (No Session State Logic)
             if st.button("💾 Save to List"):
                 try:
                     sheet = get_sheet()
                     timestamp = datetime.now().strftime("%Y-%m-%d")
                     
-                    # Prepare data
+                    # Prepare Data
                     final_def = " | ".join(all_definitions_text)
-                    final_et = first_entry['et']
-                    final_pos = first_entry['pos']
-                    
-                    # Debug Info (Expand to see if something breaks)
-                    with st.expander("Debug Save Info"):
-                        st.write(f"Saving: {word_input}")
-                        st.write(f"Cols: {len([word_input, final_def, final_pos, final_et, timestamp, 1])}")
+                    final_pos = ", ".join(all_pos)
+                    # We grab the etymology from the first result that has one
+                    final_et = next((r['et'] for r in results if r['et'] != "Etymology not available."), "N/A")
 
-                    # The Write Operation
+                    # SAVE to Columns: Word | Def | Type | Etymology | Date | Count
                     sheet.append_row([word_input, final_def, final_pos, final_et, timestamp, 1])
                     
-                    st.session_state.last_saved_word = word_input
-                    st.success(f"✅ Saved '{word_input}' successfully!")
+                    st.toast(f"✅ Saved '{word_input}'!", icon="💾")
+                    st.success(f"Saved: {word_input} ({final_pos})")
                     
                 except Exception as e:
                     st.error(f"Save failed: {e}")
-                    st.write("Check that your Google Sheet has at least 6 columns.")
-
         else:
             st.error("Word not found.")
 
@@ -192,13 +184,11 @@ else:
         trans_submitted = st.form_submit_button("Translate")
         
     if trans_submitted:
-        # Note: We need deep-translator installed for this
         from deep_translator import GoogleTranslator
         try:
             res = GoogleTranslator(source='auto', target=lang_codes[target_lang]).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
             
-            # Save Translation Logic
             if st.button("💾 Save Translation"):
                  sheet = get_sheet()
                  timestamp = datetime.now().strftime("%Y-%m-%d")
