@@ -6,6 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from deep_translator import GoogleTranslator
 import os
+import re # New tool for cleaning text
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
@@ -24,142 +25,169 @@ def get_sheet():
     client = gspread.authorize(creds)
     return client.open("VocabApp_DB").sheet1
 
-# --- 2. HELPER: MAKE TEXT CLICKABLE ---
-# This creates HTML links that reload the app with a new word query
+# --- 2. TEXT CLEANERS (New for Merriam-Webster) ---
+def clean_mw_text(text):
+    """Merriam-Webster returns text with tags like {it}word{/it}. We clean them here."""
+    if not text: return ""
+    # Remove things like {bc}, {it}, {/it}, {wi}, {/wi}
+    clean = re.sub(r'\{.*?\}', '', text)
+    # Remove leading colons usually found in MW definitions
+    return clean.replace(":", "").strip()
+
 def make_clickable(text):
+    """Turn words into links for drill-down."""
     words = text.split()
     html_words = []
     for w in words:
-        # Strip punctuation for the link, keep it for the display
         clean_word = ''.join(filter(str.isalnum, w))
-        if len(clean_word) > 3: # Only link words longer than 3 letters
-            # This link updates the URL query parameter '?word=...'
+        if len(clean_word) > 3:
             link = f'<a href="?word={clean_word}" target="_self" style="text-decoration:none; color:#31333F; border-bottom:1px dotted #aaa;">{w}</a>'
             html_words.append(link)
         else:
             html_words.append(w)
     return " ".join(html_words)
 
-# --- 3. THE ENGINES ---
-def get_dictionary_data(word):
-    url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
+# --- 3. THE MERRIAM-WEBSTER ENGINE ---
+def get_mw_data(word):
+    # Grab the key from secrets
+    try:
+        api_key = st.secrets["merriam_key"]
+    except:
+        st.error("Missing API Key! check .streamlit/secrets.toml")
+        return None
+
+    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{word}?key={api_key}"
     response = requests.get(url)
+    
     if response.status_code == 200:
-        return response.json()[0]
+        data = response.json()
+        
+        # Check if word is valid (MW returns a list of strings if it suggests corrections)
+        if not data or isinstance(data[0], str):
+            return None
+            
+        entry = data[0] # Take the first result
+        
+        # A. Definition (Shortdef is best for flashcards)
+        definition = "No definition found."
+        if entry.get('shortdef'):
+            definition = entry['shortdef'][0]
+        
+        # B. Functional Label (Noun/Verb)
+        fl = entry.get('fl', '')
+
+        # C. Etymology (The hard part!)
+        etymology = "Etymology not available."
+        # MW nests etymology deep: et -> [0] -> [1]
+        try:
+            if entry.get('et'):
+                raw_et = entry['et'][0][1] # Get the text string
+                etymology = clean_mw_text(raw_et)
+        except:
+            pass
+
+        # D. Audio Filename
+        audio_url = None
+        try:
+            if entry.get('hwi') and entry['hwi'].get('prs'):
+                sound_name = entry['hwi']['prs'][0]['sound']['audio']
+                # MW Audio Logic: subfolder is the first letter of the file
+                subdir = sound_name[0]
+                if sound_name.startswith("bix"): subdir = "bix"
+                elif sound_name.startswith("gg"): subdir = "gg"
+                elif sound_name[0].isdigit(): subdir = "number"
+                
+                audio_url = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{sound_name}.mp3"
+        except:
+            pass
+
+        return definition, etymology, fl, audio_url, entry
     return None
 
-def translate_text(text):
-    try:
-        # Auto-detects language and translates to English
-        translated = GoogleTranslator(source='auto', target='en').translate(text)
-        return translated
-    except Exception as e:
-        return f"Error: {e}"
-
-# --- 4. APP LOGIC ---
-
-# A. Handle "Drill Down" clicks (Check URL params)
-# If the user clicked a link like '?word=test', we grab it here.
+# --- 4. APP INTERFACE ---
 query_params = st.query_params
 default_word = query_params.get("word", "")
 
-st.title("📖 My Vocab & Translator")
+st.title("📖 My Vocab (Pro Edition)")
 
-# B. The Mode Switcher
+# MODE SELECTOR
 mode = st.radio("Mode:", ["Dictionary", "Translator"], horizontal=True)
 
 # --- MODE 1: DICTIONARY ---
 if mode == "Dictionary":
     with st.form("dict_form"):
-        # If we clicked a link, pre-fill the box with that word
         word_input = st.text_input("Look up:", value=default_word, placeholder="e.g. Petrichor").strip()
         submitted = st.form_submit_button("Search")
 
-    # Trigger search if button pressed OR if we just loaded from a link
     if word_input and (submitted or default_word):
-        data = get_dictionary_data(word_input)
+        # CALL THE NEW ENGINE
+        result = get_mw_data(word_input)
         
-        if data:
+        if result:
+            definition, et, fl, audio_link, raw_data = result
+            
             st.divider()
             
-            # 1. Header & Phonetic
-            phonetic = data.get('phonetic', '')
-            st.markdown(f"### {data['word'].title()} <span style='font-size:14px; color:gray'>{phonetic}</span>", unsafe_allow_html=True)
+            # HEADER
+            st.markdown(f"### {word_input.title()} <span style='font-size:14px; color:gray'>({fl})</span>", unsafe_allow_html=True)
 
-            # 2. Audio Button
-            safe_word = word_input.replace("'", "\\'")
-            components.html(
-                f"""
-                <button onclick="speak()" style="background:#f0f2f6; border:1px solid #ccc; border-radius:5px; cursor:pointer;">🔊 Listen</button>
-                <script>
-                  function speak() {{
-                    var msg = new SpeechSynthesisUtterance('{safe_word}');
-                    window.speechSynthesis.speak(msg);
-                  }}
-                </script>
-                """, height=40
-            )
+            # AUDIO (Using MW's native high-quality audio if available)
+            if audio_link:
+                st.audio(audio_link, format="audio/mp3")
+            else:
+                # Fallback to browser voice if MW has no audio
+                safe_word = word_input.replace("'", "\\'")
+                components.html(f"""<button onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('{safe_word}'))">🔊 Listen (System)</button>""", height=40)
 
-            # 3. Robust Definitions (Loop through meanings)
-            all_definitions_text = [] # We collect these to save to sheets later
-            
-            for meaning in data.get('meanings', []):
-                part_of_speech = meaning.get('partOfSpeech', 'unknown')
-                st.markdown(f"**_{part_of_speech}_**")
-                
-                for i, def_obj in enumerate(meaning.get('definitions', [])):
-                    raw_def = def_obj.get('definition', '')
-                    # MAGIC: Render the definition as clickable links
-                    clickable_def = make_clickable(raw_def)
-                    st.markdown(f"{i+1}. {clickable_def}", unsafe_allow_html=True)
-                    
-                    # Collect first definition for saving
-                    if i == 0: 
-                        all_definitions_text.append(f"({part_of_speech}) {raw_def}")
+            # DEFINITIONS
+            st.markdown("**Definitions:**")
+            # Loop through all short definitions
+            for i, d in enumerate(raw_data.get('shortdef', [])):
+                clickable_def = make_clickable(d)
+                st.markdown(f"{i+1}. {clickable_def}", unsafe_allow_html=True)
 
-            # 4. Roots & Etymology
+            # ETYMOLOGY (Real data now!)
             st.divider()
-            etymology = data.get('origin', 'Etymology not available in quick view.')
-            st.caption(f"**Origin:** {etymology}")
-            # External Link for "Deep Dive"
-            st.markdown(f"[🔎 View full Word Roots on Etymonline](https://www.etymonline.com/search?q={word_input})")
-
-            # 5. Save Button
+            st.markdown(f"**Origin:**\n\n{et}")
+            
+            # SAVE BUTTON
             if st.button("💾 Save Word"):
                 try:
                     sheet = get_sheet()
                     timestamp = datetime.now().strftime("%Y-%m-%d")
-                    # Join all definitions into one string
-                    final_def = " | ".join(all_definitions_text)
-                    sheet.append_row([word_input, final_def, "", etymology, timestamp, 1])
+                    # Save all definitions joined by |
+                    all_defs = " | ".join(raw_data.get('shortdef', []))
+                    sheet.append_row([word_input, all_defs, fl, et, timestamp, 1])
                     st.toast(f"Saved {word_input}!")
                 except Exception as e:
                     st.error(f"Save error: {e}")
 
         else:
-            st.error("Word not found.")
+            st.error("Word not found (or check spelling).")
 
-# --- MODE 2: TRANSLATOR ---
+# --- MODE 2: TRANSLATOR (Previous Code) ---
 else:
     st.subheader("🌍 Quick Translate")
+    target_lang = st.selectbox("Translate to:", ["English", "French", "Spanish", "German", "Italian"])
+    lang_codes = {"English": "en", "French": "fr", "Spanish": "es", "German": "de", "Italian": "it"}
+    
     with st.form("trans_form"):
-        text_to_translate = st.text_area("Enter text (French, German, Spanish, etc.):")
-        trans_submitted = st.form_submit_button("Translate to English")
+        text_to_translate = st.text_area(f"Enter text:")
+        trans_submitted = st.form_submit_button("Translate")
         
-    if trans_submitted and text_to_translate:
-        result = translate_text(text_to_translate)
-        st.success(result)
-        
-        if st.button("💾 Save Translation"):
-             try:
-                sheet = get_sheet()
-                timestamp = datetime.now().strftime("%Y-%m-%d")
-                sheet.append_row([text_to_translate, result, "Translation", "N/A", timestamp, 1])
-                st.toast("Saved translation!")
-             except Exception as e:
-                st.error(f"Save error: {e}")
+    if trans_submitted:
+        try:
+            res = GoogleTranslator(source='auto', target=lang_codes[target_lang]).translate(text_to_translate)
+            st.success(f"**{target_lang}:** {res}")
+            if st.button("💾 Save Translation"):
+                 sheet = get_sheet()
+                 timestamp = datetime.now().strftime("%Y-%m-%d")
+                 sheet.append_row([text_to_translate, res, f"Trans ({lang_codes[target_lang]})", "N/A", timestamp, 1])
+                 st.toast("Saved!")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-# --- HISTORY ---
+# HISTORY
 st.divider()
 if st.checkbox("Show Recent History"):
     try:
