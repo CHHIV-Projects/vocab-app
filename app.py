@@ -4,9 +4,8 @@ import requests
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+from deep_translator import GoogleTranslator
 import os
-
-# Note: We removed 'from gtts import gTTS' because we are using the browser's voice now.
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
@@ -16,10 +15,8 @@ st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centere
 def get_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     
-    # 1. Check for the local file FIRST (Desktop Mode)
     if os.path.exists("service_account.json"):
         creds = ServiceAccountCredentials.from_json_keyfile_name("service_account.json", scope)
-    # 2. If no file, assume we are in the Cloud (Mobile Mode)
     else:
         creds_dict = st.secrets["gcp_service_account"]
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
@@ -27,121 +24,146 @@ def get_sheet():
     client = gspread.authorize(creds)
     return client.open("VocabApp_DB").sheet1
 
-# --- 2. THE DICTIONARY ENGINE ---
-def get_word_data(word):
+# --- 2. HELPER: MAKE TEXT CLICKABLE ---
+# This creates HTML links that reload the app with a new word query
+def make_clickable(text):
+    words = text.split()
+    html_words = []
+    for w in words:
+        # Strip punctuation for the link, keep it for the display
+        clean_word = ''.join(filter(str.isalnum, w))
+        if len(clean_word) > 3: # Only link words longer than 3 letters
+            # This link updates the URL query parameter '?word=...'
+            link = f'<a href="?word={clean_word}" target="_self" style="text-decoration:none; color:#31333F; border-bottom:1px dotted #aaa;">{w}</a>'
+            html_words.append(link)
+        else:
+            html_words.append(w)
+    return " ".join(html_words)
+
+# --- 3. THE ENGINES ---
+def get_dictionary_data(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
     response = requests.get(url)
-    
     if response.status_code == 200:
-        data = response.json()[0]
-        
-        # 1. Definition
-        meanings = data.get('meanings', [])
-        definition = "No definition found."
-        synonyms = "None"
-        part_of_speech = ""
+        return response.json()[0]
+    return None
 
-        if meanings:
-            first_meaning = meanings[0]
-            part_of_speech = first_meaning.get('partOfSpeech', '')
-            if first_meaning.get('definitions'):
-                definition = first_meaning['definitions'][0].get('definition', "No definition found.")
+def translate_text(text):
+    try:
+        # Auto-detects language and translates to English
+        translated = GoogleTranslator(source='auto', target='en').translate(text)
+        return translated
+    except Exception as e:
+        return f"Error: {e}"
+
+# --- 4. APP LOGIC ---
+
+# A. Handle "Drill Down" clicks (Check URL params)
+# If the user clicked a link like '?word=test', we grab it here.
+query_params = st.query_params
+default_word = query_params.get("word", "")
+
+st.title("📖 My Vocab & Translator")
+
+# B. The Mode Switcher
+mode = st.radio("Mode:", ["Dictionary", "Translator"], horizontal=True)
+
+# --- MODE 1: DICTIONARY ---
+if mode == "Dictionary":
+    with st.form("dict_form"):
+        # If we clicked a link, pre-fill the box with that word
+        word_input = st.text_input("Look up:", value=default_word, placeholder="e.g. Petrichor").strip()
+        submitted = st.form_submit_button("Search")
+
+    # Trigger search if button pressed OR if we just loaded from a link
+    if word_input and (submitted or default_word):
+        data = get_dictionary_data(word_input)
+        
+        if data:
+            st.divider()
             
-            # 2. Synonyms
-            all_synonyms = []
-            for m in meanings:
-                all_synonyms.extend(m.get('synonyms', []))
-            if all_synonyms:
-                synonyms = ", ".join(all_synonyms[:5])
+            # 1. Header & Phonetic
+            phonetic = data.get('phonetic', '')
+            st.markdown(f"### {data['word'].title()} <span style='font-size:14px; color:gray'>{phonetic}</span>", unsafe_allow_html=True)
 
-        # 3. Etymology
-        etymology = data.get('origin')
-        if not etymology:
-             etymology = "Etymology data currently unavailable for this word."
-
-        return definition, synonyms, etymology, part_of_speech
-    return None, None, None, None
-
-
-# --- 3. THE USER INTERFACE ---
-st.title("📖 My Vocab")
-
-# The Search Box
-with st.form("search_form"):
-    word_input = st.text_input("Enter a word:", placeholder="e.g. Petrichor").strip()
-    submitted = st.form_submit_button("Search")
-
-if submitted and word_input:
-    # A. Get Data
-    definition, synonyms, etymology, pos = get_word_data(word_input)
-    
-    if definition:
-        # --- DISPLAY RESULTS ---
-        st.divider()
-        st.subheader(word_input.capitalize())
-        
-        # 1. Definition
-        st.markdown(f"**Definition:** {definition}")
-        
-        # 2. Audio (Browser Native Button)
-        # This replaces the old gTTS code. It uses JavaScript to speak on your device.
-        safe_word = word_input.replace("'", "\\'") # Safety for words like "don't"
-        
-        components.html(
-            f"""
-            <html>
-              <body style="margin:0; padding:0; background-color:transparent;">
-                <button onclick="speak()" style="
-                    background-color: #f0f2f6;
-                    border: 1px solid #ccc;
-                    border-radius: 8px;
-                    padding: 8px 16px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    font-family: sans-serif;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;">
-                    🔊 Listen
-                </button>
-
+            # 2. Audio Button
+            safe_word = word_input.replace("'", "\\'")
+            components.html(
+                f"""
+                <button onclick="speak()" style="background:#f0f2f6; border:1px solid #ccc; border-radius:5px; cursor:pointer;">🔊 Listen</button>
                 <script>
                   function speak() {{
                     var msg = new SpeechSynthesisUtterance('{safe_word}');
-                    msg.lang = 'en-US';
                     window.speechSynthesis.speak(msg);
                   }}
                 </script>
-              </body>
-            </html>
-            """,
-            height=60,
-        )
-        
-        # 3. Synonyms
-        if synonyms != "None":
-            st.caption(f"**Synonyms:** {synonyms}")
-            
-        # 4. Save to Google Sheets
-        try:
-            sheet = get_sheet()
-            timestamp = datetime.now().strftime("%Y-%m-%d")
-            sheet.append_row([word_input, definition, synonyms, etymology, timestamp, 1])
-            st.toast(f"✅ Saved '{word_input}' to your library!", icon="💾")
-            
-        except Exception as e:
-            st.error(f"Error saving to Sheet: {e}")
-            
-    else:
-        st.error("Could not find that word. Check spelling?")
+                """, height=40
+            )
 
-# --- 4. QUICK HISTORY ---
+            # 3. Robust Definitions (Loop through meanings)
+            all_definitions_text = [] # We collect these to save to sheets later
+            
+            for meaning in data.get('meanings', []):
+                part_of_speech = meaning.get('partOfSpeech', 'unknown')
+                st.markdown(f"**_{part_of_speech}_**")
+                
+                for i, def_obj in enumerate(meaning.get('definitions', [])):
+                    raw_def = def_obj.get('definition', '')
+                    # MAGIC: Render the definition as clickable links
+                    clickable_def = make_clickable(raw_def)
+                    st.markdown(f"{i+1}. {clickable_def}", unsafe_allow_html=True)
+                    
+                    # Collect first definition for saving
+                    if i == 0: 
+                        all_definitions_text.append(f"({part_of_speech}) {raw_def}")
+
+            # 4. Roots & Etymology
+            st.divider()
+            etymology = data.get('origin', 'Etymology not available in quick view.')
+            st.caption(f"**Origin:** {etymology}")
+            # External Link for "Deep Dive"
+            st.markdown(f"[🔎 View full Word Roots on Etymonline](https://www.etymonline.com/search?q={word_input})")
+
+            # 5. Save Button
+            if st.button("💾 Save Word"):
+                try:
+                    sheet = get_sheet()
+                    timestamp = datetime.now().strftime("%Y-%m-%d")
+                    # Join all definitions into one string
+                    final_def = " | ".join(all_definitions_text)
+                    sheet.append_row([word_input, final_def, "", etymology, timestamp, 1])
+                    st.toast(f"Saved {word_input}!")
+                except Exception as e:
+                    st.error(f"Save error: {e}")
+
+        else:
+            st.error("Word not found.")
+
+# --- MODE 2: TRANSLATOR ---
+else:
+    st.subheader("🌍 Quick Translate")
+    with st.form("trans_form"):
+        text_to_translate = st.text_area("Enter text (French, German, Spanish, etc.):")
+        trans_submitted = st.form_submit_button("Translate to English")
+        
+    if trans_submitted and text_to_translate:
+        result = translate_text(text_to_translate)
+        st.success(result)
+        
+        if st.button("💾 Save Translation"):
+             try:
+                sheet = get_sheet()
+                timestamp = datetime.now().strftime("%Y-%m-%d")
+                sheet.append_row([text_to_translate, result, "Translation", "N/A", timestamp, 1])
+                st.toast("Saved translation!")
+             except Exception as e:
+                st.error(f"Save error: {e}")
+
+# --- HISTORY ---
 st.divider()
 if st.checkbox("Show Recent History"):
     try:
         sheet = get_sheet()
-        data = sheet.get_all_records()
-        if data:
-            st.dataframe(data[-5:])
+        st.dataframe(sheet.get_all_records()[-5:])
     except:
-        st.write("No history found yet.")
+        st.write("No history.")
