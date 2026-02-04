@@ -64,6 +64,15 @@ def get_mw_data(query):
 
         target_clean = query.lower().strip()
 
+        # --- LOGIC TO DETECT ROOT WORD AUTOMATICALLY ---
+        # If the first entry's ID is different from our query, that's likely the root.
+        # Example: Query "Swimming" -> returns ID "swim:1" -> Root is "Swim"
+        first_entry_id = data[0].get("meta", {}).get("id", "").split(":")[0]
+        if first_entry_id and first_entry_id.lower() != target_clean:
+            # Only set it if it's actually shorter/different (e.g. avoid Swim:1 vs Swim)
+            if len(first_entry_id) < len(target_clean) or first_entry_id.lower() not in target_clean:
+                root_word_ref = first_entry_id.title()
+
         for entry in data:
             if not isinstance(entry, dict): continue
 
@@ -77,7 +86,7 @@ def get_mw_data(query):
             fl = entry.get("fl", "unknown")
             combined_pos.add(fl)
 
-            # Check for Root Word (Cross Reference)
+            # Check for Explicit Cross Reference (like "See X")
             if "cxs" in entry:
                 for cx in entry["cxs"]:
                     targets = cx.get("cxtis", [])
@@ -117,7 +126,7 @@ def get_mw_data(query):
     except Exception as e:
         st.error(f"API Error: {e}")
         return None
-
+    
 # --- UI LAYOUT ---
 st.title("📚 Vocab Builder")
 
