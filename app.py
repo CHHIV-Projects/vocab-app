@@ -10,6 +10,10 @@ import re
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
 
+# --- SESSION STATE INITIALIZATION ---
+if 'search_trigger' not in st.session_state:
+    st.session_state.search_trigger = "" 
+
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
 def get_sheet():
@@ -28,153 +32,204 @@ def get_sheet():
 def clean_mw_text(text):
     """Merriam-Webster returns text with tags like {it}word{/it}. We clean them here."""
     if not text: return ""
-    # Remove things like {bc}, {it}, {/it}, {wi}, {/wi}
+    # Remove things like {bc}, {it}, {/it}, {wi}, {/wi}, {sx|...}
     clean = re.sub(r'\{.*?\}', '', text)
-    return clean.replace(":", "").strip()
+    # Remove specific cross reference syntax if any remains
+    clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
+    return clean.strip()
 
-# --- 3. THE MERRIAM-WEBSTER ENGINE (FILTERED) ---
-def get_mw_data(word):
-    try:
-        api_key = st.secrets["merriam_key"]
-    except:
-        st.error("Missing API Key! Check .streamlit/secrets.toml")
-        return None
-
-    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{word}?key={api_key}"
-    response = requests.get(url)
+# --- 3. GET DATA FROM MERRIAM-WEBSTER ---
+def get_mw_data(query):
+    key = st.secrets["mw_api_key"]["key"]
+    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{query}?key={key}"
     
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
         data = response.json()
         
-        if not data or isinstance(data[0], str):
+        if not data:
             return None
+            
+        # If the API returns a list of suggested strings (misspelling)
+        if isinstance(data[0], str):
+            return {"suggestion": data}
+
+        # --- NEW LOGIC: Collect ALL relevant definitions ---
         
-        combined_results = []
-        
-        # HEADWORD FILTERING:
-        # We clean the headword (e.g., "swim*1") to ensure it matches the user's search.
-        # This prevents "swim bladder" from showing up when you search "swim".
-        target_word = word.lower().strip()
-        
+        # We will build a single string for definitions: "(verb) 1. ... | (noun) 1. ..."
+        combined_defs = []
+        combined_pos = set()
+        audio_link = None
+        root_word_ref = None
+
+        target_clean = query.lower().strip()
+
         for entry in data:
-            if 'hwi' in entry and 'hw' in entry['hwi']:
-                # MW Headwords often have asterisks (e.g., "swim*") or numbers. Remove them.
-                raw_headword = entry['hwi']['hw']
-                clean_headword = re.sub(r'[^a-zA-Z\-\s]', '', raw_headword).lower()
-                
-                # STRICT MATCH: Only keep if the headword matches the search
-                if clean_headword == target_word:
-                    part_of_speech = entry.get('fl', 'unknown')
-                    definitions = entry.get('shortdef', [])
+            # Safety check: ensure entry is a dict
+            if not isinstance(entry, dict): continue
+
+            # Get Headword (the word itself)
+            headword_info = entry.get("hwi", {})
+            hw = headword_info.get("hw", "").replace("*", "") # Remove syllable dots
+            
+            # --- FILTER LOGIC ---
+            # We want to match "swim", "swim:1", "swim:2" but NOT "swim bladder"
+            # If the headword contains a space and the target doesn't, skip it (unless it's very close)
+            if " " in hw and " " not in target_clean:
+                 continue
+
+            # Get Part of Speech (fl)
+            fl = entry.get("fl", "unknown")
+            combined_pos.add(fl)
+
+            # --- CHECK FOR ROOT WORD (CROSS REFERENCE) ---
+            # Sometimes the definition is just "see SWIM"
+            # MW uses "cxs" for cross-references
+            if "cxs" in entry:
+                for cx in entry["cxs"]:
+                    ref = cx.get("cxl", "") # label like "see"
+                    targets = cx.get("cxtis", []) # targets
+                    for t in targets:
+                        tgt_text = t.get("cxt", "")
+                        if tgt_text:
+                            root_word_ref = tgt_text.upper() # Found a root word!
+
+            # --- EXTRACT DEFINITIONS ---
+            short_defs = entry.get("shortdef", [])
+            if short_defs:
+                # Format: "(verb) 1. jump 2. run"
+                def_text = f"({fl}) " + "; ".join([f"{i+1}. {d}" for i, d in enumerate(short_defs)])
+                combined_defs.append(def_text)
+            
+            # --- GET AUDIO (Grab first available) ---
+            if not audio_link and "prs" in headword_info:
+                prs = headword_info["prs"][0]
+                if "sound" in prs:
+                    audio_base = prs["sound"]["audio"]
+                    # Calculate subdirectory
+                    if audio_base.startswith("bix"): subdir = "bix"
+                    elif audio_base.startswith("gg"): subdir = "gg"
+                    elif audio_base[0].isdigit(): subdir = "number"
+                    else: subdir = audio_base[0]
                     
-                    # Etymology
-                    etymology = "Etymology not available."
-                    try:
-                        if entry.get('et'):
-                            raw_et = entry['et'][0][1]
-                            etymology = clean_mw_text(raw_et)
-                    except:
-                        pass
-                    
-                    # Audio
-                    audio_url = None
-                    try:
-                        if entry.get('hwi') and entry['hwi'].get('prs'):
-                            sound_name = entry['hwi']['prs'][0]['sound']['audio']
-                            subdir = sound_name[0]
-                            if sound_name.startswith("bix"): subdir = "bix"
-                            elif sound_name.startswith("gg"): subdir = "gg"
-                            elif sound_name[0].isdigit(): subdir = "number"
-                            audio_url = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{sound_name}.mp3"
-                    except:
-                        pass
+                    audio_link = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{audio_base}.mp3"
 
-                    if definitions: # Only add if there are actual definitions
-                        combined_results.append({
-                            "pos": part_of_speech,
-                            "defs": definitions,
-                            "et": etymology,
-                            "audio": audio_url
-                        })
-                
-        return combined_results
-    return None
+        if not combined_defs and not root_word_ref:
+            return None
 
-# --- 4. APP INTERFACE ---
-st.title("📖 My Vocab (Pro)")
+        return {
+            "word": query, # Keep original query for display
+            "pos": ", ".join(combined_pos),
+            "definition": " | ".join(combined_defs), # Option A: Pipe separated
+            "audio": audio_link,
+            "root_ref": root_word_ref
+        }
 
-# MODE SELECTOR
-mode = st.radio("Mode:", ["Dictionary", "Translator"], horizontal=True)
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return None
+
+# --- UI LAYOUT ---
+st.title("📚 Vocab Builder")
+
+# --- SIDEBAR: HISTORY ---
+with st.sidebar:
+    st.header("Recent History")
+    try:
+        sheet = get_sheet()
+        # Get all records
+        records = sheet.get_all_records()
+        
+        if records:
+            # Sort by timestamp (assuming formatted YYYY-MM-DD or similar, or just take bottom)
+            # For now, let's just take the last 5 added
+            recent = records[-10:] # Last 10
+            recent.reverse() # Newest on top
+
+            for row in recent:
+                w = row.get("Word", "Unknown")
+                # Create a button for each word
+                if st.button(f"Draft: {w}", key=f"hist_{w}"):
+                    st.session_state.search_trigger = w # Set the trigger
+                    st.rerun() # Reload the app to reflect changes
+        else:
+            st.info("No words saved yet.")
+            
+    except Exception as e:
+        st.error("Could not load history.")
+
+# --- MAIN TAB SELECTION ---
+tab1, tab2 = st.tabs(["📖 Dictionary", "🌍 Translator"])
 
 # --- MODE 1: DICTIONARY ---
-if mode == "Dictionary":
-    with st.form("dict_form"):
-        word_input = st.text_input("Look up:", placeholder="e.g. Swim").strip()
-        submitted = st.form_submit_button("Search")
+with tab1:
+    # Use session state to populate the box if a history button was clicked
+    default_val = st.session_state.search_trigger if st.session_state.search_trigger else ""
+    
+    # Callback to clear trigger so user can type normally after
+    def clear_trigger():
+        st.session_state.search_trigger = ""
 
-    if word_input and submitted:
-        results = get_mw_data(word_input)
+    word_input = st.text_input("Enter a word:", value=default_val, on_change=clear_trigger)
+    
+    if word_input:
+        data = get_mw_data(word_input)
         
-        if results:
-            st.divider()
-            st.markdown(f"# {word_input.title()}")
-
-            # 1. Audio (Use the first valid audio found)
-            audio_found = False
-            for res in results:
-                if res['audio']:
-                    st.audio(res['audio'], format="audio/mp3")
-                    audio_found = True
-                    break
+        if data:
+            if "suggestion" in data:
+                st.warning(f"Did you mean: {', '.join(data['suggestion'])}?")
             
-            if not audio_found:
-                # Fallback
-                safe_word = word_input.replace("'", "\\'")
-                components.html(f"""<button onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('{safe_word}'))">🔊 Listen (System)</button>""", height=40)
+            else:
+                # --- ROOT WORD LOGIC ---
+                # If we found a "See X" reference but no definitions (or even if we did)
+                if data.get("root_ref"):
+                    st.info(f"Root word found: **{data['root_ref']}**")
+                    if st.button(f"Go to {data['root_ref']}"):
+                        st.session_state.search_trigger = data['root_ref']
+                        st.rerun()
 
-            # 2. Definitions (Grouped by Part of Speech)
-            all_definitions_text = [] 
-            all_pos = set() # To store "noun, verb" etc.
-            
-            for i, res in enumerate(results):
-                st.markdown(f"### *{res['pos']}*")
-                all_pos.add(res['pos'])
+                # --- DISPLAY RESULTS ---
+                st.header(f"📖 {data['word'].title()}")
+                st.markdown(f"**Part of Speech:** *{data['pos']}*")
                 
-                for j, d in enumerate(res['defs']):
-                    st.markdown(f"{j+1}. {d}")
-                    all_definitions_text.append(f"({res['pos']}) {d}")
+                # Format definitions for readability (Replace | with newlines for display)
+                display_def = data['definition'].replace("|", "\n\n")
+                st.markdown(f"**Definition:**\n\n{display_def}")
                 
-                # Show Etymology (Only show once if it's the same, or show for each entry)
-                if res['et'] != "Etymology not available.":
-                    st.caption(f"**Origin:** {res['et']}")
-
-            st.divider()
-
-            # 3. DIRECT SAVE (No Session State Logic)
-            if st.button("💾 Save to List"):
-                try:
-                    sheet = get_sheet()
-                    timestamp = datetime.now().strftime("%Y-%m-%d")
-                    
-                    # Prepare Data
-                    final_def = " | ".join(all_definitions_text)
-                    final_pos = ", ".join(all_pos)
-                    # We grab the etymology from the first result that has one
-                    final_et = next((r['et'] for r in results if r['et'] != "Etymology not available."), "N/A")
-
-                    # SAVE to Columns: Word | Def | Type | Etymology | Date | Count
-                    sheet.append_row([word_input, final_def, final_pos, final_et, timestamp, 1])
-                    
-                    st.toast(f"✅ Saved '{word_input}'!", icon="💾")
-                    st.success(f"Saved: {word_input} ({final_pos})")
-                    
-                except Exception as e:
-                    st.error(f"Save failed: {e}")
+                if data['audio']:
+                    st.audio(data['audio'])
+                
+                # --- SAVE BUTTON ---
+                # Check for duplicates before saving
+                if st.button("💾 Save Word"):
+                    try:
+                        sheet = get_sheet()
+                        # Get all words from Column 1 to check duplicates
+                        existing_words = sheet.col_values(1)
+                        
+                        # Case insensitive check
+                        if word_input.lower() in [x.lower() for x in existing_words]:
+                            st.warning(f"'{word_input}' is already in your list!")
+                        else:
+                            timestamp = datetime.now().strftime("%Y-%m-%d")
+                            # Add Row: Word | Definition | Type | Audio | Date | Count
+                            sheet.append_row([
+                                data['word'], 
+                                data['definition'], 
+                                data['pos'], 
+                                data['audio'] if data['audio'] else "N/A", 
+                                timestamp, 
+                                1
+                            ])
+                            st.success(f"Saved '{word_input}' to your list!")
+                            
+                    except Exception as e:
+                        st.error(f"Save failed: {e}")
         else:
             st.error("Word not found.")
 
 # --- MODE 2: TRANSLATOR ---
-else:
+with tab2:
     st.subheader("🌍 Quick Translate")
     target_lang = st.selectbox("Translate to:", ["English", "French", "Spanish", "German", "Italian"])
     lang_codes = {"English": "en", "French": "fr", "Spanish": "es", "German": "de", "Italian": "it"}
@@ -196,12 +251,3 @@ else:
                  st.toast("Saved!")
         except Exception as e:
             st.error(f"Error: {e}")
-
-# HISTORY
-st.divider()
-if st.checkbox("Show Recent History"):
-    try:
-        sheet = get_sheet()
-        st.dataframe(sheet.get_all_records()[-5:])
-    except:
-        st.write("No history.")
