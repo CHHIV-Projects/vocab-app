@@ -36,9 +36,55 @@ def clean_mw_text(text):
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-# --- 3. GET DATA FROM MERRIAM-WEBSTER ---
+# --- 3. HELPER: SUFFIX LOGIC (New Feature) ---
+def get_possible_root(word):
+    """Guesses the root word based on English morphology rules."""
+    w = word.lower().strip()
+    if len(w) < 4: return None # Safety: Don't guess roots for tiny words
+
+    # Rule 1: -ING (Swimming -> Swim, Walking -> Walk)
+    if w.endswith("ing"):
+        base = w[:-3]
+        if len(base) > 2 and base[-1] == base[-2]: # Double char (Swimm -> Swim)
+            return base[:-1]
+        return base
+
+    # Rule 2: -ED (Plotted -> Plot, Tried -> Try, Walked -> Walk)
+    if w.endswith("ed"):
+        base = w[:-2]
+        if w.endswith("ied"): return w[:-3] + "y" # Tried -> Try
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] # Plotted -> Plot
+        return base
+
+    # Rule 3: -LY (Happily -> Happy, Quickly -> Quick)
+    if w.endswith("ly"):
+        if w.endswith("ily"): return w[:-3] + "y" # Happily -> Happy
+        return w[:-2] # Quickly -> Quick
+
+    # Rule 4: -S / -ES (Flies -> Fly, Boxes -> Box, Cats -> Cat)
+    if w.endswith("es"):
+        if w.endswith("ies"): return w[:-3] + "y" # Flies -> Fly
+        # Words ending in s, x, z, ch, sh add -es. We strip it.
+        if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
+    if w.endswith("s") and not w.endswith("ss"): # Avoid "Grass" -> "Gras"
+        return w[:-1]
+
+    # Rule 5: -ER / -EST (Bigger -> Big, Faster -> Fast)
+    if w.endswith("er"):
+        base = w[:-2]
+        if w.endswith("ier"): return w[:-3] + "y"
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
+        return base
+    if w.endswith("est"):
+        base = w[:-3]
+        if w.endswith("iest"): return w[:-4] + "y"
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
+        return base
+
+    return None
+
+# --- 4. GET DATA FROM MERRIAM-WEBSTER ---
 def get_mw_data(query):
-    # --- FIX: USE YOUR EXISTING KEY NAME ---
     try:
         key = st.secrets["merriam_key"]
     except:
@@ -51,11 +97,8 @@ def get_mw_data(query):
         response = requests.get(url)
         data = response.json()
         
-        if not data:
-            return None
-            
-        if isinstance(data[0], str):
-            return {"suggestion": data}
+        if not data: return None
+        if isinstance(data[0], str): return {"suggestion": data}
 
         combined_defs = []
         combined_pos = set()
@@ -64,36 +107,43 @@ def get_mw_data(query):
 
         target_clean = query.lower().strip()
 
-        # --- LOGIC TO DETECT ROOT WORD AUTOMATICALLY ---
-        # If the first entry's ID is different from our query, that's likely the root.
-        # Example: Query "Swimming" -> returns ID "swim:1" -> Root is "Swim"
+        # --- A. PRIORITY 1: DICTIONARY REDIRECTS (Swum -> Swim) ---
         first_entry_id = data[0].get("meta", {}).get("id", "").split(":")[0]
+        # Fix: Ensure strict lowercase comparison to avoid "Swim" vs "swim" bug
         if first_entry_id and first_entry_id.lower() != target_clean:
-            # Only set it if it's actually shorter/different (e.g. avoid Swim:1 vs Swim)
-            if len(first_entry_id) < len(target_clean) or first_entry_id.lower() not in target_clean:
+            # Only suggest if it's truly different
+            if first_entry_id.lower() not in target_clean: 
                 root_word_ref = first_entry_id.title()
 
+        # Check explicit cross-references (cxs)
+        if not root_word_ref:
+            for entry in data:
+                if isinstance(entry, dict) and "cxs" in entry:
+                    for cx in entry["cxs"]:
+                        for t in cx.get("cxtis", []):
+                            tgt = t.get("cxt", "")
+                            if tgt: root_word_ref = tgt.title()
+
+        # --- B. PRIORITY 2: SUFFIX LOGIC (Swimming -> Swim) ---
+        # Only run if Priority 1 didn't find anything
+        if not root_word_ref:
+            heuristic_guess = get_possible_root(target_clean)
+            if heuristic_guess:
+                root_word_ref = heuristic_guess.title()
+
+        # --- PROCESS ENTRIES ---
         for entry in data:
             if not isinstance(entry, dict): continue
 
             headword_info = entry.get("hwi", {})
             hw = headword_info.get("hw", "").replace("*", "") 
             
-            # Filter matches
+            # Filter matches (No phrases if input is single word)
             if " " in hw and " " not in target_clean:
                  continue
 
             fl = entry.get("fl", "unknown")
             combined_pos.add(fl)
-
-            # Check for Explicit Cross Reference (like "See X")
-            if "cxs" in entry:
-                for cx in entry["cxs"]:
-                    targets = cx.get("cxtis", [])
-                    for t in targets:
-                        tgt_text = t.get("cxt", "")
-                        if tgt_text:
-                            root_word_ref = tgt_text.upper()
 
             # Extract Definitions
             short_defs = entry.get("shortdef", [])
@@ -135,15 +185,13 @@ with st.sidebar:
     st.header("Recent History")
     try:
         sheet = get_sheet()
-        # Get all records safely
         records = sheet.get_all_records()
         
         if records:
-            recent = records[-10:] # Last 10
-            recent.reverse() # Newest on top
+            recent = records[-10:] 
+            recent.reverse() 
 
             for row in recent:
-                # SAFE GET: specific check to avoid crash if "Word" column is missing
                 w = row.get("Word") 
                 if w:
                     if st.button(f"Draft: {w}", key=f"hist_{w}"):
@@ -153,10 +201,9 @@ with st.sidebar:
             st.info("No words saved yet.")
             
     except Exception as e:
-        # Just show a quiet warning instead of a big red box
-        st.caption("History unavailable (Sheet empty or connection issue)")
+        st.caption("History unavailable")
 
-# --- MAIN TAB SELECTION ---
+# --- MAIN TABS ---
 tab1, tab2 = st.tabs(["📖 Dictionary", "🌍 Translator"])
 
 # --- MODE 1: DICTIONARY ---
@@ -176,6 +223,7 @@ with tab1:
                 st.warning(f"Did you mean: {', '.join(data['suggestion'])}?")
             
             else:
+                # ROOT WORD DISPLAY
                 if data.get("root_ref"):
                     st.info(f"Root word found: **{data['root_ref']}**")
                     if st.button(f"Go to {data['root_ref']}"):
