@@ -37,16 +37,25 @@ def clean_mw_text(text):
     return clean.strip()
 
 # --- 3. HELPER: SUFFIX LOGIC (New Feature) ---
+# --- 3. HELPER: SUFFIX LOGIC (Fixed for 'Smelly') ---
 def get_possible_root(word):
     """Guesses the root word based on English morphology rules."""
     w = word.lower().strip()
-    if len(w) < 4: return None # Safety: Don't guess roots for tiny words
+    if len(w) < 4: return None 
 
+    # --- SPECIAL EXCEPTIONS ---
+    # Rule 0: -LLY (Smelly -> Smell, Fully -> Full, Hilly -> Hill)
+    # We check this BEFORE the standard -ly rule so "Smelly" doesn't become "Smel"
+    if w.endswith("lly"):
+        return w[:-1] # Just remove 'y'
+
+    # --- STANDARD RULES ---
+    
     # Rule 1: -ING (Swimming -> Swim, Walking -> Walk)
     if w.endswith("ing"):
         base = w[:-3]
-        if len(base) > 2 and base[-1] == base[-2]: # Double char (Swimm -> Swim)
-            return base[:-1]
+        if len(base) > 2 and base[-1] == base[-2]: 
+            return base[:-1] # Swimm -> Swim
         return base
 
     # Rule 2: -ED (Plotted -> Plot, Tried -> Try, Walked -> Walk)
@@ -64,9 +73,8 @@ def get_possible_root(word):
     # Rule 4: -S / -ES (Flies -> Fly, Boxes -> Box, Cats -> Cat)
     if w.endswith("es"):
         if w.endswith("ies"): return w[:-3] + "y" # Flies -> Fly
-        # Words ending in s, x, z, ch, sh add -es. We strip it.
         if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
-    if w.endswith("s") and not w.endswith("ss"): # Avoid "Grass" -> "Gras"
+    if w.endswith("s") and not w.endswith("ss"): 
         return w[:-1]
 
     # Rule 5: -ER / -EST (Bigger -> Big, Faster -> Fast)
@@ -82,6 +90,7 @@ def get_possible_root(word):
         return base
 
     return None
+
 
 # --- 4. GET DATA FROM MERRIAM-WEBSTER ---
 def get_mw_data(query):
