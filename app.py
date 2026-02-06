@@ -135,6 +135,20 @@ def get_mw_data(query):
         st.error("Missing API Key! Please check .streamlit/secrets.toml")
         return None
 
+    # --- INTERNAL HELPER: CHECK IF A WORD EXISTS IN API ---
+    def validate_word_exists(candidate_word):
+        """Checks if a guessed root (like 'Palimp') is actually real."""
+        check_url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{candidate_word}?key={key}"
+        try:
+            r = requests.get(check_url)
+            d = r.json()
+            # If it returns a list of strings (suggestions) or empty, it's not a real word
+            if not d or isinstance(d[0], str): 
+                return False
+            return True
+        except:
+            return False
+
     url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{query}?key={key}"
     
     try:
@@ -165,16 +179,20 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # --- NEW: CHECK IF THE API RESULT CAN GO DEEPER ---
+        # --- NEW: VALIDATE DEEP ROOTS ---
+        # If API gave us a root, or if we have to guess one, we MUST validate it.
+        
+        # 1. If API gave us a root (e.g. Fatty), check if IT has a deeper root (Fat)
         if root_word_ref:
             deeper_root = get_possible_root(root_word_ref)
-            if deeper_root:
-                root_word_ref = deeper_root.title()
-
-        # --- B. PRIORITY 2: FALLBACK SUFFIX LOGIC ---
-        if not root_word_ref:
+            if deeper_root and validate_word_exists(deeper_root):
+                 root_word_ref = deeper_root.title()
+        
+        # 2. If API gave nothing, we guess from the original word
+        else:
             heuristic_guess = get_possible_root(target_clean)
-            if heuristic_guess:
+            # CRITICAL CHECK: Only use the guess if the dictionary confirms it exists!
+            if heuristic_guess and validate_word_exists(heuristic_guess):
                 root_word_ref = heuristic_guess.title()
 
         # --- PROCESS ENTRIES ---
@@ -184,8 +202,10 @@ def get_mw_data(query):
             headword_info = entry.get("hwi", {})
             hw = headword_info.get("hw", "").replace("*", "") 
             
-            # Filter matches
-            if " " in hw and " " not in target_clean:
+            # --- UPDATED FILTER: Exclude Hyphens too ---
+            # If search is "Fat", ignore "Fat-Shame" (has hyphen)
+            # But if search is "Re-do", keep "Re-do"
+            if (" " in hw or "-" in hw) and (hw.lower() != target_clean):
                  continue
 
             fl = entry.get("fl", "unknown")
@@ -211,6 +231,22 @@ def get_mw_data(query):
         if not combined_defs and not root_word_ref:
             return None
 
+        # --- FETCH SYNONYMS (Datamuse) ---
+        synonyms = get_synonyms(query)
+
+        return {
+            "word": query, 
+            "pos": ", ".join(combined_pos),
+            "definition": " | ".join(combined_defs),
+            "audio": audio_link,
+            "root_ref": root_word_ref,
+            "synonyms": synonyms
+        }
+
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return None
+    
         # --- FETCH SYNONYMS (Datamuse) ---
         synonyms = get_synonyms(query)
 
