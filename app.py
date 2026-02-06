@@ -36,23 +36,18 @@ def clean_mw_text(text):
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-# --- 3. HELPER: SUFFIX LOGIC ---
-def get_possible_root(word):
-    """Guesses the root word based on English morphology rules."""
-    w = word.lower().strip()
+# --- 3. HELPER: SUFFIX LOGIC (Recursive) ---
+def _get_root_step(w):
+    """Performs one 'hop' of logic. Returns the new word or None."""
     if len(w) < 4: return None 
 
-    # --- SPECIAL EXCEPTIONS ---
-    # Rule 0: -LLY (Smelly -> Smell, Fully -> Full, Hilly -> Hill)
-    if w.endswith("lly"):
-        return w[:-1] 
+    # Rule 0: -LLY (Smelly -> Smell)
+    if w.endswith("lly"): return w[:-1] 
 
-    # --- STANDARD RULES ---
     # Rule 1: -ING
     if w.endswith("ing"):
         base = w[:-3]
-        if len(base) > 2 and base[-1] == base[-2]: 
-            return base[:-1] 
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
         return base
 
     # Rule 2: -ED 
@@ -71,8 +66,7 @@ def get_possible_root(word):
     if w.endswith("es"):
         if w.endswith("ies"): return w[:-3] + "y" 
         if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
-    if w.endswith("s") and not w.endswith("ss"): 
-        return w[:-1]
+    if w.endswith("s") and not w.endswith("ss"): return w[:-1]
 
     # Rule 5: -ER / -EST 
     if w.endswith("er"):
@@ -86,7 +80,37 @@ def get_possible_root(word):
         if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
         return base
 
+    # Rule 6: -Y (Adjectives -> Nouns)
+    # Fatty -> Fat, Skinny -> Skin, Rainy -> Rain
+    if w.endswith("y"):
+        base = w[:-1] # Remove y
+        # Check for double consonant (Fatty -> Fatt -> Fat)
+        if len(base) > 2 and base[-1] == base[-2]: 
+            return base[:-1]
+        return base
+
     return None
+
+def get_possible_root(word):
+    """Drills down recursively to find the deepest root."""
+    current_word = word.lower().strip()
+    
+    # We loop up to 3 times to prevent infinite loops (safety first)
+    for _ in range(3):
+        next_step = _get_root_step(current_word)
+        
+        # If no rule matched, or we hit a tiny word, STOP.
+        if not next_step or len(next_step) < 3:
+            break
+            
+        # If the rule worked, update current_word and try again
+        current_word = next_step
+    
+    # Return None if we didn't change anything
+    if current_word == word.lower().strip():
+        return None
+        
+    return current_word
 
 # --- 4. GET DATA FROM MERRIAM-WEBSTER ---
 def get_mw_data(query):
