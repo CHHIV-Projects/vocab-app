@@ -6,6 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import os
 import re
+from deep_translator import GoogleTranslator
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
@@ -112,8 +113,21 @@ def get_possible_root(word):
         
     return current_word
 
-# --- 4. GET DATA FROM MERRIAM-WEBSTER ---
+# --- 4. HELPER: SYNONYMS (The Missing Piece) ---
+def get_synonyms(word):
+    """Fetches synonyms using the free Datamuse API."""
+    try:
+        url = f"https://api.datamuse.com/words?rel_syn={word}&max=5"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            if data:
+                return ", ".join([item['word'] for item in data])
+    except:
+        pass
+    return None
 
+# --- 5. GET DATA FROM MERRIAM-WEBSTER ---
 def get_mw_data(query):
     try:
         key = st.secrets["merriam_key"]
@@ -152,14 +166,12 @@ def get_mw_data(query):
                             if tgt: root_word_ref = tgt.title()
 
         # --- NEW: CHECK IF THE API RESULT CAN GO DEEPER ---
-        # If API gave us "Fatty", we check if "Fatty" has a root ("Fat")
         if root_word_ref:
             deeper_root = get_possible_root(root_word_ref)
             if deeper_root:
                 root_word_ref = deeper_root.title()
 
         # --- B. PRIORITY 2: FALLBACK SUFFIX LOGIC ---
-        # If API gave us nothing, we check the original word
         if not root_word_ref:
             heuristic_guess = get_possible_root(target_clean)
             if heuristic_guess:
@@ -232,7 +244,6 @@ with st.sidebar:
             for row in recent:
                 w = row.get("Word") 
                 if w:
-                    # UPDATED: Removed "Draft: " prefix
                     if st.button(w, key=f"hist_{w}"):
                         st.session_state.search_trigger = w
                         st.rerun()
@@ -262,7 +273,6 @@ with tab1:
                 st.warning(f"Did you mean: {', '.join(data['suggestion'])}?")
             
             else:
-                # ROOT WORD DISPLAY
                 if data.get("root_ref"):
                     st.info(f"Root word found: **{data['root_ref']}**")
                     if st.button(f"Go to {data['root_ref']}"):
@@ -272,6 +282,10 @@ with tab1:
                 st.header(f"📖 {data['word'].title()}")
                 st.markdown(f"**Part of Speech:** *{data['pos']}*")
                 
+                # --- DISPLAY SYNONYMS ---
+                if data['synonyms']:
+                    st.caption(f"**Synonyms:** {data['synonyms']}")
+
                 display_def = data['definition'].replace("|", "\n\n")
                 st.markdown(f"**Definition:**\n\n{display_def}")
                 
@@ -313,12 +327,8 @@ with tab2:
         trans_submitted = st.form_submit_button("Translate")
         
     if trans_submitted:
-        from deep_translator import GoogleTranslator
         try:
             res = GoogleTranslator(source='auto', target=lang_codes[target_lang]).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
-            
-            # UPDATED: Removed the "Save Translation" button entirely
-            
         except Exception as e:
             st.error(f"Error: {e}")
