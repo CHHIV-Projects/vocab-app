@@ -36,8 +36,7 @@ def clean_mw_text(text):
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-# --- 3. HELPER: SUFFIX LOGIC (New Feature) ---
-# --- 3. HELPER: SUFFIX LOGIC (Fixed for 'Smelly') ---
+# --- 3. HELPER: SUFFIX LOGIC ---
 def get_possible_root(word):
     """Guesses the root word based on English morphology rules."""
     w = word.lower().strip()
@@ -45,39 +44,37 @@ def get_possible_root(word):
 
     # --- SPECIAL EXCEPTIONS ---
     # Rule 0: -LLY (Smelly -> Smell, Fully -> Full, Hilly -> Hill)
-    # We check this BEFORE the standard -ly rule so "Smelly" doesn't become "Smel"
     if w.endswith("lly"):
-        return w[:-1] # Just remove 'y'
+        return w[:-1] 
 
     # --- STANDARD RULES ---
-    
-    # Rule 1: -ING (Swimming -> Swim, Walking -> Walk)
+    # Rule 1: -ING
     if w.endswith("ing"):
         base = w[:-3]
         if len(base) > 2 and base[-1] == base[-2]: 
-            return base[:-1] # Swimm -> Swim
+            return base[:-1] 
         return base
 
-    # Rule 2: -ED (Plotted -> Plot, Tried -> Try, Walked -> Walk)
+    # Rule 2: -ED 
     if w.endswith("ed"):
         base = w[:-2]
-        if w.endswith("ied"): return w[:-3] + "y" # Tried -> Try
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] # Plotted -> Plot
+        if w.endswith("ied"): return w[:-3] + "y" 
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
         return base
 
-    # Rule 3: -LY (Happily -> Happy, Quickly -> Quick)
+    # Rule 3: -LY 
     if w.endswith("ly"):
-        if w.endswith("ily"): return w[:-3] + "y" # Happily -> Happy
-        return w[:-2] # Quickly -> Quick
+        if w.endswith("ily"): return w[:-3] + "y" 
+        return w[:-2] 
 
-    # Rule 4: -S / -ES (Flies -> Fly, Boxes -> Box, Cats -> Cat)
+    # Rule 4: -S / -ES 
     if w.endswith("es"):
-        if w.endswith("ies"): return w[:-3] + "y" # Flies -> Fly
+        if w.endswith("ies"): return w[:-3] + "y" 
         if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
     if w.endswith("s") and not w.endswith("ss"): 
         return w[:-1]
 
-    # Rule 5: -ER / -EST (Bigger -> Big, Faster -> Fast)
+    # Rule 5: -ER / -EST 
     if w.endswith("er"):
         base = w[:-2]
         if w.endswith("ier"): return w[:-3] + "y"
@@ -90,7 +87,6 @@ def get_possible_root(word):
         return base
 
     return None
-
 
 # --- 4. GET DATA FROM MERRIAM-WEBSTER ---
 def get_mw_data(query):
@@ -116,15 +112,12 @@ def get_mw_data(query):
 
         target_clean = query.lower().strip()
 
-        # --- A. PRIORITY 1: DICTIONARY REDIRECTS (Swum -> Swim) ---
+        # --- A. PRIORITY 1: DICTIONARY REDIRECTS ---
         first_entry_id = data[0].get("meta", {}).get("id", "").split(":")[0]
-        # Fix: Ensure strict lowercase comparison to avoid "Swim" vs "swim" bug
         if first_entry_id and first_entry_id.lower() != target_clean:
-            # Only suggest if it's truly different
             if first_entry_id.lower() not in target_clean: 
                 root_word_ref = first_entry_id.title()
 
-        # Check explicit cross-references (cxs)
         if not root_word_ref:
             for entry in data:
                 if isinstance(entry, dict) and "cxs" in entry:
@@ -133,8 +126,7 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # --- B. PRIORITY 2: SUFFIX LOGIC (Swimming -> Swim) ---
-        # Only run if Priority 1 didn't find anything
+        # --- B. PRIORITY 2: SUFFIX LOGIC ---
         if not root_word_ref:
             heuristic_guess = get_possible_root(target_clean)
             if heuristic_guess:
@@ -147,7 +139,7 @@ def get_mw_data(query):
             headword_info = entry.get("hwi", {})
             hw = headword_info.get("hw", "").replace("*", "") 
             
-            # Filter matches (No phrases if input is single word)
+            # Filter matches
             if " " in hw and " " not in target_clean:
                  continue
 
@@ -203,7 +195,8 @@ with st.sidebar:
             for row in recent:
                 w = row.get("Word") 
                 if w:
-                    if st.button(f"Draft: {w}", key=f"hist_{w}"):
+                    # UPDATED: Removed "Draft: " prefix
+                    if st.button(w, key=f"hist_{w}"):
                         st.session_state.search_trigger = w
                         st.rerun()
         else:
@@ -288,10 +281,7 @@ with tab2:
             res = GoogleTranslator(source='auto', target=lang_codes[target_lang]).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
             
-            if st.button("💾 Save Translation"):
-                 sheet = get_sheet()
-                 timestamp = datetime.now().strftime("%Y-%m-%d")
-                 sheet.append_row([text_to_translate, res, f"Trans ({lang_codes[target_lang]})", "N/A", timestamp, 1])
-                 st.toast("Saved!")
+            # UPDATED: Removed the "Save Translation" button entirely
+            
         except Exception as e:
             st.error(f"Error: {e}")
