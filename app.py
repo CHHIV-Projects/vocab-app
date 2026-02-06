@@ -180,18 +180,13 @@ def get_mw_data(query):
                             if tgt: root_word_ref = tgt.title()
 
         # --- NEW: VALIDATE DEEP ROOTS ---
-        # If API gave us a root, or if we have to guess one, we MUST validate it.
-        
-        # 1. If API gave us a root (e.g. Fatty), check if IT has a deeper root (Fat)
         if root_word_ref:
             deeper_root = get_possible_root(root_word_ref)
             if deeper_root and validate_word_exists(deeper_root):
                  root_word_ref = deeper_root.title()
         
-        # 2. If API gave nothing, we guess from the original word
         else:
             heuristic_guess = get_possible_root(target_clean)
-            # CRITICAL CHECK: Only use the guess if the dictionary confirms it exists!
             if heuristic_guess and validate_word_exists(heuristic_guess):
                 root_word_ref = heuristic_guess.title()
 
@@ -203,8 +198,6 @@ def get_mw_data(query):
             hw = headword_info.get("hw", "").replace("*", "") 
             
             # --- UPDATED FILTER: Exclude Hyphens too ---
-            # If search is "Fat", ignore "Fat-Shame" (has hyphen)
-            # But if search is "Re-do", keep "Re-do"
             if (" " in hw or "-" in hw) and (hw.lower() != target_clean):
                  continue
 
@@ -231,22 +224,6 @@ def get_mw_data(query):
         if not combined_defs and not root_word_ref:
             return None
 
-        # --- FETCH SYNONYMS (Datamuse) ---
-        synonyms = get_synonyms(query)
-
-        return {
-            "word": query, 
-            "pos": ", ".join(combined_pos),
-            "definition": " | ".join(combined_defs),
-            "audio": audio_link,
-            "root_ref": root_word_ref,
-            "synonyms": synonyms
-        }
-
-    except Exception as e:
-        st.error(f"API Error: {e}")
-        return None
-    
         # --- FETCH SYNONYMS (Datamuse) ---
         synonyms = get_synonyms(query)
 
@@ -306,7 +283,14 @@ with tab1:
         
         if data:
             if "suggestion" in data:
-                st.warning(f"Did you mean: {', '.join(data['suggestion'])}?")
+                # --- NEW CLICKABLE BUTTONS ---
+                st.warning("Word not found. Did you mean:")
+                cols = st.columns(3)
+                for i, suggestion in enumerate(data['suggestion'][:9]):
+                    with cols[i % 3]:
+                        if st.button(suggestion, key=f"sugg_{i}"):
+                            st.session_state.search_trigger = suggestion
+                            st.rerun()
             
             else:
                 if data.get("root_ref"):
