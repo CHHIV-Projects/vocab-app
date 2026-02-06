@@ -113,6 +113,7 @@ def get_possible_root(word):
     return current_word
 
 # --- 4. GET DATA FROM MERRIAM-WEBSTER ---
+
 def get_mw_data(query):
     try:
         key = st.secrets["merriam_key"]
@@ -150,7 +151,15 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # --- B. PRIORITY 2: SUFFIX LOGIC ---
+        # --- NEW: CHECK IF THE API RESULT CAN GO DEEPER ---
+        # If API gave us "Fatty", we check if "Fatty" has a root ("Fat")
+        if root_word_ref:
+            deeper_root = get_possible_root(root_word_ref)
+            if deeper_root:
+                root_word_ref = deeper_root.title()
+
+        # --- B. PRIORITY 2: FALLBACK SUFFIX LOGIC ---
+        # If API gave us nothing, we check the original word
         if not root_word_ref:
             heuristic_guess = get_possible_root(target_clean)
             if heuristic_guess:
@@ -190,12 +199,16 @@ def get_mw_data(query):
         if not combined_defs and not root_word_ref:
             return None
 
+        # --- FETCH SYNONYMS (Datamuse) ---
+        synonyms = get_synonyms(query)
+
         return {
             "word": query, 
             "pos": ", ".join(combined_pos),
             "definition": " | ".join(combined_defs),
             "audio": audio_link,
-            "root_ref": root_word_ref
+            "root_ref": root_word_ref,
+            "synonyms": synonyms
         }
 
     except Exception as e:
