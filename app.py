@@ -324,8 +324,10 @@ with tab3:
                     # Logic: Sort by Score (Count), Take lowest 10, Shuffle them
                     # Ensure 'Count' is treated as int
                     for r in all_records:
-                        if not isinstance(r.get('Count'), int):
-                            r['Count'] = 1 # Default fallback
+                        # Safe get for Count, defaulting to 1 if missing
+                        c = r.get('Count')
+                        if not isinstance(c, int):
+                            r['Count'] = 1 
                             
                     sorted_words = sorted(all_records, key=lambda x: x['Count'])
                     session_batch = sorted_words[:10]
@@ -358,9 +360,14 @@ with tab3:
             progress = (idx + 1) / len(cards)
             st.progress(progress, text=f"Card {idx+1} of {len(cards)}")
             
+            # Use .get() to avoid crashing if headers are slightly different
+            word_text = card.get('Word', 'Unknown Word')
+            def_text = card.get('Definition', 'No definition found.')
+            audio_url = card.get('Audio') # Returns None if missing
+            
             # THE FLASHCARD
             st.markdown("---")
-            st.subheader(f"🔤 {card['Word']}")
+            st.subheader(f"🔤 {word_text}")
             st.markdown("---")
             
             if not st.session_state.card_flipped:
@@ -370,23 +377,25 @@ with tab3:
                     st.rerun()
             else:
                 # State B: Reveal
-                st.info(f"**Definition:** {card['Definition']}")
-                if card['Audio'] and card['Audio'] != "N/A":
-                    st.audio(card['Audio'])
+                st.info(f"**Definition:** {def_text}")
+                
+                # Safe Audio Check
+                if audio_url and audio_url != "N/A":
+                    st.audio(audio_url)
                     
                 st.write("How did you do?")
                 col1, col2 = st.columns(2)
                 
                 with col1:
                     if st.button("❌ Missed it"):
-                        update_score(card['Word'], success=False)
+                        update_score(word_text, success=False)
                         st.session_state.current_card_idx += 1
                         st.session_state.card_flipped = False
                         st.rerun()
                 
                 with col2:
                     if st.button("✅ Got it"):
-                        update_score(card['Word'], success=True)
+                        update_score(word_text, success=True)
                         st.session_state.current_card_idx += 1
                         st.session_state.card_flipped = False
                         st.rerun()
