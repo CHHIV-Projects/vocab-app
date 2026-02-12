@@ -6,16 +6,23 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import os
 import re
+import random
 from deep_translator import GoogleTranslator
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
 
 # --- SESSION STATE INITIALIZATION ---
-# We use 'active_search' to remember what word we are looking at,
-# even after the text box has been cleared.
 if 'active_search' not in st.session_state:
     st.session_state.active_search = ""
+
+# Flashcard States
+if 'flashcards' not in st.session_state:
+    st.session_state.flashcards = [] # List of words to review
+if 'current_card_idx' not in st.session_state:
+    st.session_state.current_card_idx = 0
+if 'card_flipped' not in st.session_state:
+    st.session_state.card_flipped = False
 
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
@@ -31,47 +38,32 @@ def get_sheet():
     client = gspread.authorize(creds)
     return client.open("VocabApp_DB").sheet1
 
-# --- 2. TEXT CLEANERS ---
+# --- 2. LOGIC HELPERS ---
 def clean_mw_text(text):
-    """Merriam-Webster returns text with tags like {it}word{/it}. We clean them here."""
     if not text: return ""
     clean = re.sub(r'\{.*?\}', '', text)
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-# --- 3. HELPER: SUFFIX LOGIC (Recursive) ---
 def _get_root_step(w):
-    """Performs one 'hop' of logic. Returns the new word or None."""
     if len(w) < 4: return None 
-
-    # Rule 0: -LLY (Smelly -> Smell)
     if w.endswith("lly"): return w[:-1] 
-
-    # Rule 1: -ING
     if w.endswith("ing"):
         base = w[:-3]
         if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
         return base
-
-    # Rule 2: -ED 
     if w.endswith("ed"):
         base = w[:-2]
         if w.endswith("ied"): return w[:-3] + "y" 
         if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
         return base
-
-    # Rule 3: -LY 
     if w.endswith("ly"):
         if w.endswith("ily"): return w[:-3] + "y" 
         return w[:-2] 
-
-    # Rule 4: -S / -ES 
     if w.endswith("es"):
         if w.endswith("ies"): return w[:-3] + "y" 
         if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
     if w.endswith("s") and not w.endswith("ss"): return w[:-1]
-
-    # Rule 5: -ER / -EST 
     if w.endswith("er"):
         base = w[:-2]
         if w.endswith("ier"): return w[:-3] + "y"
@@ -82,50 +74,55 @@ def _get_root_step(w):
         if w.endswith("iest"): return w[:-4] + "y"
         if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
         return base
-
-    # Rule 6: -Y (Adjectives -> Nouns)
     if w.endswith("y"):
-        base = w[:-1] # Remove y
-        if len(base) > 2 and base[-1] == base[-2]: 
-            return base[:-1]
+        base = w[:-1] 
+        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
         return base
-
     return None
 
 def get_possible_root(word):
-    """Drills down recursively to find the deepest root."""
     current_word = word.lower().strip()
-    
     for _ in range(3):
         next_step = _get_root_step(current_word)
-        if not next_step or len(next_step) < 3:
-            break
+        if not next_step or len(next_step) < 3: break
         current_word = next_step
-    
-    if current_word == word.lower().strip():
-        return None
+    if current_word == word.lower().strip(): return None
     return current_word
 
-# --- 4. HELPER: SYNONYMS ---
 def get_synonyms(word):
-    """Fetches synonyms using the free Datamuse API."""
     try:
         url = f"https://api.datamuse.com/words?rel_syn={word}&max=5"
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
-            if data:
-                return ", ".join([item['word'] for item in data])
-    except:
-        pass
+            if data: return ", ".join([item['word'] for item in data])
+    except: pass
     return None
 
-# --- 5. GET DATA FROM MERRIAM-WEBSTER ---
+def update_score(word, success):
+    """Finds the word in the sheet and updates the score (Column 6)."""
+    try:
+        sheet = get_sheet()
+        cell = sheet.find(word) # Find the row where the word is
+        if cell:
+            # Column 6 is the 'Count' / Score column
+            current_score = int(sheet.cell(cell.row, 6).value)
+            
+            if success:
+                new_score = current_score + 1
+            else:
+                new_score = 1 # Reset to 1 if missed
+                
+            sheet.update_cell(cell.row, 6, new_score)
+    except Exception as e:
+        print(f"Error updating score: {e}")
+
+# --- 3. GET DATA FROM API ---
 def get_mw_data(query):
     try:
         key = st.secrets["merriam_key"]
     except:
-        st.error("Missing API Key! Please check .streamlit/secrets.toml")
+        st.error("Missing API Key! Check secrets.")
         return None
 
     def validate_word_exists(candidate_word):
@@ -133,11 +130,9 @@ def get_mw_data(query):
         try:
             r = requests.get(check_url)
             d = r.json()
-            if not d or isinstance(d[0], str): 
-                return False
+            if not d or isinstance(d[0], str): return False
             return True
-        except:
-            return False
+        except: return False
 
     url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{query}?key={key}"
     
@@ -168,7 +163,7 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # NEW: Validate Root
+        # Validate Root
         if root_word_ref:
             deeper_root = get_possible_root(root_word_ref)
             if deeper_root and validate_word_exists(deeper_root):
@@ -181,17 +176,14 @@ def get_mw_data(query):
         # Process Entries
         for entry in data:
             if not isinstance(entry, dict): continue
-
             headword_info = entry.get("hwi", {})
             hw = headword_info.get("hw", "").replace("*", "") 
             
             # Filter: Exclude hyphens or spaces unless exact match
-            if (" " in hw or "-" in hw) and (hw.lower() != target_clean):
-                 continue
+            if (" " in hw or "-" in hw) and (hw.lower() != target_clean): continue
 
             fl = entry.get("fl", "unknown")
             combined_pos.add(fl)
-
             short_defs = entry.get("shortdef", [])
             if short_defs:
                 def_text = f"({fl}) " + "; ".join([f"{i+1}. {d}" for i, d in enumerate(short_defs)])
@@ -207,18 +199,13 @@ def get_mw_data(query):
                     else: subdir = audio_base[0]
                     audio_link = f"https://media.merriam-webster.com/audio/prons/en/us/mp3/{subdir}/{audio_base}.mp3"
 
-        if not combined_defs and not root_word_ref:
-            return None
-
+        if not combined_defs and not root_word_ref: return None
         synonyms = get_synonyms(query)
 
         return {
-            "word": query, 
-            "pos": ", ".join(combined_pos),
+            "word": query, "pos": ", ".join(combined_pos),
             "definition": " | ".join(combined_defs),
-            "audio": audio_link,
-            "root_ref": root_word_ref,
-            "synonyms": synonyms
+            "audio": audio_link, "root_ref": root_word_ref, "synonyms": synonyms
         }
 
     except Exception as e:
@@ -234,40 +221,31 @@ with st.sidebar:
     try:
         sheet = get_sheet()
         records = sheet.get_all_records()
-        
         if records:
             recent = records[-10:] 
             recent.reverse() 
-
             for row in recent:
                 w = row.get("Word") 
                 if w:
                     if st.button(w, key=f"hist_{w}"):
-                        st.session_state.active_search = w # Update Memory
+                        st.session_state.active_search = w 
                         st.rerun()
         else:
             st.info("No words saved yet.")
-            
     except Exception as e:
         st.caption("History unavailable")
 
 # --- MAIN TABS ---
-tab1, tab2 = st.tabs(["📖 Dictionary", "🌍 Translator"])
+tab1, tab2, tab3 = st.tabs(["📖 Dictionary", "🌍 Translator", "🧠 Practice"])
 
 # --- MODE 1: DICTIONARY ---
 with tab1:
-    
-    # CALLBACK: Handles the "Enter" key
     def handle_new_search():
-        # Move the input to the active memory
         st.session_state.active_search = st.session_state.temp_input_val
-        # Clear the input
         st.session_state.temp_input_val = ""
 
-    # The Input Box (Notice key="temp_input_val")
     st.text_input("Enter a word:", key="temp_input_val", on_change=handle_new_search)
     
-    # THE DISPLAY LOGIC (Now looks at 'active_search' instead of the input box)
     if st.session_state.active_search:
         word_to_show = st.session_state.active_search
         data = get_mw_data(word_to_show)
@@ -279,53 +257,37 @@ with tab1:
                 for i, suggestion in enumerate(data['suggestion'][:9]):
                     with cols[i % 3]:
                         if st.button(suggestion, key=f"sugg_{i}"):
-                            st.session_state.active_search = suggestion # Update Memory
+                            st.session_state.active_search = suggestion
                             st.rerun()
-            
             else:
                 if data.get("root_ref"):
                     st.info(f"Root word found: **{data['root_ref']}**")
                     if st.button(f"Go to {data['root_ref']}"):
-                        st.session_state.active_search = data['root_ref'] # Update Memory
+                        st.session_state.active_search = data['root_ref']
                         st.rerun()
 
                 st.header(f"📖 {data['word'].title()}")
                 st.markdown(f"**Part of Speech:** *{data['pos']}*")
-                
-                if data['synonyms']:
-                    st.caption(f"**Synonyms:** {data['synonyms']}")
-
+                if data['synonyms']: st.caption(f"**Synonyms:** {data['synonyms']}")
                 display_def = data['definition'].replace("|", "\n\n")
                 st.markdown(f"**Definition:**\n\n{display_def}")
-                
-                if data['audio']:
-                    st.audio(data['audio'])
+                if data['audio']: st.audio(data['audio'])
                 
                 if st.button("💾 Save Word"):
                     try:
                         sheet = get_sheet()
                         existing_words = sheet.col_values(1)
-                        
-                        # Check capitalization-insensitive match
                         if word_to_show.lower() in [x.lower() for x in existing_words]:
                             st.warning(f"'{word_to_show}' is already in your list!")
                         else:
                             timestamp = datetime.now().strftime("%Y-%m-%d")
-                            # SAVE UPDATE: We force .title() here
                             sheet.append_row([
-                                data['word'].title(), 
-                                data['definition'], 
-                                data['pos'], 
-                                data['audio'] if data['audio'] else "N/A", 
-                                timestamp, 
-                                1
+                                data['word'].title(), data['definition'], data['pos'], 
+                                data['audio'] if data['audio'] else "N/A", timestamp, 1
                             ])
                             st.success(f"Saved '{data['word'].title()}' to your list!")
-                            
-                    except Exception as e:
-                        st.error(f"Save failed: {e}")
-        else:
-            st.error("Word not found.")
+                    except Exception as e: st.error(f"Save failed: {e}")
+        else: st.error("Word not found.")
 
 # --- MODE 2: TRANSLATOR ---
 with tab2:
@@ -343,3 +305,88 @@ with tab2:
             st.success(f"**{target_lang}:** {res}")
         except Exception as e:
             st.error(f"Error: {e}")
+
+# --- MODE 3: PRACTICE (FLASHCARDS) ---
+with tab3:
+    st.header("🧠 Flashcard Session")
+    
+    # Check if a session is active
+    if not st.session_state.flashcards:
+        st.write("Ready to review? We'll pick 10 words you need to practice.")
+        if st.button("Start Session"):
+            try:
+                sheet = get_sheet()
+                all_records = sheet.get_all_records()
+                
+                if not all_records:
+                    st.warning("No words saved yet! Go to the Dictionary tab to add some.")
+                else:
+                    # Logic: Sort by Score (Count), Take lowest 10, Shuffle them
+                    # Ensure 'Count' is treated as int
+                    for r in all_records:
+                        if not isinstance(r.get('Count'), int):
+                            r['Count'] = 1 # Default fallback
+                            
+                    sorted_words = sorted(all_records, key=lambda x: x['Count'])
+                    session_batch = sorted_words[:10]
+                    random.shuffle(session_batch)
+                    
+                    # Initialize Session
+                    st.session_state.flashcards = session_batch
+                    st.session_state.current_card_idx = 0
+                    st.session_state.card_flipped = False
+                    st.rerun()
+            except Exception as e:
+                st.error(f"Could not fetch cards: {e}")
+                
+    else:
+        # Session is Active
+        cards = st.session_state.flashcards
+        idx = st.session_state.current_card_idx
+        
+        # Check if session is finished
+        if idx >= len(cards):
+            st.balloons()
+            st.success("🎉 Session Complete! Great job.")
+            if st.button("Start New Session"):
+                st.session_state.flashcards = []
+                st.session_state.current_card_idx = 0
+                st.rerun()
+        else:
+            # Display Current Card
+            card = cards[idx]
+            progress = (idx + 1) / len(cards)
+            st.progress(progress, text=f"Card {idx+1} of {len(cards)}")
+            
+            # THE FLASHCARD
+            st.markdown("---")
+            st.subheader(f"🔤 {card['Word']}")
+            st.markdown("---")
+            
+            if not st.session_state.card_flipped:
+                # State A: Question
+                if st.button("Flip Card 🔄"):
+                    st.session_state.card_flipped = True
+                    st.rerun()
+            else:
+                # State B: Reveal
+                st.info(f"**Definition:** {card['Definition']}")
+                if card['Audio'] and card['Audio'] != "N/A":
+                    st.audio(card['Audio'])
+                    
+                st.write("How did you do?")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("❌ Missed it"):
+                        update_score(card['Word'], success=False)
+                        st.session_state.current_card_idx += 1
+                        st.session_state.card_flipped = False
+                        st.rerun()
+                
+                with col2:
+                    if st.button("✅ Got it"):
+                        update_score(card['Word'], success=True)
+                        st.session_state.current_card_idx += 1
+                        st.session_state.card_flipped = False
+                        st.rerun()
