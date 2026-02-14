@@ -9,8 +9,22 @@ import re
 import random
 from deep_translator import GoogleTranslator
 
+# --- NEW: IMPORT NLTK ---
+import nltk
+from nltk.stem import WordNetLemmatizer
+
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
+
+# --- NLTK SETUP (Run once) ---
+# This ensures the app has the dictionary data it needs
+try:
+    nltk.data.find('corpora/wordnet.zip')
+except LookupError:
+    nltk.download('wordnet')
+    nltk.download('omw-1.4')
+
+lemmatizer = WordNetLemmatizer()
 
 # --- SESSION STATE INITIALIZATION ---
 if 'active_search' not in st.session_state:
@@ -18,7 +32,7 @@ if 'active_search' not in st.session_state:
 
 # Flashcard States
 if 'flashcards' not in st.session_state:
-    st.session_state.flashcards = [] # List of words to review
+    st.session_state.flashcards = [] 
 if 'current_card_idx' not in st.session_state:
     st.session_state.current_card_idx = 0
 if 'card_flipped' not in st.session_state:
@@ -45,49 +59,27 @@ def clean_mw_text(text):
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-def _get_root_step(w):
-    if len(w) < 4: return None 
-    if w.endswith("lly"): return w[:-1] 
-    if w.endswith("ing"):
-        base = w[:-3]
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
-        return base
-    if w.endswith("ed"):
-        base = w[:-2]
-        if w.endswith("ied"): return w[:-3] + "y" 
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1] 
-        return base
-    if w.endswith("ly"):
-        if w.endswith("ily"): return w[:-3] + "y" 
-        return w[:-2] 
-    if w.endswith("es"):
-        if w.endswith("ies"): return w[:-3] + "y" 
-        if len(w) > 4 and w[-3] in ['s','x','z','h']: return w[:-2]
-    if w.endswith("s") and not w.endswith("ss"): return w[:-1]
-    if w.endswith("er"):
-        base = w[:-2]
-        if w.endswith("ier"): return w[:-3] + "y"
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
-        return base
-    if w.endswith("est"):
-        base = w[:-3]
-        if w.endswith("iest"): return w[:-4] + "y"
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
-        return base
-    if w.endswith("y"):
-        base = w[:-1] 
-        if len(base) > 2 and base[-1] == base[-2]: return base[:-1]
-        return base
+# --- NEW: NLTK ROOT LOGIC (Replaces old manual rules) ---
+def get_nltk_root(word):
+    """Uses NLTK to find the root (lemma) of a word."""
+    w = word.lower().strip()
+    
+    # NLTK defaults to Noun (n). We try Verb (v) and Adjective (a) if Noun doesn't change it.
+    
+    # 1. Try as Noun (Plurals -> Singular)
+    # e.g., "Wolves" -> "Wolf"
+    lemma = lemmatizer.lemmatize(w, pos='n')
+    if lemma != w: return lemma
+    
+    # 2. Try as Verb (Running -> Run, Consumed -> Consume)
+    lemma = lemmatizer.lemmatize(w, pos='v')
+    if lemma != w: return lemma
+    
+    # 3. Try as Adjective (Fattier -> Fat)
+    lemma = lemmatizer.lemmatize(w, pos='a')
+    if lemma != w: return lemma
+    
     return None
-
-def get_possible_root(word):
-    current_word = word.lower().strip()
-    for _ in range(3):
-        next_step = _get_root_step(current_word)
-        if not next_step or len(next_step) < 3: break
-        current_word = next_step
-    if current_word == word.lower().strip(): return None
-    return current_word
 
 def get_synonyms(word):
     try:
@@ -100,19 +92,12 @@ def get_synonyms(word):
     return None
 
 def update_score(word, success):
-    """Finds the word in the sheet and updates the score (Column 6)."""
     try:
         sheet = get_sheet()
-        cell = sheet.find(word) # Find the row where the word is
+        cell = sheet.find(word) 
         if cell:
-            # Column 6 is the 'Count' / Score column
             current_score = int(sheet.cell(cell.row, 6).value)
-            
-            if success:
-                new_score = current_score + 1
-            else:
-                new_score = 1 # Reset to 1 if missed
-                
+            new_score = current_score + 1 if success else 1
             sheet.update_cell(cell.row, 6, new_score)
     except Exception as e:
         print(f"Error updating score: {e}")
@@ -163,13 +148,13 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # Validate Root
+        # Validate Root (Using NLTK logic now)
         if root_word_ref:
-            deeper_root = get_possible_root(root_word_ref)
+            deeper_root = get_nltk_root(root_word_ref)
             if deeper_root and validate_word_exists(deeper_root):
                  root_word_ref = deeper_root.title()
         else:
-            heuristic_guess = get_possible_root(target_clean)
+            heuristic_guess = get_nltk_root(target_clean)
             if heuristic_guess and validate_word_exists(heuristic_guess):
                 root_word_ref = heuristic_guess.title()
 
@@ -179,7 +164,6 @@ def get_mw_data(query):
             headword_info = entry.get("hwi", {})
             hw = headword_info.get("hw", "").replace("*", "") 
             
-            # Filter: Exclude hyphens or spaces unless exact match
             if (" " in hw or "-" in hw) and (hw.lower() != target_clean): continue
 
             fl = entry.get("fl", "unknown")
@@ -310,7 +294,6 @@ with tab2:
 with tab3:
     st.header("🧠 Flashcard Session")
     
-    # Check if a session is active
     if not st.session_state.flashcards:
         st.write("Ready to review? We'll pick 10 words you need to practice.")
         if st.button("Start Session"):
@@ -321,10 +304,7 @@ with tab3:
                 if not all_records:
                     st.warning("No words saved yet! Go to the Dictionary tab to add some.")
                 else:
-                    # Logic: Sort by Score (Count), Take lowest 10, Shuffle them
-                    # Ensure 'Count' is treated as int
                     for r in all_records:
-                        # Safe get for Count, defaulting to 1 if missing
                         c = r.get('Count')
                         if not isinstance(c, int):
                             r['Count'] = 1 
@@ -333,7 +313,6 @@ with tab3:
                     session_batch = sorted_words[:10]
                     random.shuffle(session_batch)
                     
-                    # Initialize Session
                     st.session_state.flashcards = session_batch
                     st.session_state.current_card_idx = 0
                     st.session_state.card_flipped = False
@@ -342,11 +321,9 @@ with tab3:
                 st.error(f"Could not fetch cards: {e}")
                 
     else:
-        # Session is Active
         cards = st.session_state.flashcards
         idx = st.session_state.current_card_idx
         
-        # Check if session is finished
         if idx >= len(cards):
             st.balloons()
             st.success("🎉 Session Complete! Great job.")
@@ -355,31 +332,24 @@ with tab3:
                 st.session_state.current_card_idx = 0
                 st.rerun()
         else:
-            # Display Current Card
             card = cards[idx]
             progress = (idx + 1) / len(cards)
             st.progress(progress, text=f"Card {idx+1} of {len(cards)}")
             
-            # Use .get() to avoid crashing if headers are slightly different
             word_text = card.get('Word', 'Unknown Word')
             def_text = card.get('Definition', 'No definition found.')
-            audio_url = card.get('Audio') # Returns None if missing
+            audio_url = card.get('Audio')
             
-            # THE FLASHCARD
             st.markdown("---")
             st.subheader(f"🔤 {word_text}")
             st.markdown("---")
             
             if not st.session_state.card_flipped:
-                # State A: Question
                 if st.button("Flip Card 🔄"):
                     st.session_state.card_flipped = True
                     st.rerun()
             else:
-                # State B: Reveal
                 st.info(f"**Definition:** {def_text}")
-                
-                # Safe Audio Check
                 if audio_url and audio_url != "N/A":
                     st.audio(audio_url)
                     
