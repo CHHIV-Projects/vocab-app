@@ -17,7 +17,6 @@ from nltk.stem import WordNetLemmatizer
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
 
 # --- NLTK SETUP (Run once) ---
-# This ensures the app has the dictionary data it needs
 try:
     nltk.data.find('corpora/wordnet.zip')
 except LookupError:
@@ -37,6 +36,11 @@ if 'current_card_idx' not in st.session_state:
     st.session_state.current_card_idx = 0
 if 'card_flipped' not in st.session_state:
     st.session_state.card_flipped = False
+
+# --- NEW: BALLOON CONTROL ---
+# This variable prevents the balloons from running infinitely
+if 'balloons_shown' not in st.session_state:
+    st.session_state.balloons_shown = False
 
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
@@ -59,19 +63,16 @@ def clean_mw_text(text):
     clean = re.sub(r'\{sx\|(.*?)\|\|.*?\}', r'\1', clean) 
     return clean.strip()
 
-# --- NEW: NLTK ROOT LOGIC (Replaces old manual rules) ---
+# --- NLTK ROOT LOGIC ---
 def get_nltk_root(word):
     """Uses NLTK to find the root (lemma) of a word."""
     w = word.lower().strip()
     
-    # NLTK defaults to Noun (n). We try Verb (v) and Adjective (a) if Noun doesn't change it.
-    
     # 1. Try as Noun (Plurals -> Singular)
-    # e.g., "Wolves" -> "Wolf"
     lemma = lemmatizer.lemmatize(w, pos='n')
     if lemma != w: return lemma
     
-    # 2. Try as Verb (Running -> Run, Consumed -> Consume)
+    # 2. Try as Verb (Running -> Run)
     lemma = lemmatizer.lemmatize(w, pos='v')
     if lemma != w: return lemma
     
@@ -294,10 +295,14 @@ with tab2:
 with tab3:
     st.header("🧠 Flashcard Session")
     
+    # Check if a session is active
     if not st.session_state.flashcards:
         st.write("Ready to review? We'll pick 10 words you need to practice.")
         if st.button("Start Session"):
             try:
+                # --- NEW: RESET BALLOONS ---
+                st.session_state.balloons_shown = False
+                
                 sheet = get_sheet()
                 all_records = sheet.get_all_records()
                 
@@ -313,6 +318,7 @@ with tab3:
                     session_batch = sorted_words[:10]
                     random.shuffle(session_batch)
                     
+                    # Initialize Session
                     st.session_state.flashcards = session_batch
                     st.session_state.current_card_idx = 0
                     st.session_state.card_flipped = False
@@ -321,35 +327,49 @@ with tab3:
                 st.error(f"Could not fetch cards: {e}")
                 
     else:
+        # Session is Active
         cards = st.session_state.flashcards
         idx = st.session_state.current_card_idx
         
+        # Check if session is finished
         if idx >= len(cards):
-            st.balloons()
+            
+            # --- NEW: ONE-TIME BALLOON CHECK ---
+            if not st.session_state.balloons_shown:
+                st.balloons()
+                st.session_state.balloons_shown = True
+            
             st.success("🎉 Session Complete! Great job.")
             if st.button("Start New Session"):
                 st.session_state.flashcards = []
                 st.session_state.current_card_idx = 0
                 st.rerun()
         else:
+            # Display Current Card
             card = cards[idx]
             progress = (idx + 1) / len(cards)
             st.progress(progress, text=f"Card {idx+1} of {len(cards)}")
             
+            # Use .get() to avoid crashing if headers are slightly different
             word_text = card.get('Word', 'Unknown Word')
             def_text = card.get('Definition', 'No definition found.')
-            audio_url = card.get('Audio')
+            audio_url = card.get('Audio') # Returns None if missing
             
+            # THE FLASHCARD
             st.markdown("---")
             st.subheader(f"🔤 {word_text}")
             st.markdown("---")
             
             if not st.session_state.card_flipped:
+                # State A: Question
                 if st.button("Flip Card 🔄"):
                     st.session_state.card_flipped = True
                     st.rerun()
             else:
+                # State B: Reveal
                 st.info(f"**Definition:** {def_text}")
+                
+                # Safe Audio Check
                 if audio_url and audio_url != "N/A":
                     st.audio(audio_url)
                     
