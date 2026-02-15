@@ -1,6 +1,7 @@
 streamlit
-requests
 gspread
 oauth2client
-gTTS
+requests
 deep-translator
+nltk
+gTTS
