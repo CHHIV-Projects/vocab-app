@@ -190,9 +190,6 @@ def get_mw_data(query):
                 def_text = f"({fl}) " + "; ".join([f"{i+1}. {d}" for i, d in enumerate(short_defs)])
                 combined_defs.append(def_text)
             
-            # NOTE: We removed the Merriam-Webster audio scraper here 
-            # because we are using gTTS in the UI now.
-
         if not combined_defs and not root_word_ref: return None
         
         # New NLTK Synonyms
@@ -256,7 +253,7 @@ with tab1:
                             st.session_state.active_search = suggestion
                             st.rerun()
             else:
-                # 1. ROOT WORD LOGIC (Explicit "No Found")
+                # 1. ROOT WORD LOGIC
                 if data.get("root_ref"):
                     st.info(f"Root word found: **{data['root_ref']}**")
                     if st.button(f"Go to {data['root_ref']}"):
@@ -268,12 +265,12 @@ with tab1:
                 st.header(f"📖 {data['word'].title()}")
                 st.markdown(f"**Part of Speech:** *{data['pos']}*")
                 
-                # 2. AUDIO GENERATION (gTTS)
+                # 2. AUDIO GENERATION (Updated for Mobile)
                 audio_bytes = get_audio_bytes(data['word'])
                 if audio_bytes:
-                    st.audio(audio_bytes, format='audio/mp3')
+                    st.audio(audio_bytes.getvalue(), format='audio/mpeg')
 
-                # 3. SYNONYMS LOGIC (Clickable & Explicit "No Found")
+                # 3. SYNONYMS LOGIC
                 st.markdown("### Synonyms")
                 if data['synonyms']:
                     syn_cols = st.columns(3)
@@ -297,7 +294,6 @@ with tab1:
                             st.warning(f"'{word_to_show}' is already in your list!")
                         else:
                             timestamp = datetime.now().strftime("%Y-%m-%d")
-                            # We save "Auto-Generated" for audio since we generate it live now
                             sheet.append_row([
                                 data['word'].title(), data['definition'], data['pos'], 
                                 "Auto-Generated", timestamp, 1
@@ -323,10 +319,10 @@ with tab2:
             res = GoogleTranslator(source='auto', target=target_code).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
             
-            # 2. Generate Audio for Translation
+            # 2. Generate Audio for Translation (Updated for Mobile)
             audio_bytes = get_audio_bytes(res, lang=target_code)
             if audio_bytes:
-                st.audio(audio_bytes, format='audio/mp3')
+                st.audio(audio_bytes.getvalue(), format='audio/mpeg')
                 
         except Exception as e:
             st.error(f"Error: {e}")
@@ -405,10 +401,10 @@ with tab3:
                 # State B: Reveal
                 st.info(f"**Definition:** {def_text}")
                 
-                # GENERATE AUDIO LIVE (Ensures consistency)
+                # GENERATE AUDIO LIVE (Updated for Mobile)
                 audio_bytes = get_audio_bytes(word_text)
                 if audio_bytes:
-                    st.audio(audio_bytes, format='audio/mp3')
+                    st.audio(audio_bytes.getvalue(), format='audio/mpeg')
                     
                 st.write("How did you do?")
                 col1, col2 = st.columns(2)
