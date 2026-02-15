@@ -67,6 +67,7 @@ def get_audio_bytes(text, lang='en'):
         tts = gTTS(text=text, lang=lang)
         fp = io.BytesIO()
         tts.write_to_fp(fp)
+        fp.seek(0)
         return fp
     except Exception as e:
         print(f"Audio generation error: {e}")
