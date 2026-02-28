@@ -233,12 +233,16 @@ tab1, tab2, tab3 = st.tabs(["📖 Dictionary", "🌍 Translator", "🧠 Practice
 
 # --- MODE 1: DICTIONARY ---
 with tab1:
-    def handle_new_search():
-        st.session_state.active_search = st.session_state.temp_input_val
-        st.session_state.temp_input_val = ""
-
-    st.text_input("Enter a word:", key="temp_input_val", on_change=handle_new_search)
     
+    # --- NEW: Form replaces the buggy callback ---
+    with st.form("search_form", clear_on_submit=True):
+        search_input = st.text_input("Enter a word:")
+        search_submitted = st.form_submit_button("Search")
+        
+    if search_submitted and search_input.strip():
+        st.session_state.active_search = search_input.strip()
+    # ---------------------------------------------
+        
     if st.session_state.active_search:
         word_to_show = st.session_state.active_search
         data = get_mw_data(word_to_show)
@@ -265,7 +269,7 @@ with tab1:
                 st.header(f"📖 {data['word'].title()}")
                 st.markdown(f"**Part of Speech:** *{data['pos']}*")
                 
-                # 2. AUDIO GENERATION (Updated for Mobile)
+                # 2. AUDIO GENERATION
                 audio_bytes = get_audio_bytes(data['word'])
                 if audio_bytes:
                     st.audio(audio_bytes.getvalue(), format='audio/mpeg')
@@ -319,7 +323,7 @@ with tab2:
             res = GoogleTranslator(source='auto', target=target_code).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
             
-            # 2. Generate Audio for Translation (Updated for Mobile)
+            # 2. Generate Audio for Translation
             audio_bytes = get_audio_bytes(res, lang=target_code)
             if audio_bytes:
                 st.audio(audio_bytes.getvalue(), format='audio/mpeg')
@@ -401,7 +405,7 @@ with tab3:
                 # State B: Reveal
                 st.info(f"**Definition:** {def_text}")
                 
-                # GENERATE AUDIO LIVE (Updated for Mobile)
+                # GENERATE AUDIO LIVE
                 audio_bytes = get_audio_bytes(word_text)
                 if audio_bytes:
                     st.audio(audio_bytes.getvalue(), format='audio/mpeg')
