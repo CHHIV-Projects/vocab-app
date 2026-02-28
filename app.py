@@ -8,6 +8,8 @@ import os
 import re
 import random
 import io
+import time
+from contextlib import contextmanager
 from deep_translator import GoogleTranslator
 
 # --- NEW: AUDIO & NLP LIBRARIES ---
@@ -44,6 +46,45 @@ if 'card_flipped' not in st.session_state:
 if 'balloons_shown' not in st.session_state:
     st.session_state.balloons_shown = False
 
+# Logger State
+if 'logs' not in st.session_state:
+    st.session_state.logs = []
+
+# --- DIAGNOSTIC LOGGER ---
+@contextmanager
+def log_performance(action_name):
+    """A stopwatch that records how long a chunk of code takes."""
+    start_time = time.time()
+    status = "✅"
+    try:
+        yield
+    except Exception as e:
+        status = "❌"
+        raise e
+    finally:
+        elapsed = round(time.time() - start_time, 2)
+        
+        # Traffic light indicator
+        if status == "❌":
+            indicator = "🔴"
+        elif elapsed < 1.0:
+            indicator = "🟢"
+        elif elapsed <= 3.0:
+            indicator = "🟡"
+        else:
+            indicator = "🔴"
+            
+        log_entry = {
+            "Status": indicator,
+            "Action": action_name,
+            "Time (s)": elapsed
+        }
+        
+        # Add to the top of the list and keep only the last 20
+        st.session_state.logs.insert(0, log_entry)
+        if len(st.session_state.logs) > 20:
+            st.session_state.logs.pop()
+
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
 def get_sheet():
@@ -62,7 +103,6 @@ def get_sheet():
 
 # --- AUDIO GENERATOR (gTTS) ---
 def get_audio_bytes(text, lang='en'):
-    """Generates audio bytes in memory using gTTS."""
     try:
         tts = gTTS(text=text, lang=lang)
         fp = io.BytesIO()
@@ -75,18 +115,14 @@ def get_audio_bytes(text, lang='en'):
 
 # --- NLTK ROOT LOGIC ---
 def get_nltk_root(word):
-    """Uses NLTK to find the root (lemma) of a word."""
     w = word.lower().strip()
     
-    # 1. Try as Noun (Plurals -> Singular)
     lemma = lemmatizer.lemmatize(w, pos='n')
     if lemma != w: return lemma
     
-    # 2. Try as Verb (Running -> Run)
     lemma = lemmatizer.lemmatize(w, pos='v')
     if lemma != w: return lemma
     
-    # 3. Try as Adjective (Fattier -> Fat)
     lemma = lemmatizer.lemmatize(w, pos='a')
     if lemma != w: return lemma
     
@@ -94,19 +130,16 @@ def get_nltk_root(word):
 
 # --- NLTK SYNONYM LOGIC ---
 def get_synonyms_nltk(word):
-    """Fetches a list of synonyms using NLTK WordNet."""
     synonyms = set()
     try:
         for syn in wordnet.synsets(word):
             for lemma in syn.lemmas():
-                # Clean up the synonym (replace _ with space)
                 clean_syn = lemma.name().replace('_', ' ')
                 if clean_syn.lower() != word.lower():
                     synonyms.add(clean_syn)
     except Exception:
         pass
     
-    # Return top 5 unique synonyms as a list
     return list(synonyms)[:5]
 
 def update_score(word, success):
@@ -151,7 +184,6 @@ def get_mw_data(query):
         root_word_ref = None
         target_clean = query.lower().strip()
 
-        # Priority 1: Redirects
         first_entry_id = data[0].get("meta", {}).get("id", "").split(":")[0]
         if first_entry_id and first_entry_id.lower() != target_clean:
             if first_entry_id.lower() not in target_clean: 
@@ -165,7 +197,6 @@ def get_mw_data(query):
                             tgt = t.get("cxt", "")
                             if tgt: root_word_ref = tgt.title()
 
-        # Validate Root (Using NLTK logic now)
         if root_word_ref:
             deeper_root = get_nltk_root(root_word_ref)
             if deeper_root and validate_word_exists(deeper_root):
@@ -175,7 +206,6 @@ def get_mw_data(query):
             if heuristic_guess and validate_word_exists(heuristic_guess):
                 root_word_ref = heuristic_guess.title()
 
-        # Process Entries
         for entry in data:
             if not isinstance(entry, dict): continue
             headword_info = entry.get("hwi", {})
@@ -192,7 +222,6 @@ def get_mw_data(query):
             
         if not combined_defs and not root_word_ref: return None
         
-        # New NLTK Synonyms
         synonyms = get_synonyms_nltk(query)
 
         return {
@@ -208,12 +237,13 @@ def get_mw_data(query):
 # --- UI LAYOUT ---
 st.title("📚 Vocab Builder")
 
-# --- SIDEBAR: HISTORY ---
+# --- SIDEBAR: HISTORY & LOGS ---
 with st.sidebar:
     st.header("Recent History")
     try:
-        sheet = get_sheet()
-        records = sheet.get_all_records()
+        with log_performance("Sidebar: Fetch History"):
+            sheet = get_sheet()
+            records = sheet.get_all_records()
         if records:
             recent = records[-10:] 
             recent.reverse() 
@@ -227,6 +257,18 @@ with st.sidebar:
             st.info("No words saved yet.")
     except Exception as e:
         st.caption("History unavailable")
+        
+    st.markdown("---")
+    
+    # NEW: Diagnostics Menu
+    with st.expander("⚙️ Diagnostics & Logs"):
+        if st.session_state.logs:
+            st.dataframe(st.session_state.logs, use_container_width=True)
+            if st.button("Clear Logs"):
+                st.session_state.logs = []
+                st.rerun()
+        else:
+            st.caption("No logs recorded yet.")
 
 # --- MAIN TABS ---
 tab1, tab2, tab3 = st.tabs(["📖 Dictionary", "🌍 Translator", "🧠 Practice"])
@@ -234,18 +276,18 @@ tab1, tab2, tab3 = st.tabs(["📖 Dictionary", "🌍 Translator", "🧠 Practice
 # --- MODE 1: DICTIONARY ---
 with tab1:
     
-    # --- NEW: Form replaces the buggy callback ---
     with st.form("search_form", clear_on_submit=True):
         search_input = st.text_input("Enter a word:")
         search_submitted = st.form_submit_button("Search")
         
     if search_submitted and search_input.strip():
         st.session_state.active_search = search_input.strip()
-    # ---------------------------------------------
         
     if st.session_state.active_search:
         word_to_show = st.session_state.active_search
-        data = get_mw_data(word_to_show)
+        
+        with log_performance(f"Dictionary: Fetch API for '{word_to_show}'"):
+            data = get_mw_data(word_to_show)
         
         if data:
             if "suggestion" in data:
@@ -257,7 +299,6 @@ with tab1:
                             st.session_state.active_search = suggestion
                             st.rerun()
             else:
-                # 1. ROOT WORD LOGIC
                 if data.get("root_ref"):
                     st.info(f"Root word found: **{data['root_ref']}**")
                     if st.button(f"Go to {data['root_ref']}"):
@@ -269,12 +310,11 @@ with tab1:
                 st.header(f"📖 {data['word'].title()}")
                 st.markdown(f"**Part of Speech:** *{data['pos']}*")
                 
-                # 2. AUDIO GENERATION
-                audio_bytes = get_audio_bytes(data['word'])
+                with log_performance(f"Audio: Generate gTTS for '{data['word']}'"):
+                    audio_bytes = get_audio_bytes(data['word'])
                 if audio_bytes:
                     st.audio(audio_bytes.getvalue(), format='audio/mpeg')
 
-                # 3. SYNONYMS LOGIC
                 st.markdown("### Synonyms")
                 if data['synonyms']:
                     syn_cols = st.columns(3)
@@ -292,17 +332,18 @@ with tab1:
                 
                 if st.button("💾 Save Word"):
                     try:
-                        sheet = get_sheet()
-                        existing_words = sheet.col_values(1)
-                        if word_to_show.lower() in [x.lower() for x in existing_words]:
-                            st.warning(f"'{word_to_show}' is already in your list!")
-                        else:
-                            timestamp = datetime.now().strftime("%Y-%m-%d")
-                            sheet.append_row([
-                                data['word'].title(), data['definition'], data['pos'], 
-                                "Auto-Generated", timestamp, 1
-                            ])
-                            st.success(f"Saved '{data['word'].title()}' to your list!")
+                        with log_performance(f"Database: Save '{word_to_show}'"):
+                            sheet = get_sheet()
+                            existing_words = sheet.col_values(1)
+                            if word_to_show.lower() in [x.lower() for x in existing_words]:
+                                st.warning(f"'{word_to_show}' is already in your list!")
+                            else:
+                                timestamp = datetime.now().strftime("%Y-%m-%d")
+                                sheet.append_row([
+                                    data['word'].title(), data['definition'], data['pos'], 
+                                    "Auto-Generated", timestamp, 1
+                                ])
+                                st.success(f"Saved '{data['word'].title()}' to your list!")
                     except Exception as e: st.error(f"Save failed: {e}")
         else: st.error("Word not found.")
 
@@ -318,13 +359,14 @@ with tab2:
         
     if trans_submitted:
         try:
-            # 1. Translate
             target_code = lang_codes[target_lang]
-            res = GoogleTranslator(source='auto', target=target_code).translate(text_to_translate)
+            
+            with log_performance(f"Translator: {target_code}"):
+                res = GoogleTranslator(source='auto', target=target_code).translate(text_to_translate)
             st.success(f"**{target_lang}:** {res}")
             
-            # 2. Generate Audio for Translation
-            audio_bytes = get_audio_bytes(res, lang=target_code)
+            with log_performance(f"Audio: Generate gTTS ({target_code})"):
+                audio_bytes = get_audio_bytes(res, lang=target_code)
             if audio_bytes:
                 st.audio(audio_bytes.getvalue(), format='audio/mpeg')
                 
@@ -335,16 +377,15 @@ with tab2:
 with tab3:
     st.header("🧠 Flashcard Session")
     
-    # Check if a session is active
     if not st.session_state.flashcards:
         st.write("Ready to review? We'll pick 10 words you need to practice.")
         if st.button("Start Session"):
             try:
-                # RESET BALLOONS
                 st.session_state.balloons_shown = False
                 
-                sheet = get_sheet()
-                all_records = sheet.get_all_records()
+                with log_performance("Practice: Fetch & Sort Flashcards"):
+                    sheet = get_sheet()
+                    all_records = sheet.get_all_records()
                 
                 if not all_records:
                     st.warning("No words saved yet! Go to the Dictionary tab to add some.")
@@ -369,10 +410,7 @@ with tab3:
         cards = st.session_state.flashcards
         idx = st.session_state.current_card_idx
         
-        # Check if session is finished
         if idx >= len(cards):
-            
-            # ONE-TIME BALLOON CHECK
             if not st.session_state.balloons_shown:
                 st.balloons()
                 st.session_state.balloons_shown = True
@@ -383,7 +421,6 @@ with tab3:
                 st.session_state.current_card_idx = 0
                 st.rerun()
         else:
-            # Display Current Card
             card = cards[idx]
             progress = (idx + 1) / len(cards)
             st.progress(progress, text=f"Card {idx+1} of {len(cards)}")
@@ -391,22 +428,19 @@ with tab3:
             word_text = card.get('Word', 'Unknown Word')
             def_text = card.get('Definition', 'No definition found.')
             
-            # THE FLASHCARD
             st.markdown("---")
             st.subheader(f"🔤 {word_text}")
             st.markdown("---")
             
             if not st.session_state.card_flipped:
-                # State A: Question
                 if st.button("Flip Card 🔄"):
                     st.session_state.card_flipped = True
                     st.rerun()
             else:
-                # State B: Reveal
                 st.info(f"**Definition:** {def_text}")
                 
-                # GENERATE AUDIO LIVE
-                audio_bytes = get_audio_bytes(word_text)
+                with log_performance(f"Audio: Generate gTTS for '{word_text}'"):
+                    audio_bytes = get_audio_bytes(word_text)
                 if audio_bytes:
                     st.audio(audio_bytes.getvalue(), format='audio/mpeg')
                     
@@ -415,14 +449,16 @@ with tab3:
                 
                 with col1:
                     if st.button("❌ Missed it"):
-                        update_score(word_text, success=False)
+                        with log_performance(f"Database: Update Score (Miss)"):
+                            update_score(word_text, success=False)
                         st.session_state.current_card_idx += 1
                         st.session_state.card_flipped = False
                         st.rerun()
                 
                 with col2:
                     if st.button("✅ Got it"):
-                        update_score(word_text, success=True)
+                        with log_performance(f"Database: Update Score (Hit)"):
+                            update_score(word_text, success=True)
                         st.session_state.current_card_idx += 1
                         st.session_state.card_flipped = False
                         st.rerun()
