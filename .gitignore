@@ -1,0 +1,25 @@
+# Python generated state
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Python virtual environments
+.venv/
+venv/
+
+# Local AI-tool state
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/
+
+# Secrets / protected local configuration
+.env
+.env.*
+!.env.example
+.streamlit/
+service_account.json
+*.pem
+*.key
+
+# Local runtime artifacts
+pronunciation.mp3

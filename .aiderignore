@@ -1,0 +1,15 @@
+# Never expose credentials or credential-oriented test utilities.
+service_account.json
+.streamlit/
+.env
+get_secrets.py
+test_connection.py
+
+# Ignore non-source artifacts.
+pronunciation.mp3
+*.ico
+*.gsheet
+__pycache__/
+*.pyc
+.venv/
+venv/
