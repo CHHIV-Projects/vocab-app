@@ -19,7 +19,7 @@ M004 must establish the durable application architecture:
 
 - Vocab application runs in a container;
 - PostgreSQL runs on `henderson-server1` as Vocab's operational database;
-- existing Google Sheets vocabulary data is migrated into PostgreSQL through a controlled one-time migration;
+- PostgreSQL may begin with an empty Vocab database; legacy Google Sheets data is not migrated in M004;
 - normal application runtime no longer depends on Google Sheets;
 - Streamlit remains the temporary UI layer;
 - the application remains continuously available through a browser while the server is running;
@@ -30,6 +30,31 @@ M004 must establish the durable application architecture:
 M004 is the self-hosted platform cutover.
 
 It is not merely a container demonstration.
+
+## Product Owner controlling clarification
+
+This clarification supersedes conflicting earlier wording in this prompt while preserving the original prompt as milestone history.
+
+- The local `main` branch must be at upstream parity before M004 implementation begins. Do not begin while local `main` is ahead of `origin/main`.
+- M004 does not include Google Sheets migration, legacy header inspection, source-row fidelity verification, migration credentials, dry-run migration, duplicate-conflict resolution, or a Google migration reader.
+- The new PostgreSQL database may start empty. Do not access the live Google Sheet merely for historical migration.
+- Google Sheets must not participate in normal runtime, fallback, dual-write, or ongoing synchronization. The operational path is application -> PostgreSQL.
+- Existing external definition, translation, pronunciation, and TTS services may remain. M004 self-hosting applies to the application runtime, canonical persistence, and always-on LAN service, not elimination of every external enrichment service.
+- Use the official PostgreSQL `17` image, pinned to major version 17.
+- Use external operator-owned runtime configuration at `/home/chuck/.config/vocab-app/runtime.env` when ordinary permissions allow. Keep real values outside Git, with restrictive permissions such as `600`, and never print passwords.
+- Use application port `8501` if preflight confirms it is free. Confirm the current server LAN address; the expected address is `192.168.1.173`.
+- Docker and Docker Compose operations are authorized for the Vocab project only. Do not modify unrelated stacks or Docker daemon configuration. Stop if Docker unexpectedly requires privileged access.
+- If UFW blocks LAN access, stop and provide the exact minimal LAN-only command for the Product Owner; do not modify the firewall directly.
+- The Product Owner will validate desktop access from a same-LAN Windows PC and mobile access from a phone on the same home Wi-Fi. The coder must provide the exact LAN URL and record the validation gate.
+- M004 PASS accepts an empty/new PostgreSQL database and requires PostgreSQL-only persistence, persistent storage, always-on restart behavior, container/runtime validation, tests, and Repo Control evidence.
+
+The controlling persistence architecture is:
+
+```text
+Vocab application -> PostgreSQL
+```
+
+The Google Sheets adapter may be removed or retained only for bounded code-history/testing reasons; it must not participate in normal runtime.
 
 ---
 
@@ -56,7 +81,7 @@ Streamlit is temporary but may remain in M004 because Streamlit itself is fully 
 The planned roadmap is now:
 
 - **M003** — bounded refactor and characterization tests — complete;
-- **M004** — PostgreSQL + containerized always-on self-hosted service + controlled Google Sheets migration — this milestone;
+- **M004** — PostgreSQL + containerized always-on self-hosted service with an empty/new operational database — this milestone;
 - **M005** — multiple-choice practice;
 - **M006** — replace Streamlit with the permanent self-hosted web UI;
 - **M007+** — secure external access, deployment hardening, and later product enhancements.
@@ -101,8 +126,6 @@ The purpose of that seam is now realized:
              |
              v
     persistence boundary
-             |
-             +--> old Google Sheets adapter — migration source only
              |
              +--> PostgreSQL adapter — permanent runtime implementation
 
@@ -150,7 +173,7 @@ The intended access pattern is conceptually:
     Mobile on home Wi-Fi:
     http://192.168.1.173:<vocab-port>
 
-Select and document a clear application port.
+Use application port `8501` if preflight confirms it is free, and document the result.
 
 Do not configure:
 
@@ -196,7 +219,7 @@ Confirm:
 
 Capture the actual M003/M004 starting SHA.
 
-Do not infer it from prior conversation.
+Do not infer it from prior conversation. The Product Owner will restore upstream parity before implementation; a local-ahead state is a stop condition.
 
 STOP if state is unexpected.
 
@@ -255,18 +278,19 @@ Before designing PostgreSQL tables, inspect the actual canonical M003 persistenc
 
 Identify exactly:
 
-- current Google Sheet column/header structure;
-- fields written by `append_row`;
+- fields represented by the current vocabulary record;
+- fields written by the M003 save path;
 - fields read by the application;
 - score/Count field semantics;
 - case-insensitive duplicate behavior;
-- row-order/history semantics, if any;
-- whether any application behavior relies implicitly on Google Sheet row numbers/order;
-- any existing empty/null/default behavior.
+- history and ordering semantics actually used by the application;
+- empty/null/default behavior characterized by M003.
 
-Do not invent a PostgreSQL schema from assumptions.
+Do not invent a PostgreSQL schema from assumptions or add future-feature columns.
 
 Document the source-to-database mapping in the closeout.
+
+The operational database may start empty. Do not access the live Google Sheet for historical schema or data migration.
 
 Keep this reconnaissance bounded.
 
@@ -295,7 +319,7 @@ Do not inspect or modify Photo Organizer's database.
 
 Do not reuse another project's database credentials.
 
-Use the official PostgreSQL container image with a pinned supported major version.
+Use the official PostgreSQL `17` container image, pinned to major version 17.
 
 PostgreSQL should not need to publish its database port to the LAN.
 
@@ -344,12 +368,6 @@ Where practical, enforce that rule at the database level rather than relying sol
 
 For example, a unique expression/index based on normalized/lowercase word identity may be appropriate if it matches current semantics.
 
-Do not silently discard duplicate source data if the existing Google Sheet already violates the expected uniqueness rule.
-
-If conflicting existing rows are discovered:
-
-**STOP and report them before migration.**
-
 Preserve ordering/history semantics where the existing product actually depends on them.
 
 Do not add speculative future columns for multiple-choice or future UI work.
@@ -391,9 +409,9 @@ Typical values may include:
 
 Do not commit real secrets.
 
-A committed `.env.example` or equivalent documentation containing variable names and safe placeholders is acceptable.
+A committed `.env.example` or equivalent documentation containing variable names and safe placeholders is acceptable. The preferred operator-owned runtime file is `/home/chuck/.config/vocab-app/runtime.env` when ordinary permissions allow it.
 
-The real server values must remain outside Git.
+The real server values must remain outside Git and should have restrictive permissions such as `600`. If creating the configuration location requires privilege, stop and provide the exact operator command.
 
 Do not print real passwords into logs or closeout evidence.
 
@@ -416,106 +434,29 @@ Do not use an ephemeral anonymous volume for the operational database.
 
 Document the volume name/location.
 
-Do not delete or recreate the real populated volume during routine validation after migration.
+Do not delete or recreate the operational volume during routine validation.
 
----
+## 15. Superseded legacy Google Sheets migration scope
 
-# 15. Controlled Google Sheets Migration
+The original sections 15 through 18 described a controlled Google Sheets migration. The Product Owner clarification supersedes those requirements for M004.
 
-Google Sheets becomes a **one-time migration source**, not the operational database.
+M004 must not:
 
-Implement a bounded migration path:
+- access the live Google Sheet for historical migration;
+- inspect legacy headers or source rows;
+- require Google migration credentials;
+- implement dry-run or transactional Google-to-PostgreSQL migration;
+- resolve legacy duplicate conflicts;
+- perform source/target fidelity verification;
+- retain a Google migration reader for this milestone.
 
-    Google Sheets
-         |
-         | read-only migration source
-         v
-    migration logic
-         |
-         v
-    PostgreSQL
+The PostgreSQL database may start empty. Google Sheets is not part of normal runtime, fallback, dual-write, or synchronization. The existing GoogleSheetsPersistence implementation may be removed or retained only for bounded code-history/testing reasons, and must not participate in operational persistence.
 
-The migration must never write back to Google Sheets.
-
-Use the existing M003 Google Sheets adapter or a similarly bounded source reader where practical.
-
-Do not reintroduce Google calls into domain logic.
-
----
-
-# 16. Migration Credential Boundary
-
-Do not inspect, print, commit, or embed Google credentials.
-
-If a safe existing credential file/configuration is available and the Product Owner explicitly makes it available for migration, mount/read it only for the one-time migration.
-
-Do not place it in the application image.
-
-Do not leave it attached to the normal Vocab runtime after migration.
-
-If no safe Google credential source is available on the server:
-
-- implement and test the migration mechanism using controlled synthetic data;
-- STOP before claiming real-data migration complete;
-- report the exact operator input required.
-
-M004 should not receive a final PASS for complete self-hosted cutover until the real vocabulary dataset has been migrated or the Product Owner explicitly changes that requirement.
-
-Do not fabricate data merely to satisfy acceptance.
-
----
-
-# 17. Migration Safety
-
-The real migration must be inspectable before cutover.
-
-Provide a dry-run or equivalent preflight that reports, without exposing sensitive content unnecessarily:
-
-- number of source rows;
-- normalized duplicate conflicts;
-- fields/schema detected;
-- invalid/missing required values;
-- expected insert count.
-
-Perform the actual migration transactionally where practical.
-
-Do not partially migrate and silently continue after errors.
-
-On failure:
-
-- preserve the source untouched;
-- preserve evidence;
-- rollback the target transaction where practical;
-- report the problem.
-
----
-
-# 18. Migration Fidelity Verification
-
-After migration, verify PostgreSQL against the source.
-
-At minimum compare:
-
-- row count;
-- word identity;
-- relevant definitions/fields;
-- Count/score values;
-- duplicate semantics;
-- any ordering/history value required by current application behavior.
-
-For a manageable dataset, deterministic row-by-row comparison is preferred.
-
-Do not expose full vocabulary content unnecessarily in the closeout.
-
-Report counts, checks, discrepancies, and representative safe evidence.
-
-M004 PASS requires zero unexplained migration discrepancies.
+M004 PASS does not require legacy migration or migration discrepancy reporting. The PostgreSQL database may begin empty.
 
 ---
 
 # 19. Runtime Cutover
-
-After migration validation:
 
     Vocab application
           |
@@ -543,15 +484,9 @@ A storage error should remain an explicit storage error rather than silently swi
 
 # 20. Google-Specific Runtime Dependencies
 
-After successful migration/cutover, reduce Google-specific runtime coupling where practical.
+The final application runtime must not need Google libraries, Google configuration, or Google Sheets availability in order to serve normal Vocab functionality.
 
-If `gspread` / `oauth2client` are only needed for one-time migration, prefer separating migration-only dependencies from the normal production runtime.
-
-Do not force unnecessary cleanup if doing so materially broadens M004.
-
-But the final application runtime must not need Google libraries/configuration in order to serve normal Vocab functionality.
-
-If migration tooling is retained for historical recovery, clearly label it migration-only.
+If `gspread` / `oauth2client` become unnecessary after the PostgreSQL cutover, remove them from the normal runtime dependency set where that is clean and safe. Do not retain a migration utility for this milestone.
 
 ---
 
@@ -566,7 +501,6 @@ Expected files are likely:
 - `.dockerignore`
 - external configuration example/documentation
 - database schema/migration files
-- bounded migration utility
 - PostgreSQL persistence code/tests.
 
 Use an appropriate maintained Python image.
@@ -813,21 +747,21 @@ Do not point automated tests at the operational Vocab database.
 
 ---
 
-# 33. Migration Tests
+# 33. PostgreSQL Initialization and Persistence Tests
 
-Using controlled synthetic source data, test:
+Using controlled synthetic records and a disposable PostgreSQL service where practical, test:
 
-- successful import;
-- Count preservation;
-- all current fields;
-- case-insensitive duplicate conflicts;
-- missing/invalid required values;
-- idempotency or explicit duplicate-run prevention;
-- transactional failure behavior;
-- source remains unchanged;
-- target verification.
+- reproducible schema initialization;
+- current vocabulary fields and Count semantics;
+- case-insensitive duplicate enforcement;
+- record loading and history behavior;
+- append/insert behavior;
+- score lookup and update;
+- missing-row behavior;
+- transaction/error behavior;
+- persistence across application/database container recreation.
 
-Do not use live Google Sheets as the automated test fixture.
+Do not point automated tests at an operational Vocab database or a live Google Sheet.
 
 ---
 
@@ -896,7 +830,7 @@ Confirm:
 
 - database port is not publicly/LAN exposed unnecessarily;
 - application is exposed only as required for LAN browser access;
-- no Google credentials exist in normal runtime after migration;
+- no Google credentials exist in normal runtime;
 - database password remains outside Git;
 - no secrets are inside Docker image layers;
 - no privileged mode;
@@ -927,7 +861,7 @@ Do not change:
 
 Containerization and persistence migration must not become product redesign.
 
-If the existing Google data contains a defect that conflicts with PostgreSQL constraints, STOP and report rather than silently correcting it.
+If the current M003 application semantics expose a defect that conflicts with PostgreSQL constraints, STOP and report rather than silently correcting it.
 
 ---
 
@@ -961,11 +895,10 @@ Do not implement:
 Expected changes may include:
 
 - `vocab_persistence.py`;
-- one or a few PostgreSQL/schema/migration modules;
+- one or a few PostgreSQL/schema initialization modules;
 - database/schema SQL or lightweight migration files;
-- migration utility;
 - `app.py` only for bounded persistence wiring/configuration;
-- `requirements.txt` and/or migration-only dependency metadata where justified;
+- `requirements.txt` only if a runtime dependency is justified;
 - `Dockerfile`;
 - `compose.yaml`;
 - `.dockerignore`;
@@ -1002,10 +935,6 @@ After acceptance, use Repo Control Workflow for guarded Stage/Commit.
 STOP and report if:
 
 - M003 tests fail before M004 changes;
-- actual Google Sheet semantics materially contradict the expected persistence model;
-- source data contains case-insensitive duplicates that prevent faithful migration;
-- real migration requires credential access not explicitly supplied by the Product Owner;
-- migration produces unexplained row/value differences;
 - PostgreSQL integration requires a broad application redesign;
 - container runtime requires privileged access or unrelated server changes;
 - a host port/firewall change requires privileged action;
@@ -1044,7 +973,7 @@ Existing test results before M004 work.
 
 ## 5. Current Google persistence schema
 
-Exact fields and semantics discovered.
+Exact current M003 vocabulary fields and semantics used to design the empty PostgreSQL schema. Do not access Google Sheets for historical migration.
 
 ## 6. Target architecture
 
@@ -1060,63 +989,57 @@ How PostgreSQL satisfies the M003 persistence boundary.
 
 ## 9. Schema initialization
 
-Exact reproducible initialization/migration mechanism.
+Exact reproducible schema initialization mechanism.
 
 ## 10. Runtime configuration
 
 Database/environment configuration and secret boundary.
 
-## 11. Google migration design
+## 11. Google runtime exclusion
 
-Read-only source, dry run, transaction behavior.
+Record that no legacy Google Sheets migration was performed or required, and that Google Sheets is absent from normal operational persistence.
 
-## 12. Real migration evidence
-
-Source row count, target row count, discrepancies, verification.
-
-Do not expose unnecessary vocabulary content.
-
-## 13. Google runtime cutover
+## 12. PostgreSQL runtime cutover
 
 Proof normal application persistence no longer requires Google Sheets.
 
-## 14. Files changed
+## 13. Files changed
 
 Exact list.
 
-## 15. Dependency changes
+## 14. Dependency changes
 
-Runtime vs migration-only dependencies and justification.
+Runtime dependencies and any justified removal of unnecessary Google persistence dependencies.
 
-## 16. Dockerfile
+## 15. Dockerfile
 
 Base image, user, workdir, source/dependency strategy, command.
 
-## 17. Compose
+## 16. Compose
 
 App/DB services, health, network, volume, restart policy, LAN binding.
 
-## 18. Build-context hygiene
+## 17. Build-context hygiene
 
 Secret/runtime exclusions.
 
-## 19. PostgreSQL persistence volume
+## 18. PostgreSQL persistence volume
 
 Exact operational volume and persistence validation.
 
-## 20. Existing tests
+## 19. Existing tests
 
 Pre/post commands and results.
 
-## 21. PostgreSQL tests
+## 20. PostgreSQL tests
 
 Exact tests/results.
 
-## 22. Migration tests
+## 21. Schema/persistence tests
 
 Exact tests/results.
 
-## 23. Container build
+## 22. Container build
 
 Command, result, image identity.
 
@@ -1195,7 +1118,7 @@ M004 is PASS only if:
 - all accepted M003 tests still pass;
 - PostgreSQL is the active Vocab persistence implementation;
 - current vocabulary schema/behavior is faithfully represented;
-- current real vocabulary data is migrated with zero unexplained discrepancies;
+- an empty/new PostgreSQL database is acceptable;
 - Google Sheets is no longer required by ordinary runtime persistence;
 - no dual-write/synchronization exists;
 - database initialization is reproducible;
@@ -1213,13 +1136,12 @@ M004 is PASS only if:
 - database port is not unnecessarily exposed;
 - secrets remain outside Git and image;
 - no Google credentials are needed by normal runtime;
+- existing external definition, translation, pronunciation, and TTS services remain at their current boundary or continue to function;
 - no privileged/GPU/Docker-socket configuration exists;
 - PostgreSQL logical backup procedure is documented;
 - Repo Control post-change evidence is captured;
-- no M005/M006/public Internet work is introduced;
+- no M005/M006/public Internet/local-AI replacement work is introduced;
 - implementation remains uncommitted for Product Owner review.
-
-If real data migration cannot occur because the Product Owner has not yet supplied a safe source/credential path, the correct result is PARTIAL, not an artificial PASS.
 
 ---
 
@@ -1257,7 +1179,7 @@ M005 should develop against:
 - the existing M003 domain seam;
 - the still-temporary Streamlit UI.
 
-This avoids developing the new quiz against Google Sheets only to migrate it later.
+This develops the new quiz against the permanent PostgreSQL persistence architecture rather than Google Sheets.
 
 ---
 
@@ -1275,7 +1197,7 @@ Do not expose Streamlit directly to the public Internet merely to satisfy the lo
 
 > The operational application and its data belong on `henderson-server1`.
 
-> Google Sheets is migration source, not permanent infrastructure.
+> Google Sheets is not part of the M004 operational persistence path.
 
 > PostgreSQL becomes the canonical Vocab datastore in M004.
 
@@ -1285,9 +1207,9 @@ Do not expose Streamlit directly to the public Internet merely to satisfy the lo
 
 > Streamlit is temporary, but it is not an obstacle to self-hosting.
 
-> Do not combine database migration with permanent UI replacement.
+> Do not combine PostgreSQL cutover with permanent UI replacement.
 
-> Migrate faithfully, validate deterministically, cut over once, and return to product work.
+> Initialize PostgreSQL reproducibly, validate deterministically, cut over once, and return to product work.
 
 ---
 
