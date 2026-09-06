@@ -1,22 +1,25 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import os
 import re
-import random
 import io
 import time
 from contextlib import contextmanager
 from deep_translator import GoogleTranslator
 
+from vocab_domain import (
+    select_practice_candidates,
+    shuffle_practice_candidates,
+    update_score as apply_score_update,
+)
+from vocab_nlp import get_nltk_root, get_synonyms_nltk
+from vocab_persistence import GoogleSheetsPersistence
+
 # --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
 import nltk
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet
 
 # --- CONFIGURATION ---
 st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
@@ -27,8 +30,6 @@ try:
 except LookupError:
     nltk.download('wordnet')
     nltk.download('omw-1.4')
-
-lemmatizer = WordNetLemmatizer()
 
 # --- SESSION STATE INITIALIZATION ---
 if 'active_search' not in st.session_state:
@@ -87,17 +88,8 @@ def log_performance(action_name):
 
 # --- 1. CONNECT TO GOOGLE SHEETS ---
 @st.cache_resource
-def get_sheet():
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    
-    if os.path.exists("service_account.json"):
-        creds = ServiceAccountCredentials.from_json_keyfile_name("service_account.json", scope)
-    else:
-        creds_dict = st.secrets["gcp_service_account"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-        
-    client = gspread.authorize(creds)
-    return client.open("VocabApp_DB").sheet1
+def get_persistence():
+    return GoogleSheetsPersistence.from_streamlit_secrets(st.secrets)
 
 # --- 2. LOGIC HELPERS ---
 
@@ -113,43 +105,9 @@ def get_audio_bytes(text, lang='en'):
         print(f"Audio generation error: {e}")
         return None
 
-# --- NLTK ROOT LOGIC ---
-def get_nltk_root(word):
-    w = word.lower().strip()
-    
-    lemma = lemmatizer.lemmatize(w, pos='n')
-    if lemma != w: return lemma
-    
-    lemma = lemmatizer.lemmatize(w, pos='v')
-    if lemma != w: return lemma
-    
-    lemma = lemmatizer.lemmatize(w, pos='a')
-    if lemma != w: return lemma
-    
-    return None
-
-# --- NLTK SYNONYM LOGIC ---
-def get_synonyms_nltk(word):
-    synonyms = set()
-    try:
-        for syn in wordnet.synsets(word):
-            for lemma in syn.lemmas():
-                clean_syn = lemma.name().replace('_', ' ')
-                if clean_syn.lower() != word.lower():
-                    synonyms.add(clean_syn)
-    except Exception:
-        pass
-    
-    return list(synonyms)[:5]
-
 def update_score(word, success):
     try:
-        sheet = get_sheet()
-        cell = sheet.find(word) 
-        if cell:
-            current_score = int(sheet.cell(cell.row, 6).value)
-            new_score = current_score + 1 if success else 1
-            sheet.update_cell(cell.row, 6, new_score)
+        apply_score_update(get_persistence(), word, success)
     except Exception as e:
         print(f"Error updating score: {e}")
 
@@ -242,8 +200,7 @@ with st.sidebar:
     st.header("Recent History")
     try:
         with log_performance("Sidebar: Fetch History"):
-            sheet = get_sheet()
-            records = sheet.get_all_records()
+            records = get_persistence().load_history()
         if records:
             recent = records[-10:] 
             recent.reverse() 
@@ -333,13 +290,12 @@ with tab1:
                 if st.button("💾 Save Word"):
                     try:
                         with log_performance(f"Database: Save '{word_to_show}'"):
-                            sheet = get_sheet()
-                            existing_words = sheet.col_values(1)
-                            if word_to_show.lower() in [x.lower() for x in existing_words]:
+                            persistence = get_persistence()
+                            if persistence.word_exists(word_to_show):
                                 st.warning(f"'{word_to_show}' is already in your list!")
                             else:
                                 timestamp = datetime.now().strftime("%Y-%m-%d")
-                                sheet.append_row([
+                                persistence.append_record([
                                     data['word'].title(), data['definition'], data['pos'], 
                                     "Auto-Generated", timestamp, 1
                                 ])
@@ -384,20 +340,13 @@ with tab3:
                 st.session_state.balloons_shown = False
                 
                 with log_performance("Practice: Fetch & Sort Flashcards"):
-                    sheet = get_sheet()
-                    all_records = sheet.get_all_records()
+                    all_records = get_persistence().load_records()
                 
                 if not all_records:
                     st.warning("No words saved yet! Go to the Dictionary tab to add some.")
                 else:
-                    for r in all_records:
-                        c = r.get('Count')
-                        if not isinstance(c, int):
-                            r['Count'] = 1 
-                            
-                    sorted_words = sorted(all_records, key=lambda x: x['Count'])
-                    session_batch = sorted_words[:10]
-                    random.shuffle(session_batch)
+                    session_batch = select_practice_candidates(all_records)
+                    shuffle_practice_candidates(session_batch)
                     
                     st.session_state.flashcards = session_batch
                     st.session_state.current_card_idx = 0
