@@ -1,0 +1,40 @@
+services:
+  vocab-db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${VOCAB_DB_NAME:-vocab}
+      POSTGRES_USER: ${VOCAB_DB_USER:-vocab}
+      POSTGRES_PASSWORD: ${VOCAB_DB_PASSWORD:?VOCAB_DB_PASSWORD must be set}
+    volumes:
+      - vocab_postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  vocab-app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      vocab-db:
+        condition: service_healthy
+    environment:
+      VOCAB_DB_HOST: vocab-db
+      VOCAB_DB_PORT: 5432
+      VOCAB_DB_NAME: ${VOCAB_DB_NAME:-vocab}
+      VOCAB_DB_USER: ${VOCAB_DB_USER:-vocab}
+      VOCAB_DB_PASSWORD: ${VOCAB_DB_PASSWORD:?VOCAB_DB_PASSWORD must be set}
+    ports:
+      - "192.168.1.173:8501:8501"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  vocab_postgres_data:
+    name: vocab_postgres_data

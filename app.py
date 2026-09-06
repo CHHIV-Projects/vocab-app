@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 import requests
 from datetime import datetime
-import os
 import re
 import io
 import time
@@ -15,7 +14,7 @@ from vocab_domain import (
     update_score as apply_score_update,
 )
 from vocab_nlp import get_nltk_root, get_synonyms_nltk
-from vocab_persistence import GoogleSheetsPersistence
+from vocab_persistence import PostgresPersistence
 
 # --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
@@ -86,10 +85,10 @@ def log_performance(action_name):
         if len(st.session_state.logs) > 20:
             st.session_state.logs.pop()
 
-# --- 1. CONNECT TO GOOGLE SHEETS ---
+# --- 1. CONNECT TO POSTGRESQL ---
 @st.cache_resource
 def get_persistence():
-    return GoogleSheetsPersistence.from_streamlit_secrets(st.secrets)
+    return PostgresPersistence.from_env()
 
 # --- 2. LOGIC HELPERS ---
 
