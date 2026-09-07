@@ -1,20 +1,20 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import requests
 from datetime import datetime
 import re
 import io
 import time
 from contextlib import contextmanager
-from deep_translator import GoogleTranslator
 
 from vocab_domain import (
     select_practice_candidates,
     shuffle_practice_candidates,
     update_score as apply_score_update,
 )
-from vocab_nlp import get_nltk_root, get_synonyms_nltk
+from vocab_dictionary import get_dictionary_data
+from vocab_nlp import get_synonyms_nltk
 from vocab_persistence import PostgresPersistence
+from vocab_translation import SUPPORTED_LANGUAGES, translate_text
 
 # --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
@@ -110,87 +110,6 @@ def update_score(word, success):
     except Exception as e:
         print(f"Error updating score: {e}")
 
-# --- 3. GET DATA FROM API ---
-def get_mw_data(query):
-    try:
-        key = st.secrets["merriam_key"]
-    except:
-        st.error("Missing API Key! Check secrets.")
-        return None
-
-    def validate_word_exists(candidate_word):
-        check_url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{candidate_word}?key={key}"
-        try:
-            r = requests.get(check_url)
-            d = r.json()
-            if not d or isinstance(d[0], str): return False
-            return True
-        except: return False
-
-    url = f"https://www.dictionaryapi.com/api/v3/references/collegiate/json/{query}?key={key}"
-    
-    try:
-        response = requests.get(url)
-        data = response.json()
-        
-        if not data: return None
-        if isinstance(data[0], str): return {"suggestion": data}
-
-        combined_defs = []
-        combined_pos = set()
-        root_word_ref = None
-        target_clean = query.lower().strip()
-
-        first_entry_id = data[0].get("meta", {}).get("id", "").split(":")[0]
-        if first_entry_id and first_entry_id.lower() != target_clean:
-            if first_entry_id.lower() not in target_clean: 
-                root_word_ref = first_entry_id.title()
-
-        if not root_word_ref:
-            for entry in data:
-                if isinstance(entry, dict) and "cxs" in entry:
-                    for cx in entry["cxs"]:
-                        for t in cx.get("cxtis", []):
-                            tgt = t.get("cxt", "")
-                            if tgt: root_word_ref = tgt.title()
-
-        if root_word_ref:
-            deeper_root = get_nltk_root(root_word_ref)
-            if deeper_root and validate_word_exists(deeper_root):
-                 root_word_ref = deeper_root.title()
-        else:
-            heuristic_guess = get_nltk_root(target_clean)
-            if heuristic_guess and validate_word_exists(heuristic_guess):
-                root_word_ref = heuristic_guess.title()
-
-        for entry in data:
-            if not isinstance(entry, dict): continue
-            headword_info = entry.get("hwi", {})
-            hw = headword_info.get("hw", "").replace("*", "") 
-            
-            if (" " in hw or "-" in hw) and (hw.lower() != target_clean): continue
-
-            fl = entry.get("fl", "unknown")
-            combined_pos.add(fl)
-            short_defs = entry.get("shortdef", [])
-            if short_defs:
-                def_text = f"({fl}) " + "; ".join([f"{i+1}. {d}" for i, d in enumerate(short_defs)])
-                combined_defs.append(def_text)
-            
-        if not combined_defs and not root_word_ref: return None
-        
-        synonyms = get_synonyms_nltk(query)
-
-        return {
-            "word": query, "pos": ", ".join(combined_pos),
-            "definition": " | ".join(combined_defs),
-            "root_ref": root_word_ref, "synonyms": synonyms
-        }
-
-    except Exception as e:
-        st.error(f"API Error: {e}")
-        return None
-    
 # --- UI LAYOUT ---
 st.title("📚 Vocab Builder")
 
@@ -242,9 +161,12 @@ with tab1:
     if st.session_state.active_search:
         word_to_show = st.session_state.active_search
         
-        with log_performance(f"Dictionary: Fetch API for '{word_to_show}'"):
-            data = get_mw_data(word_to_show)
-        
+        with log_performance(f"Dictionary: Fetch WordNet for '{word_to_show}'"):
+            data = get_dictionary_data(word_to_show)
+
+            if data:
+                data["synonyms"] = get_synonyms_nltk(word_to_show)
+
         if data:
             if "suggestion" in data:
                 st.warning("Word not found. Did you mean:")
@@ -305,19 +227,20 @@ with tab1:
 # --- MODE 2: TRANSLATOR ---
 with tab2:
     st.subheader("🌍 Quick Translate")
+    source_lang = st.selectbox("Translate from:", list(SUPPORTED_LANGUAGES))
     target_lang = st.selectbox("Translate to:", ["English", "French", "Spanish", "German", "Italian"])
-    lang_codes = {"English": "en", "French": "fr", "Spanish": "es", "German": "de", "Italian": "it"}
-    
+
     with st.form("trans_form"):
         text_to_translate = st.text_area(f"Enter text:")
         trans_submitted = st.form_submit_button("Translate")
         
     if trans_submitted:
         try:
-            target_code = lang_codes[target_lang]
-            
+            source_code = SUPPORTED_LANGUAGES[source_lang]
+            target_code = SUPPORTED_LANGUAGES[target_lang]
+
             with log_performance(f"Translator: {target_code}"):
-                res = GoogleTranslator(source='auto', target=target_code).translate(text_to_translate)
+                res = translate_text(text_to_translate, source_code, target_code)
             st.success(f"**{target_lang}:** {res}")
             
             with log_performance(f"Audio: Generate gTTS ({target_code})"):
@@ -346,7 +269,7 @@ with tab3:
                 else:
                     session_batch = select_practice_candidates(all_records)
                     shuffle_practice_candidates(session_batch)
-                    
+
                     st.session_state.flashcards = session_batch
                     st.session_state.current_card_idx = 0
                     st.session_state.card_flipped = False
@@ -357,7 +280,7 @@ with tab3:
     else:
         cards = st.session_state.flashcards
         idx = st.session_state.current_card_idx
-        
+
         if idx >= len(cards):
             if not st.session_state.balloons_shown:
                 st.balloons()

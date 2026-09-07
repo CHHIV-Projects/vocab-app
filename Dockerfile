@@ -11,7 +11,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py vocab_domain.py vocab_nlp.py vocab_persistence.py ./
+COPY app.py vocab_dictionary.py vocab_domain.py vocab_nlp.py vocab_persistence.py vocab_translation.py ./
 
 RUN useradd --create-home --uid 10001 vocab
 USER vocab
