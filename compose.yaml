@@ -21,6 +21,9 @@ services:
     depends_on:
       vocab-db:
         condition: service_healthy
+    networks:
+      - default
+      - local-ai
     environment:
       VOCAB_DB_HOST: vocab-db
       VOCAB_DB_PORT: 5432
@@ -38,3 +41,8 @@ services:
 volumes:
   vocab_postgres_data:
     name: vocab_postgres_data
+
+networks:
+  local-ai:
+    external: true
+    name: local-ai
