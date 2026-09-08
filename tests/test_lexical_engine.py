@@ -15,6 +15,7 @@ from vocab_lexical_engine import (
     resource_fingerprint,
     resolve_active_database,
     write_manifest,
+    wordnet_version,
 )
 
 
@@ -73,6 +74,14 @@ class LexicalEngineTests(unittest.TestCase):
         (second / "data.txt").write_text("changed", encoding="utf-8")
         self.assertNotEqual(resource_fingerprint(first), resource_fingerprint(second))
 
+    def test_wordnet_version_works_with_operational_resource_pointer(self):
+        try:
+            version = wordnet_version()
+        except ModuleNotFoundError:
+            self.skipTest("NLTK is unavailable in the host test environment")
+        self.assertIn("nltk-", version)
+        self.assertIn("-wordnet-", version)
+
     def test_repeated_lookup_latency_is_measurable(self):
         samples = []
         for _ in range(50):
@@ -87,6 +96,48 @@ class LexicalEngineTests(unittest.TestCase):
         names = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type IN ('table', 'view')")}
         connection.close()
         self.assertTrue({"entries", "senses", "forms", "sounds", "relations", "entries_fts"}.issubset(names))
+
+    def test_sqlite_skips_identical_duplicate_records_but_rejects_conflicts(self):
+        duplicate_records = self.records + [self.records[0]]
+        duplicate_db = self.root / "duplicate.sqlite"
+        build_sqlite(duplicate_records, duplicate_db)
+        connection = sqlite3.connect(duplicate_db)
+        count = connection.execute("SELECT count(*) FROM entries").fetchone()[0]
+        connection.close()
+        self.assertEqual(count, len({record["entry_key"] for record in self.records}))
+
+        conflicting = dict(self.records[0])
+        conflicting["source_record_hash"] = "conflicting-hash"
+        with self.assertRaises(ValueError):
+            build_sqlite(self.records + [conflicting], self.root / "conflict.sqlite")
+
+    def test_duplicate_source_sense_ids_remain_distinct(self):
+        record = {
+            "word": "free",
+            "lang": "English",
+            "lang_code": "en",
+            "pos": "adjective",
+            "senses": [
+                {"senseid": "en:shared", "glosses": ["first"]},
+                {"senseid": "en:shared", "glosses": ["second"]},
+            ],
+        }
+        from vocab_lexical_engine import normalize_record
+        normalized = normalize_record(record, "fixture", "fixture#1")
+        self.assertEqual(len({sense["sense_id"] for sense in normalized["senses"]}), 2)
+
+    def test_relation_identity_includes_source_relation_content(self):
+        record = {
+            "word": "test",
+            "lang": "English",
+            "lang_code": "en",
+            "pos": "noun",
+            "senses": [{"glosses": ["one"], "synonyms": [{"word": "same", "tags": ["one"]}, {"word": "same", "tags": ["two"]}]}],
+        }
+        from vocab_lexical_engine import normalize_record
+        normalized = normalize_record(record, "fixture", "fixture#1")
+        ids = [relation["relation_id"] for relation in normalized["relations"]]
+        self.assertEqual(len(ids), len(set(ids)))
 
     def test_manifest_writes_and_active_version_resolves(self):
         manifest = build_manifest("fixture-20260906", "https://example.invalid/run.jsonl", FIXTURE, self.records[:4])
