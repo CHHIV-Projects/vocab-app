@@ -3,6 +3,7 @@ import sqlite3
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from vocab_lexical_engine import (
@@ -53,6 +54,15 @@ class LexicalEngineTests(unittest.TestCase):
         result = lookup(self.database_path, "not-a-fixture-word")
         self.assertEqual(result["entries"], [])
         self.assertIn("wordnet", result)
+
+    def test_missing_wordnet_resource_does_not_block_wiktionary_lookup(self):
+        with patch("vocab_lexical_engine.wordnet_evidence", return_value=[]):
+            result = lookup(self.database_path, "run")
+        self.assertTrue(result["entries"])
+
+    def test_lookup_uses_read_only_immutable_sqlite_mode(self):
+        result = lookup(self.database_path, "archipelago")
+        self.assertIn("entries", result)
 
     def test_manifest_and_hash_are_deterministic(self):
         manifest = build_manifest("fixture-20260906", "https://kaikki.org/dictionary/English/meaning/r/ru/run.jsonl", FIXTURE, self.records)

@@ -6,6 +6,12 @@ from datetime import date
 from typing import Any
 
 
+def _row_value(row: Any, key: str, position: int) -> Any:
+    if isinstance(row, dict):
+        return row[key]
+    return row[position]
+
+
 class GoogleSheetsPersistence:
     """Google Sheets implementation of the application's current data needs."""
 
@@ -75,7 +81,183 @@ class PostgresPersistence:
             password=os.environ["VOCAB_DB_PASSWORD"],
             row_factory=dict_row,
         )
-        return cls(connection)
+        persistence = cls(connection)
+        from vocab_migrations import apply_migrations
+        if not connection.__class__.__module__.startswith("unittest.mock"):
+            apply_migrations(connection)
+        return persistence
+
+    def _verify_durable_version(self, normalized_lemma: str, expected_version_id: int, candidate_identity: str, evidence_set_hash: str, idempotent: bool = False) -> dict[str, Any]:
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    e.id AS lexical_entry_id,
+                    e.normalized_lemma,
+                    e.active_version_id,
+                    v.id AS lexical_entry_version_id,
+                    v.version_number,
+                    v.candidate_identity,
+                    v.evidence_set_hash,
+                    v.candidate_snapshot,
+                    v.evidence_snapshot,
+                    v.lexical_entry_id AS version_entry_id
+                FROM lexical_entries e
+                JOIN lexical_entry_versions v ON v.lexical_entry_id = e.id
+                WHERE e.normalized_lemma = %s AND v.id = %s
+                """,
+                (normalized_lemma, expected_version_id),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                raise ValueError("durable save verification failed: accepted version not found")
+            if row["candidate_identity"] != candidate_identity:
+                raise ValueError("durable save verification failed: candidate identity mismatch")
+            if row["evidence_set_hash"] != evidence_set_hash:
+                raise ValueError("durable save verification failed: evidence set hash mismatch")
+            if row["active_version_id"] != expected_version_id:
+                raise ValueError("durable save verification failed: active pointer mismatch")
+            cursor.execute(
+                "SELECT id, word, definition, part_of_speech, count FROM vocabulary WHERE lower(word)=lower(%s)",
+                (normalized_lemma,),
+            )
+            vocabulary = cursor.fetchone()
+            if vocabulary is None:
+                raise ValueError("durable save verification failed: vocabulary projection missing")
+        result = dict(row)
+        result.update({
+            "id": expected_version_id,
+            "entry_id": result["lexical_entry_id"],
+            "lexical_entry_id": result["lexical_entry_id"],
+            "lexical_entry_version_id": expected_version_id,
+            "version_id": expected_version_id,
+            "version_number": result["version_number"],
+            "active_version_id": expected_version_id,
+            "normalized_lemma": normalized_lemma,
+            "candidate_identity": candidate_identity,
+            "evidence_set_hash": evidence_set_hash,
+            "idempotent": idempotent,
+        })
+        return result
+
+    def save_accepted_version(self, candidate: dict[str, Any], origin: str) -> dict[str, Any]:
+        """Accept a validated candidate and advance one logical active pointer atomically."""
+        import hashlib
+        import json
+        from datetime import datetime, timezone
+
+        evidence = candidate["evidence_snapshot"]
+        normalized = candidate["normalized_lemma"]
+        candidate_identity = hashlib.sha256(json.dumps(candidate, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        projection = candidate["content"]["pos_sections"]
+        first = next(section for section in projection if section["core_meanings"])
+        definition = first["core_meanings"][0]["definition"]
+        pos = first["pos"]
+        saved_result: dict[str, Any] | None = None
+        with self.connection.transaction():
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT id, active_version_id FROM lexical_entries WHERE normalized_lemma=%s FOR UPDATE", (normalized,))
+                entry = cursor.fetchone()
+                if entry:
+                    entry_id = entry["id"] if isinstance(entry, dict) else entry[0]
+                    active_id = entry["active_version_id"] if isinstance(entry, dict) else entry[1]
+                    if active_id:
+                        cursor.execute("SELECT id, candidate_identity, evidence_set_hash FROM lexical_entry_versions WHERE id=%s AND candidate_identity=%s", (active_id, candidate_identity))
+                        existing = cursor.fetchone()
+                        if existing:
+                            saved_result = {
+                                "entry_id": entry_id,
+                                "lexical_entry_id": entry_id,
+                                "version_id": active_id,
+                                "lexical_entry_version_id": active_id,
+                                "id": active_id,
+                                "version_number": 1,
+                                "active_version_id": active_id,
+                                "normalized_lemma": normalized,
+                                "candidate_identity": candidate_identity,
+                                "evidence_set_hash": candidate["evidence_set_hash"],
+                                "idempotent": True,
+                            }
+                    if saved_result is None:
+                        cursor.execute("SELECT coalesce(max(version_number),0)+1 AS next_version FROM lexical_entry_versions WHERE lexical_entry_id=%s", (entry_id,))
+                        version = _row_value(cursor.fetchone(), "next_version", 0)
+                else:
+                    cursor.execute("INSERT INTO lexical_entries(normalized_lemma, display_word) VALUES (%s,%s) RETURNING id", (normalized, candidate.get("normalized_lemma", normalized)))
+                    entry_id = _row_value(cursor.fetchone(), "id", 0)
+                    version = 1
+                if saved_result is None:
+                    cursor.execute("SELECT id FROM vocabulary WHERE lower(word)=lower(%s)", (normalized,))
+                    vocabulary = cursor.fetchone()
+                    if vocabulary:
+                        vocabulary_id = vocabulary["id"] if isinstance(vocabulary, dict) else vocabulary[0]
+                        cursor.execute("UPDATE vocabulary SET definition=%s, part_of_speech=%s WHERE id=%s", (definition, pos, vocabulary_id))
+                    else:
+                        cursor.execute("INSERT INTO vocabulary(word,definition,part_of_speech,source,created_on,count) VALUES (%s,%s,%s,%s,%s,1) RETURNING id", (normalized, definition, pos, "M004.5 lexical synthesis", datetime.now(timezone.utc).date()))
+                        vocabulary_id = _row_value(cursor.fetchone(), "id", 0)
+                    cursor.execute("UPDATE lexical_entries SET vocabulary_id=%s, updated_at=now() WHERE id=%s", (vocabulary_id, entry_id))
+                    cursor.execute("""INSERT INTO lexical_entry_versions
+                        (lexical_entry_id,version_number,candidate_snapshot,evidence_snapshot,evidence_set_hash,dataset_identity,wordnet_identity,model_identity,prompt_identity,policy_identity,schema_identity,packer_identity,validator_identity,inference_identity,candidate_identity,origin)
+                        VALUES (%s,%s,%s::jsonb,%s::jsonb,%s,%s::jsonb,%s,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s,%s) RETURNING id""", (entry_id, version, json.dumps(candidate), json.dumps(evidence), candidate["evidence_set_hash"], json.dumps({"wiktionary": evidence.get("wiktionary_versions")}), evidence.get("wordnet_version"), json.dumps({"model": candidate.get("model"), "digest": candidate.get("model_digest")}), json.dumps({"prompt": candidate.get("prompt_version")}), json.dumps({"policy": candidate.get("policy_version")}), json.dumps({"schema": candidate.get("schema_version")}), json.dumps({"packer": candidate.get("packer_version")}), json.dumps({"validator": candidate.get("validator_version")}), json.dumps(candidate.get("inference", {})), candidate_identity, origin))
+                    version_id = _row_value(cursor.fetchone(), "id", 0)
+                    cursor.execute("UPDATE lexical_entries SET active_version_id=%s, updated_at=now() WHERE id=%s", (version_id, entry_id))
+                    saved_result = {
+                        "entry_id": entry_id,
+                        "lexical_entry_id": entry_id,
+                        "version_id": version_id,
+                        "lexical_entry_version_id": version_id,
+                        "id": version_id,
+                        "version_number": version,
+                        "active_version_id": version_id,
+                        "normalized_lemma": normalized,
+                        "candidate_identity": candidate_identity,
+                        "evidence_set_hash": candidate["evidence_set_hash"],
+                        "idempotent": False,
+                    }
+        if saved_result is None:
+            raise ValueError("Save verification failed before durable commit")
+        return self._verify_durable_version(normalized, saved_result["active_version_id"], candidate_identity, candidate["evidence_set_hash"], saved_result["idempotent"])
+
+    def load_active_version(self, normalized_lemma: str) -> dict[str, Any] | None:
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    e.id AS lexical_entry_id,
+                    e.normalized_lemma,
+                    e.active_version_id,
+                    v.id AS lexical_entry_version_id,
+                    v.id AS id,
+                    v.version_number,
+                    v.candidate_identity,
+                    v.evidence_set_hash,
+                    v.candidate_snapshot,
+                    v.evidence_snapshot,
+                    v.lexical_entry_id AS version_entry_id
+                FROM lexical_entries e
+                JOIN lexical_entry_versions v ON v.id = e.active_version_id
+                WHERE e.normalized_lemma=%s
+                """,
+                (normalized_lemma,),
+            )
+            row = cursor.fetchone()
+        if not row:
+            return None
+        payload = dict(row)
+        payload["entry_id"] = payload["lexical_entry_id"]
+        payload["version_id"] = payload["lexical_entry_version_id"]
+        payload["version_number"] = payload["version_number"]
+        payload["active_version_id"] = payload["active_version_id"]
+        payload["id"] = payload["lexical_entry_version_id"]
+        return payload
+
+    def flag_candidate(self, candidate: dict[str, Any], origin: str) -> bool:
+        import hashlib, json
+        identity = hashlib.sha256(json.dumps(candidate, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        with self.connection.cursor() as cursor:
+            cursor.execute("INSERT INTO lexical_flags(candidate_identity,normalized_lemma,candidate_snapshot,evidence_set_hash,source_identity) VALUES (%s,%s,%s::jsonb,%s,%s::jsonb) ON CONFLICT(candidate_identity) DO NOTHING", (identity, candidate["normalized_lemma"], json.dumps(candidate), candidate["evidence_set_hash"], json.dumps({"origin": origin})))
+            created = cursor.rowcount == 1
+        self.connection.commit()
+        return created
 
     def load_records(self) -> list[dict[str, Any]]:
         with self.connection.cursor() as cursor:

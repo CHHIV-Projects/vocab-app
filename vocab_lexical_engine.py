@@ -278,7 +278,7 @@ def build_sqlite(records: Iterable[dict[str, Any]], database_path: str | Path) -
 
 
 def lookup(database_path: str | Path, word: str) -> dict[str, Any]:
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(f"file:{Path(database_path).resolve()}?immutable=1", uri=True)
     rows = connection.execute("SELECT * FROM entries WHERE normalized_lemma = ? ORDER BY entry_key", (word.casefold(),)).fetchall()
     entries = []
     for row in rows:
@@ -293,9 +293,10 @@ def lookup(database_path: str | Path, word: str) -> dict[str, Any]:
 def wordnet_evidence(word: str) -> list[dict[str, Any]]:
     try:
         from nltk.corpus import wordnet
-    except ModuleNotFoundError:
+        synsets = wordnet.synsets(word)
+    except (LookupError, ModuleNotFoundError):
         return []
-    return [{"synset_id": synset.name(), "pos": synset.pos(), "gloss": synset.definition(), "lemmas": sorted(lemma.name() for lemma in synset.lemmas())} for synset in wordnet.synsets(word)]
+    return [{"synset_id": synset.name(), "pos": synset.pos(), "gloss": synset.definition(), "lemmas": sorted(lemma.name() for lemma in synset.lemmas())} for synset in synsets]
 
 
 def evidence_bundle(result: dict[str, Any]) -> dict[str, Any]:

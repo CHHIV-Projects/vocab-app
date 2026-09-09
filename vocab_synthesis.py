@@ -553,6 +553,7 @@ def build_envelope(content: dict[str, Any], evidence: dict[str, Any], *, model: 
         "attempt_id": attempt_id,
         "validation_status": "validated",
         "content": content,
+        "evidence_snapshot": evidence,
     }
 
 
@@ -619,9 +620,13 @@ def synthesize_word(
     seed: int | None = None,
     target_tokens: int = DEFAULT_TARGET_INPUT_TOKENS,
     retry: bool = False,
+    evidence_snapshot: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    result = lookup(database_path, word)
-    evidence = project_synthesis_evidence(result)
+    if evidence_snapshot is None:
+        result = lookup(database_path, word)
+        evidence = project_synthesis_evidence(result)
+    else:
+        evidence = evidence_snapshot
     packages = pack_evidence(evidence, target_tokens=target_tokens)
     identity = {
         "normalized_lemma": evidence["normalized_lemma"],
@@ -748,8 +753,8 @@ def _atomic_write(path: Path, value: dict[str, Any]) -> None:
 
 
 class SynthesisRuntime:
-    def __init__(self, runtime_root: str | Path = "/home/chuck/.local/share/vocab-app/runtime"):
-        self.root = Path(runtime_root)
+    def __init__(self, runtime_root: str | Path | None = None):
+        self.root = Path(runtime_root or os.environ.get("VOCAB_RUNTIME_ROOT", "/tmp/vocab-app-runtime"))
         self.cache = self.root / "synthesis-cache"
         self.diagnostics = self.root / "failure-diagnostics"
 
