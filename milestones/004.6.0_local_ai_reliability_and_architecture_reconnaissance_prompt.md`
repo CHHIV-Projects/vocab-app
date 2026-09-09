@@ -1737,3 +1737,339 @@ DO NOT MUTATE GIT.
 Produce the closeout, report findings, and STOP for Architect/Product Owner review.
 
 **End of M004.6.0 prompt**
+
+
+
+
+
+Proceed with M004.6.0 reconnaissance. I do not see a blocker or a Product Owner decision required before you begin.
+
+Your framing is largely correct, with several important guardrails:
+
+1. UTILITARIAN FAILURE
+
+Yes — first attempt to reconstruct the `Utilitarian` failure strictly from retained evidence.
+
+Do NOT rerun `Utilitarian` initially.
+
+Look for:
+
+- retained synthesis/runtime diagnostics;
+- cache metadata;
+- logs;
+- failure envelopes;
+- model response artifacts;
+- validator evidence.
+
+If the exact failed response or enough evidence to reconstruct it no longer exists, record that explicitly:
+
+    "Original Utilitarian model output not retained; exact failing model
+    selection cannot be reconstructed."
+
+Then continue the architecture analysis using:
+
+- the known Product Owner-visible validator error;
+- current source implementation;
+- other retained observed failures;
+- theoretically possible states demonstrated by the current contracts.
+
+Do not manufacture an exact reconstruction from the current code.
+
+2. STRUCTURAL-AUTHORITY HYPOTHESIS
+
+I agree this is currently our strongest architectural hypothesis:
+
+    model authority is too broad in one or more structural stages.
+
+However, treat that as a hypothesis to PROVE during reconnaissance, not as a conclusion already established.
+
+The closeout needs to show exactly:
+
+- what code owns;
+- what the model owns;
+- what schema constrains;
+- what the runtime constrains;
+- what the validator merely detects afterward.
+
+It is possible that some failures ultimately belong to:
+
+- schema construction;
+- Ollama structured-output enforcement;
+- prompt design;
+- model behavior;
+- cross-stage code assembly;
+
+rather than simply "GPT has too much authority."
+
+Separate those carefully.
+
+3. RETRIEVAL VS. AI RELIABILITY
+
+Correct.
+
+Treat these as independent issues.
+
+Exact lexical retrieval:
+
+    normalized lemma
+        -> SQLite
+        -> canonical lexical evidence
+
+is conventional database/index work.
+
+Semantic synthesis:
+
+    canonical evidence
+        -> AI processing
+        -> deterministic validation
+
+is the AI-reliability problem.
+
+The M004.6.0 closeout should explicitly prevent these from being conflated.
+
+Inspect the current SQLite query/index/query-plan evidence, but do not modify the active lexical artifact.
+
+4. LLM NECESSITY
+
+Correct — this is one of the most important outputs of M004.6.0.
+
+Do not assume that every current GPT stage should survive.
+
+For each stage classify it as:
+
+    deterministic code
+    embedding/similarity
+    small bounded model
+    stronger reasoning model
+    hybrid
+
+This needs to be based on the actual semantic task and current implementation.
+
+5. EMBEDDINGS
+
+Your current framing is appropriate:
+
+    embeddings = semantic screening / similarity evidence
+
+not:
+
+    embeddings = source of topology truth
+
+Investigate whether embeddings can reduce the number or complexity of semantic judgments presented to an LLM.
+
+Do not assume a similarity threshold can automatically merge senses.
+
+The reconnaissance should explain:
+
+- what embeddings can safely tell us;
+- what they cannot prove;
+- which lexical phenomena could cause misleading similarity;
+- how thresholds would later need calibration.
+
+6. CORE SELECTION
+
+Give this stage a very detailed audit because it produced the visible `Utilitarian` failure.
+
+Specifically prove whether the current model:
+
+- originates group IDs;
+- selects arbitrary string IDs;
+- chooses among enum-constrained IDs;
+- can duplicate IDs;
+- can reference another POS;
+- controls the core count;
+- controls Additional Meanings;
+- or only makes semantic choices over code-owned topology.
+
+Then compare the required alternatives from the prompt.
+
+I am particularly interested in whether a design such as:
+
+    code provides every valid group
+        ->
+    model gives each group a bounded priority/rank
+        ->
+    code chooses the core set
+        ->
+    code computes Additional
+
+can make the observed structural failure class impossible.
+
+Do not implement it yet.
+
+7. SEMANTIC GROUPING
+
+Do not focus only on core selection.
+
+The earlier retained failure:
+
+    missing_used_group_definition
+
+suggests semantic grouping may contain the same deeper issue.
+
+Audit whether GPT currently owns:
+
+- group creation;
+- group identity;
+- membership;
+- definitions;
+
+and whether those responsibilities can be separated.
+
+A promising hypothesis to evaluate is:
+
+    model judges semantic equivalence
+    code creates topology
+
+but again, prove this against current code before recommending it.
+
+8. MODEL / RUNTIME RESEARCH
+
+Do not narrow M004.6.0 to GPT-OSS.
+
+The prompt intentionally asks the broader question:
+
+    What should perform each task?
+
+Research credible current alternatives for the actual RTX 5070 Ti 16 GB environment.
+
+Include smaller models where appropriate.
+
+Also distinguish:
+
+    model quality
+        from
+    runtime constrained-output capability.
+
+For example, a model might be semantically adequate while the serving/runtime contract permits structural output we could prevent through stronger constrained decoding.
+
+Use authoritative current documentation when external research is available.
+
+Do not download or install anything.
+
+9. "CREW" / MULTI-AGENT APPROACH
+
+Do not assume multi-agent architecture improves reliability.
+
+Evaluate it fairly, but compare it against:
+
+    deterministic Python orchestrator
+        + specialized bounded workers.
+
+The latter remains the stronger initial architectural hypothesis.
+
+If multiple models have a useful role, identify the exact bounded reason:
+
+- specialist task;
+- escalation;
+- disagreement detection;
+
+rather than inventing autonomous agents simply to use more AI.
+
+10. BENCHMARKING
+
+Do NOT conduct the broad benchmark in M004.6.0.
+
+Design it.
+
+The closeout should leave us able to implement the next benchmark milestone without repeating broad architectural reconnaissance.
+
+In particular define:
+
+- lexical categories;
+- representative words;
+- repeated fresh-attempt strategy;
+- seed strategy;
+- cache bypass rules;
+- stage metrics;
+- semantic human-review criteria;
+- structural success metrics;
+- resource/performance metrics.
+
+11. TRAILING BACKTICK IN PROMPT FILENAME
+
+Do not treat the trailing backtick as a normal platform quirk.
+
+The intended canonical filename is:
+
+    milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_prompt.md
+
+If the actual filesystem filename contains a trailing literal backtick, that is most likely an accidental filename artifact.
+
+Because M004.6.0 is read-only:
+
+- do NOT rename it during this milestone;
+- use the actual literal filesystem path necessary to read it;
+- record the discrepancy in the closeout;
+- recommend correcting the filename later through Product Owner-controlled documentation/Git handling.
+
+Do not allow the filename artifact to block reconnaissance.
+
+12. DO NOT FRONT-LOAD THE CONCLUSION
+
+Your preliminary insight is useful:
+
+    move structural authority to code
+
+but the purpose of this milestone is to establish how far that principle can actually be taken.
+
+The closeout should remain capable of concluding, for example:
+
+    current GPT-OSS is good enough after structural hardening
+
+OR
+
+    embeddings + smaller model is superior
+
+OR
+
+    alternate runtime materially improves constrained output
+
+OR
+
+    specialized model routing is justified
+
+OR some combination.
+
+Do not shape the evidence to support the architecture we currently expect.
+
+13. REQUIRED END STATE
+
+Proceed read-only through the full M004.6.0 prompt.
+
+The most important deliverables are:
+
+    A. exact current AI pipeline map
+
+    B. model-authority matrix
+
+    C. complete structural failure taxonomy
+
+    D. Utilitarian retained-evidence reconstruction, or explicit statement
+       that exact evidence is unavailable
+
+    E. core-selection deep dive
+
+    F. semantic-grouping deep dive
+
+    G. LLM-necessity/task-routing analysis
+
+    H. embedding architecture analysis
+
+    I. alternative model/runtime research
+
+    J. at least three coherent future architecture alternatives
+
+    K. clear recommended direction
+
+    L. small sequenced M004.6 follow-on milestones
+
+Do not make source, runtime, model, cache, database, lexical-data, or Git mutations.
+
+Produce:
+
+    milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_closeout.md
+
+and STOP for Product Owner / Architect review.
+
+No further Product Owner clarification is required before beginning.
