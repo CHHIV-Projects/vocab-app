@@ -1,0 +1,1739 @@
+# M004.6.0 — Local AI Reliability & Architecture Reconnaissance
+
+**Prompt filename:** `milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_prompt.md`
+
+**Required closeout filename:** `milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_closeout.md`
+
+**Project:** Vocab App  
+**Repository:** `/home/chuck/projects/vocab-app`  
+**Primary branch:** `main`  
+**Milestone type:** RECONNAISSANCE ONLY  
+**Implementation authorization:** NONE  
+**Runtime mutation authorization:** NONE  
+**Git mutation authorization:** NONE
+
+---
+
+# 1. Objective
+
+Perform an exhaustive architectural reconnaissance of the Vocab App's current local-AI system and determine the safest, most reliable direction for the next local-AI architecture.
+
+This milestone is NOT:
+
+- a fix for `Utilitarian`;
+- a prompt-tuning exercise;
+- an implementation milestone;
+- a model-download milestone;
+- a runtime migration;
+- an embedding implementation;
+- a benchmark execution milestone;
+- a frontend milestone.
+
+The primary question is:
+
+> What is the smallest, fastest, most deterministic local-AI component or combination of components that can reliably perform each semantic task required by the Vocab App on the actual `henderson-server1` hardware?
+
+The broader engineering objective is:
+
+> Determine how local AI can become a dependable software component rather than a probabilistic application controller.
+
+The reconnaissance must challenge the current architecture rather than assume GPT-OSS:20b, Ollama, or the current staged synthesis pipeline is the optimal final design.
+
+---
+
+# 2. Required Controlling Documents
+
+Before any repository inspection, read in full:
+
+1. `vocab_app_project_context_v2.md`
+2. `vocab_app_architecture_v2.md`
+3. `project_workflow_v2.md`
+4. `coding_agent_rules_v2.md`
+5. this M004.6.0 prompt
+
+Then read the directly relevant milestone closeouts:
+
+6. M004.2 lexical architecture closeout
+7. M004.3 deterministic lexical engine closeout
+8. M004.3.1 production lexical dataset closeout
+9. M004.4 bounded lexical synthesis closeout
+10. M004.5 learner-facing lexical UI and save/versioning closeout
+
+Use the actual repository filenames.
+
+Do not indiscriminately read unrelated milestone history.
+
+At the beginning of the closeout, list the exact controlling files read.
+
+---
+
+# 3. Mandatory Git Boundary
+
+DO NOT perform:
+
+- `git add`;
+- Stage;
+- Commit;
+- Push;
+- Tag;
+- Merge;
+- Rebase;
+- Reset;
+- branch creation/deletion;
+- history rewriting.
+
+Read-only Git inspection is permitted.
+
+At the end, report literal `git status --short`.
+
+---
+
+# 4. Mandatory Runtime Boundary
+
+This milestone is reconnaissance only.
+
+DO NOT:
+
+- rebuild containers;
+- recreate containers;
+- restart services;
+- stop/start services;
+- change Compose configuration;
+- modify environment files;
+- alter filesystem permissions or ACLs;
+- modify PostgreSQL;
+- modify lexical datasets;
+- modify caches;
+- install packages;
+- download models;
+- pull Ollama models;
+- modify Ollama configuration;
+- generate embeddings;
+- create vector indexes;
+- run destructive or long production dataset jobs.
+
+Read-only runtime inspection is permitted.
+
+Limited non-mutating inference investigation is permitted ONLY where required to inspect retained/cache diagnostics or existing behavior and where the prompt explicitly permits it below.
+
+Do not launch a broad fresh-inference benchmark in M004.6.0.
+
+---
+
+# 5. Starting-State Preflight
+
+Before analysis, record:
+
+## Repository
+
+- repository path;
+- branch;
+- HEAD;
+- upstream/tracking state;
+- `git status --short`;
+- latest relevant milestone commits if identifiable.
+
+## Runtime
+
+Read-only inspect:
+
+- running Vocab application container;
+- image ID;
+- container start time;
+- working directory;
+- PostgreSQL container/health;
+- Ollama container/service state;
+- configured Ollama endpoint;
+- currently installed/available local models;
+- current active lexical dataset identity;
+- current WordNet identity;
+- current lexical/runtime mounts;
+- current writable runtime/cache location.
+
+## Deployment parity
+
+Confirm whether the running application corresponds to the current repository source using the least invasive available evidence.
+
+If hashes/build metadata are readily available, report them.
+
+Do not rebuild solely to establish parity.
+
+Reconnaissance may continue if the deployed container differs, but clearly distinguish:
+
+- repository architecture;
+- deployed architecture.
+
+---
+
+# 6. Preserve the `Utilitarian` Failure as Evidence
+
+The Product Owner observed a fresh lookup of:
+
+`Utilitarian`
+
+failing with:
+
+`Model core selection was not a valid subset of POS groups`
+
+Do NOT begin by rerunning the word.
+
+First determine whether retained diagnostics/cache/runtime artifacts contain enough evidence to reconstruct the failed attempt.
+
+Report, if available:
+
+- evidence-set hash;
+- model;
+- model digest;
+- runtime/provider;
+- seed;
+- inference settings;
+- synthesis/cache identity;
+- failed stage;
+- POS involved;
+- valid group IDs for that POS;
+- exact model-returned core IDs or structure;
+- schema supplied to the model;
+- parser/schema status;
+- deterministic validator failure;
+- `done_reason`;
+- token/truncation information;
+- duration.
+
+If the original failing response is no longer retained, say so explicitly.
+
+Do not fabricate missing evidence.
+
+The purpose is not to fix `Utilitarian`.
+
+Use it as one concrete example in a broader failure taxonomy.
+
+---
+
+# 7. Reconstruct the Actual Current AI Pipeline
+
+Map the CURRENT repository implementation stage by stage.
+
+Do not rely solely on milestone documentation.
+
+Verify current source.
+
+Produce a pipeline diagram identifying at minimum:
+
+1. exact lexical lookup;
+2. canonical evidence projection;
+3. evidence hashing;
+4. synthesis cache lookup;
+5. sense scaffold / aliases;
+6. per-sense learner paraphrase;
+7. POS-local semantic grouping;
+8. group creation/identity;
+9. group learner definitions;
+10. core-selection;
+11. deterministic Additional Meanings calculation;
+12. synonym enrichment;
+13. etymology enrichment;
+14. final validation;
+15. candidate cache;
+16. workflow/controller;
+17. Save/version persistence.
+
+For each stage identify:
+
+- code/module/function;
+- input;
+- output;
+- deterministic or AI;
+- whether GPT is invoked;
+- model/runtime used;
+- schema/contract used;
+- validator used;
+- cache behavior;
+- failure behavior.
+
+---
+
+# 8. Model-Authority Matrix
+
+For EVERY AI stage, create an explicit authority matrix.
+
+For each stage answer:
+
+## Task
+
+What semantic problem is the model being asked to solve?
+
+## Deterministic inputs
+
+Exactly what evidence/structure does code provide?
+
+## Code-owned identities
+
+Which IDs/aliases/topology are created by code?
+
+## Model-owned identities
+
+Can the model create any identifiers or references?
+
+## Model-owned structure
+
+Can the model:
+
+- create groups;
+- select IDs;
+- omit IDs;
+- duplicate IDs;
+- reference another POS;
+- create relationships;
+- choose counts;
+- create dictionary keys;
+- create new topology?
+
+## Schema constraints
+
+For every relevant output field, determine:
+
+- type;
+- required/optional;
+- enum or arbitrary string;
+- array constraints;
+- min/max items;
+- additional-properties behavior;
+- dynamic allowed values;
+- whether all code-known items are required;
+- whether the runtime actually enforces the declared schema.
+
+## Deterministic validation
+
+What is validated afterward?
+
+## Structural state still possible
+
+Identify every invalid state that the current model can theoretically emit even if no such failure has yet been observed.
+
+This matrix is one of the milestone's primary deliverables.
+
+---
+
+# 9. Failure Taxonomy
+
+Build a comprehensive failure taxonomy for the current AI pipeline.
+
+Separate at least:
+
+## A. Evidence/retrieval failures
+
+Examples:
+
+- lexical record missing;
+- source evidence malformed;
+- WordNet unavailable;
+- evidence-packaging inconsistency.
+
+## B. Runtime/provider failures
+
+Examples:
+
+- Ollama unavailable;
+- model missing;
+- timeout;
+- context overflow;
+- output truncation;
+- malformed provider response.
+
+## C. Structured-output failures
+
+Examples:
+
+- invalid JSON;
+- JSON that violates schema;
+- missing required keys;
+- additional unexpected keys;
+- invalid enum/reference.
+
+## D. Semantic topology failures
+
+Examples:
+
+- missing source alias;
+- duplicated alias;
+- cross-POS grouping;
+- missing used-group definition;
+- invalid core-selection reference;
+- core selection not subset of valid groups;
+- invalid core count;
+- lost Additional Meaning.
+
+## E. Evidence-grounding failures
+
+Examples:
+
+- unsupported synonym;
+- unsupported etymology claim;
+- unknown evidence reference.
+
+## F. Product/persistence failures
+
+Examples:
+
+- invalid candidate reaches Save;
+- cache accepts invalid candidate;
+- stale candidate identity;
+- saved evidence mismatch.
+
+For each failure class identify:
+
+- observed before?;
+- possible today?;
+- prevented by schema?;
+- prevented by validator?;
+- structurally impossible?;
+- best place to prevent it.
+
+---
+
+# 10. Failure Prevention Classification
+
+For every identified failure mode, classify the ideal treatment as one of:
+
+1. **Prevent by deterministic construction**
+2. **Prevent by constrained decoding/schema**
+3. **Detect with deterministic validator**
+4. **Reduce using deterministic preprocessing**
+5. **Reduce using embeddings**
+6. **Require LLM semantic judgment**
+7. **Conservative abstention/failure**
+8. **Runtime/provider engineering**
+9. **Not worth solving / acceptable product failure**
+
+Strongly prefer prevention over post-hoc detection when practical.
+
+---
+
+# 11. Core-Selection Deep Dive
+
+Perform a detailed reconnaissance of the core-selection stage that failed for `Utilitarian`.
+
+Answer:
+
+- What exact structure enters core selection?
+- Are groups POS-local?
+- Who creates group IDs?
+- What does the model see?
+- What exact response schema is generated?
+- Are valid group IDs expressed as dynamic enums?
+- Can the model type arbitrary IDs?
+- Can it reference IDs belonging to another POS?
+- Can it duplicate IDs?
+- Can it return too many/few IDs?
+- Who decides target core count?
+- Who calculates Additional Meanings?
+- What exact validator produced the observed error?
+
+Evaluate at least these alternative designs:
+
+## Design A — Current selection-array model
+
+Model directly returns selected group IDs.
+
+## Design B — Required per-group boolean
+
+Code supplies all valid group IDs as required schema keys:
+
+    G001 -> core true/false
+    G002 -> core true/false
+    ...
+
+Code computes final sets.
+
+## Design C — Required per-group rank/priority
+
+Code supplies all valid group IDs.
+
+Model assigns a bounded score/rank to every group.
+
+Code deterministically:
+
+- sorts;
+- tie-breaks;
+- chooses allowed core count;
+- calculates Additional Meanings.
+
+## Design D — Pairwise or relative semantic priority
+
+If appropriate, model makes smaller comparisons rather than constructing a complete selection.
+
+For each design evaluate:
+
+- structural impossibility guarantees;
+- semantic quality risk;
+- schema complexity;
+- token cost;
+- model difficulty;
+- deterministic assembly;
+- likely reliability.
+
+Do NOT implement a design.
+
+Recommend which design(s) should proceed to controlled testing.
+
+---
+
+# 12. Semantic-Grouping Deep Dive
+
+The grouping stage deserves equally deep inspection.
+
+Prior evidence has included failures such as:
+
+`missing_used_group_definition`
+
+Determine exactly how grouping currently works.
+
+Answer:
+
+- Does GPT create group IDs?
+- Does GPT assign senses to groups?
+- Does GPT define the groups in the same call?
+- Are all source aliases required?
+- Are group definitions required for every used group?
+- Can unused groups exist?
+- Can a sense appear twice?
+- Can senses be omitted?
+- Can grouping cross POS?
+- Does code canonicalize model-created topology?
+- Which failure states are impossible vs merely rejected?
+
+Evaluate whether a safer topology could be:
+
+    code owns S001...Snnn
+        ↓
+    model outputs only same-POS equivalence/representative decisions
+        ↓
+    code constructs canonical connected components/groups
+        ↓
+    code creates G001...Gnnn
+        ↓
+    next schema requires a definition for every code-created G ID
+
+Also evaluate alternative representations such as:
+
+- representative-sense assignment;
+- pairwise equivalence decisions;
+- similarity graph + connected components;
+- embedding-precluster + LLM ambiguous-edge adjudication;
+- deterministic conservative "keep separate" for unresolved cases.
+
+Do not implement.
+
+---
+
+# 13. Per-Sense Paraphrase Audit
+
+Determine whether current paraphrasing is already structurally safe.
+
+Inspect:
+
+- one output per source sense?;
+- required aliases?;
+- arbitrary keys?;
+- code-owned POS?;
+- source coverage?;
+- unsupported fact risk?;
+- label preservation?;
+- examples/source text handling?;
+- token/truncation risk for highly polysemous words.
+
+Determine whether any structural authority can still be removed from the model.
+
+---
+
+# 14. Synonym Architecture Audit
+
+Current M004.5 synonym enrichment is intended to be deterministic.
+
+Verify current source.
+
+Determine:
+
+- whether model synthesis is involved;
+- how source synonym relationships map to source senses;
+- how source senses map to learner groups;
+- how display deduplication works;
+- how provenance is retained;
+- whether unsupported synonyms can enter normal output;
+- whether WordNet synonyms are kept separate when alignment is uncertain.
+
+Recommend only if genuine reliability gaps remain.
+
+Do not redesign a deterministic system unnecessarily.
+
+---
+
+# 15. Etymology Architecture Audit
+
+Inspect the bounded etymology stage.
+
+Determine:
+
+- exact source inputs;
+- whether calls are suppressed when evidence absent;
+- output schema;
+- evidence-reference enforcement;
+- whether uncertainty is preserved;
+- what unsupported statements remain possible;
+- whether a smaller/specialized model could likely perform the task;
+- whether full GPT-style reasoning is actually needed.
+
+Identify which aspects are:
+
+- summarization;
+- evidence selection;
+- structural generation.
+
+---
+
+# 16. LLM Necessity Review
+
+For every current AI task, explicitly answer:
+
+> Does this task actually require a generative LLM?
+
+Classify each as:
+
+## Deterministic
+
+Could be solved reliably in ordinary code.
+
+## Embedding/similarity
+
+Could be reduced substantially using semantic vectors.
+
+## Small bounded model
+
+Likely suitable for a smaller instruction/classification model.
+
+## Strong reasoning model
+
+Genuinely benefits from deeper semantic reasoning.
+
+## Hybrid
+
+Best handled through deterministic preprocessing + bounded AI.
+
+Produce a table.
+
+Do not assume every current GPT stage should survive.
+
+---
+
+# 17. Embedding Architecture Reconnaissance
+
+Investigate whether text embeddings could materially reduce the semantic-grouping problem.
+
+This is reconnaissance only.
+
+Determine the likely unit of embedding:
+
+- whole word;
+- Wiktionary entry;
+- source sense;
+- learner meaning;
+- WordNet synset;
+- another representation.
+
+The default hypothesis to evaluate is:
+
+**sense-level embedding.**
+
+Evaluate deterministic projection candidates such as:
+
+- definition only;
+- POS + definition;
+- POS + definition + selected labels;
+- another evidence-supported projection.
+
+Determine:
+
+- how stable IDs would key vectors;
+- how embedding identity would be versioned;
+- how vectors could be stored;
+- whether embeddings should be built across the production dataset;
+- whether incremental reuse is possible after future dataset refresh;
+- whether vectors should live beside the immutable lexical dataset;
+- whether query-time recomputation is necessary;
+- likely storage size ranges for common dimensions;
+- expected memory/disk implications for ~1.9M senses.
+
+Do not generate embeddings.
+
+---
+
+# 18. Embedding-Assisted Grouping Design
+
+Evaluate this conceptual pipeline:
+
+    exact word lookup
+        ↓
+    POS-local source senses
+        ↓
+    retrieve precomputed sense embeddings
+        ↓
+    deterministic pairwise similarity matrix
+        ↓
+    classify:
+        clearly separate
+        likely equivalent
+        ambiguous
+        ↓
+    LLM evaluates only ambiguous relationships
+        ↓
+    code constructs final groups
+        ↓
+    deterministic validation
+
+Critically analyze this design.
+
+Answer:
+
+- Can high similarity safely imply equivalence?
+- Can low similarity safely imply separation?
+- What lexical phenomena could fool embeddings?
+- How do polysemy and short glosses affect similarity?
+- How should POS constraints interact?
+- Could labels/context improve embeddings?
+- Would embedding thresholds require manually reviewed calibration data?
+- Should high-similarity pairs still require LLM confirmation initially?
+- Is a conservative keep-separate default preferable?
+
+Do not invent numerical thresholds.
+
+Define how thresholds should later be calibrated empirically.
+
+---
+
+# 19. Exact Retrieval Performance
+
+Separate exact lexical retrieval from embedding and LLM work.
+
+Inspect the current SQLite schema/query path.
+
+Verify the known concern around `normalized_lemma` indexing.
+
+Report:
+
+- exact query being used;
+- relevant SQLite schema/indexes;
+- whether an index exists;
+- query plan if safely obtainable read-only;
+- current measured/reported latency evidence;
+- likely indexing correction;
+- whether that correction belongs in a future lexical dataset rebuild.
+
+Do not mutate active SQLite.
+
+This issue should be clearly separated from AI reliability.
+
+---
+
+# 20. Model Inventory
+
+Read-only inspect the currently available local model environment.
+
+Report:
+
+- Ollama version;
+- installed models;
+- sizes;
+- currently configured GPT-OSS model;
+- digest;
+- quantization if identifiable;
+- context configuration;
+- GPU behavior if readily visible read-only.
+
+Do not download anything.
+
+---
+
+# 21. Alternative LLM Candidate Research
+
+The reconnaissance must NOT assume GPT-OSS:20b is the best model.
+
+Research credible currently available local models appropriate to:
+
+- NVIDIA RTX 5070 Ti 16 GB;
+- 64 GB RAM;
+- Linux;
+- structured semantic tasks;
+- constrained output;
+- local inference.
+
+At minimum investigate current credible candidates in categories such as:
+
+- approximately 4B–9B;
+- approximately 9B–14B;
+- current GPT-OSS baseline;
+- larger models only where practical.
+
+Candidate families may include, if still current and technically relevant at reconnaissance time:
+
+- Qwen;
+- Gemma;
+- NVIDIA Nemotron;
+- Mistral;
+- other strong open-weight models discovered during research.
+
+Do not treat this list as mandatory or exhaustive.
+
+For each serious candidate report:
+
+- exact current model/version;
+- parameter count;
+- architecture if relevant;
+- likely quantized VRAM fit;
+- structured-output/tool capabilities;
+- context size;
+- licensing constraints relevant to local application use;
+- known runtime support;
+- likely fit for Vocab tasks;
+- reason to benchmark or reason to exclude.
+
+Use current authoritative model documentation where internet access is available.
+
+If external internet research is unavailable, say so rather than guessing.
+
+DO NOT download models.
+
+---
+
+# 22. Smaller-Model Hypothesis
+
+Evaluate explicitly:
+
+> Could a smaller model outperform GPT-OSS:20b for narrow structured tasks because the task is simpler and constrained?
+
+Consider separate candidate roles:
+
+- per-sense paraphrase;
+- semantic equivalence judgment;
+- group priority/ranking;
+- etymology summarization;
+- structured classification.
+
+Do not assume one model must handle every stage.
+
+---
+
+# 23. Specialized Model Routing
+
+Evaluate a deterministic routing architecture such as:
+
+    deterministic code
+        ↓
+    embeddings / similarity
+        ↓
+    small local model for narrow ambiguity
+        ↓
+    stronger model only for difficult cases
+        ↓
+    deterministic validator
+
+For each current AI stage recommend whether it should use:
+
+- no AI;
+- embedding model;
+- small LLM;
+- strong LLM;
+- same model as another stage;
+- separate specialist.
+
+Identify operational costs:
+
+- model loading;
+- VRAM residency;
+- swapping;
+- latency;
+- complexity;
+- reproducibility.
+
+---
+
+# 24. Multi-Model / "Crew" Evaluation
+
+Evaluate whether autonomous multi-agent/"crew" approaches would improve this application.
+
+Do not assume they do.
+
+Compare:
+
+## Autonomous agent crew
+
+Multiple LLM agents planning/reviewing/voting.
+
+versus:
+
+## Deterministic orchestrator
+
+Python controls a set of specialized workers.
+
+Assess:
+
+- failure multiplication;
+- correlated error;
+- latency;
+- GPU use;
+- model swaps;
+- debugging;
+- reproducibility;
+- real semantic benefit.
+
+The default architectural preference is deterministic orchestration unless evidence supports otherwise.
+
+---
+
+# 25. Independent Verifier Model
+
+Evaluate whether a second model could be useful only in specific ambiguous cases.
+
+Example:
+
+    Model A says merge
+    Model B says separate
+        ↓
+    code chooses conservative separation
+
+Assess:
+
+- benefit;
+- correlated errors;
+- cost;
+- suitability for lexical grouping;
+- whether disagreement is more useful than majority voting.
+
+Do not implement.
+
+---
+
+# 26. Fine-Tuning / LoRA Evaluation
+
+Determine whether fine-tuning should remain deferred.
+
+Evaluate what would be required before it makes sense:
+
+- stable task definition;
+- benchmark corpus;
+- known-good labels;
+- failure corpus;
+- model baseline;
+- train/test separation.
+
+Discuss whether a later small task-specific model could plausibly outperform a general 20B model.
+
+Do not train anything.
+
+---
+
+# 27. Runtime Architecture Research
+
+Ollama is the current runtime baseline.
+
+Evaluate whether the reliability problem is partly a runtime/constrained-decoding problem.
+
+Research current practical alternatives such as:
+
+- Ollama;
+- llama.cpp;
+- vLLM;
+- other credible local runtimes if relevant.
+
+For each serious candidate compare:
+
+- NVIDIA support;
+- RTX 5070 Ti suitability;
+- structured output;
+- JSON Schema;
+- grammar-constrained decoding;
+- dynamic enum support;
+- deterministic sampling controls;
+- model compatibility;
+- context management;
+- model load/unload behavior;
+- multi-model serving;
+- observability;
+- operational complexity.
+
+Do not install or migrate runtimes.
+
+---
+
+# 28. Constrained Decoding Investigation
+
+Determine the distinction between:
+
+- prompting for JSON;
+- supplying JSON Schema;
+- runtime-enforced structured output;
+- grammar-constrained decoding.
+
+For the current Ollama path determine:
+
+- what constraints are actually enforced;
+- what JSON Schema subset is supported;
+- whether dynamic enums are respected;
+- whether semantic-reference validity can be enforced at decode time.
+
+Evaluate whether a runtime supporting stronger grammar constraints could make classes of failures structurally impossible.
+
+---
+
+# 29. Model vs. Runtime vs. Contract Separation
+
+For observed failures, identify which layer is responsible:
+
+1. source evidence;
+2. deterministic packaging;
+3. prompt;
+4. schema;
+5. model;
+6. runtime;
+7. parser;
+8. validator;
+9. cache;
+10. application workflow.
+
+Do not classify a failure as "GPT-OSS unreliability" unless evidence distinguishes it from schema/runtime design.
+
+---
+
+# 30. Production Hardware Constraints
+
+Use the actual server target:
+
+- Ryzen 9 7900X;
+- 64 GB RAM;
+- RTX 5070 Ti 16 GB VRAM.
+
+The final architecture must be practical on this hardware.
+
+Evaluate:
+
+- full-GPU model residency;
+- quantization tradeoffs;
+- CPU offload implications;
+- simultaneous model residency;
+- model swap/load time;
+- embedding-model residency;
+- concurrent application use.
+
+Do not assume theoretical model fit equals acceptable application performance.
+
+---
+
+# 31. Future Benchmark Harness Requirements
+
+Do NOT build the benchmark harness in M004.6.0.
+
+Design what M004.6.1/M004.6.4 should eventually measure.
+
+Define a proposed benchmark corpus by categories, not merely a random word list.
+
+Include categories such as:
+
+- simple one/few-sense;
+- multiple POS;
+- many senses;
+- very high polysemy;
+- inflected forms;
+- technical;
+- philosophical;
+- archaic;
+- figurative;
+- register-heavy;
+- proper-name collisions;
+- homonyms;
+- rich etymology;
+- synonym-rich;
+- difficult grouping boundaries.
+
+Include existing known probes such as:
+
+- archipelago;
+- running;
+- runner;
+- happiness;
+- run;
+- set;
+- meander;
+- phone;
+- utilitarian;
+
+where useful, but do not limit the corpus to words already tested.
+
+---
+
+# 32. Benchmark Repetition Design
+
+Recommend how many repeated fresh attempts are needed per word/model/task to assess stochastic reliability.
+
+Consider:
+
+- fixed seed;
+- multiple controlled seeds;
+- deterministic settings;
+- cache bypass;
+- cache preservation;
+- inference cost.
+
+Do not execute the benchmark.
+
+---
+
+# 33. Benchmark Metrics
+
+Design the metrics to include:
+
+## Correctness/reliability
+
+- JSON/grammar validity;
+- structural validity;
+- validator pass;
+- end-to-end valid candidate;
+- full source coverage;
+- unknown-reference count;
+- missing-reference count;
+- cross-POS violations;
+- semantic quality review.
+
+## Performance
+
+- exact lexical retrieval;
+- evidence packaging;
+- embedding retrieval/computation;
+- model load;
+- per-stage inference;
+- total synthesis;
+- p50;
+- p95.
+
+## Resource use
+
+- VRAM;
+- RAM;
+- GPU utilization;
+- model load/swap time.
+
+## Operational behavior
+
+- cache hit/miss;
+- model/runtime errors;
+- truncation;
+- context-limit failures.
+
+---
+
+# 34. Reliability Acceptance Framework
+
+Do not invent a final percentage target yet.
+
+Instead recommend how the Product Owner should later choose one after baseline measurement.
+
+Separate:
+
+## Structural acceptance
+
+Should approach absolute deterministic safety:
+
+- invalid candidates never accepted;
+- unknown IDs never persisted;
+- evidence coverage preserved;
+- invalid outputs never cached as valid.
+
+## Fresh-inference success rate
+
+Empirical reliability metric to be established by benchmark.
+
+## Semantic-quality acceptance
+
+Requires human-reviewed sample/ground truth.
+
+Recommend how these three categories should be treated separately.
+
+---
+
+# 35. Conservative Failure Policy
+
+Evaluate conservative behavior for ambiguity.
+
+Examples:
+
+- uncertain grouping -> keep meanings separate;
+- uncertain synonym alignment -> do not attach;
+- uncertain source equivalence -> preserve separate evidence;
+- model disagreement -> conservative separation;
+- invalid structure -> fail.
+
+Identify where conservative behavior produces acceptable user experience versus excessive fragmentation.
+
+---
+
+# 36. Caching Strategy Review
+
+Audit current cache identity.
+
+Determine whether it includes enough identity for:
+
+- evidence hash;
+- model;
+- model digest;
+- prompt;
+- policy;
+- schema;
+- validator;
+- inference settings;
+- enrichment identity.
+
+Identify where future model/runtime/embedding changes require cache invalidation or separate identities.
+
+Do not clear the cache.
+
+---
+
+# 37. Dataset Refresh + Embedding Integration Design
+
+Review current versioned Wiktionary dataset architecture.
+
+Design, but do not implement, a future controlled build flow:
+
+    official Wiktionary dump
+        ↓
+    verification
+        ↓
+    pinned Wiktextract
+        ↓
+    canonical evidence
+        ↓
+    indexed lexical SQLite
+        ↓
+    optional embedding projection
+        ↓
+    integrity validation
+        ↓
+    lexical benchmark
+        ↓
+    manifest
+        ↓
+    Product Owner review
+        ↓
+    explicit activation
+
+Determine whether unchanged sense embeddings can safely be reused between dataset versions using stable content identity.
+
+---
+
+# 38. Vector Storage Options
+
+If sense embeddings are recommended, compare practical storage/index choices.
+
+Possible categories:
+
+- flat binary/Numpy-like immutable vectors;
+- FAISS;
+- SQLite-compatible vector extension;
+- PostgreSQL/pgvector;
+- another local ANN format.
+
+Evaluate against:
+
+- ~1.9M senses;
+- versioned immutable dataset model;
+- exact-word pairwise comparison;
+- future global semantic search;
+- operational complexity;
+- rebuildability;
+- memory/disk footprint.
+
+Do not select technology solely because it is popular.
+
+Recommend simplest viable path.
+
+---
+
+# 39. Security / Privacy Impact
+
+Evaluate whether any proposed local-AI architecture changes:
+
+- network exposure;
+- external-service dependence;
+- model licensing;
+- telemetry;
+- data leaving the server.
+
+The architectural preference remains local/private unless the Product Owner later explicitly approves another model.
+
+No external AI API should be introduced in this milestone.
+
+---
+
+# 40. Architecture Alternatives Required
+
+The closeout must present at least THREE coherent future architecture options.
+
+For example:
+
+## Option 1 — Harden Current Architecture
+
+GPT-OSS:20b + Ollama retained.
+
+Move more structural responsibility into code/schema.
+
+## Option 2 — Embedding-Assisted + Smaller LLM
+
+Precomputed sense embeddings reduce grouping scope.
+
+Smaller model handles bounded semantic decisions.
+
+GPT-OSS retained only for difficult escalation or removed.
+
+## Option 3 — Specialized Multi-Model Deterministic Pipeline
+
+Embeddings + small classifier/ranker + stronger reasoning escalation under Python orchestration.
+
+Alternative constrained runtime where justified.
+
+You may propose different options if repository evidence supports them.
+
+For every option include:
+
+- data flow;
+- model roles;
+- deterministic roles;
+- expected reliability;
+- expected performance;
+- complexity;
+- GPU fit;
+- migration cost;
+- risks;
+- benchmark requirements.
+
+---
+
+# 41. Required Recommendation
+
+The closeout must include a recommended NEXT ARCHITECTURAL DIRECTION.
+
+It must distinguish:
+
+## What should remain unchanged
+
+Examples may include:
+
+- canonical evidence;
+- stable IDs;
+- PostgreSQL accepted versions;
+- deterministic validation;
+- evidence hashing.
+
+## What should be redesigned first
+
+Identify the highest-leverage structural weakness.
+
+## What should be benchmarked before implementation
+
+Models/runtimes/embeddings.
+
+## What should explicitly NOT be done yet
+
+Examples:
+
+- fine-tuning;
+- autonomous crews;
+- frontend rewrite;
+- mass model downloads;
+- hidden retry.
+
+The recommendation must be evidence-based.
+
+---
+
+# 42. Proposed M004.6 Sub-Milestones
+
+Based on findings, recommend the precise subdivision after M004.6.0.
+
+Do not assume the preliminary sequence is final.
+
+A possible result might be:
+
+    M004.6.1
+        benchmark harness + baseline
+    
+    M004.6.2
+        core-selection structural hardening
+    
+    M004.6.3
+        semantic grouping / embedding experiment
+    
+    M004.6.4
+        alternative model/runtime bake-off
+    
+    M004.6.5
+        architecture selection
+    
+    M004.6.6
+        production implementation
+
+But change this if reconnaissance shows a better dependency order.
+
+Each proposed milestone should have:
+
+- objective;
+- reason;
+- prerequisites;
+- implementation/reconnaissance classification;
+- expected acceptance evidence.
+
+---
+
+# 43. No Word-Specific Patches
+
+Do NOT propose code such as:
+
+- special handling for `Utilitarian`;
+- special cases for `run`;
+- hard-coded known successful words;
+- word-specific prompt exceptions.
+
+Word failures are test evidence.
+
+Architecture corrections must generalize.
+
+---
+
+# 44. Do Not Weaken Validation
+
+A failure caught by the deterministic validator is evidence that the safety boundary worked.
+
+Do not recommend:
+
+- ignoring invalid core IDs;
+- silently dropping invalid references;
+- auto-correcting unknown group IDs by fuzzy matching;
+- bypassing completeness checks;
+- caching partially valid candidates.
+
+Prefer structural prevention.
+
+---
+
+# 45. Human Semantic Review
+
+Recognize that structural validity does not prove semantic correctness.
+
+Design a future Product Owner/human review strategy for a manageable subset of benchmark outputs.
+
+Possible evaluation dimensions:
+
+- definitions faithful to evidence;
+- groups semantically appropriate;
+- distinct meanings not wrongly merged;
+- obvious duplicates reasonably consolidated;
+- core meanings pedagogically sensible;
+- Additional Meanings complete;
+- etymology faithful;
+- synonyms attached appropriately.
+
+Do not attempt to create an artificial automatic "truth score" where no deterministic ground truth exists.
+
+---
+
+# 46. Required Architecture Diagrams
+
+The closeout must contain text/ASCII diagrams for:
+
+1. current implemented pipeline;
+2. current authority boundaries;
+3. recommended future architecture;
+4. model escalation/routing if recommended;
+5. dataset + embedding build architecture if recommended.
+
+Keep diagrams suitable for Markdown.
+
+---
+
+# 47. Required Tables
+
+The closeout must contain at least:
+
+1. current AI stage matrix;
+2. model-authority matrix;
+3. failure taxonomy;
+4. failure-prevention matrix;
+5. LLM necessity/task-routing matrix;
+6. model candidate comparison;
+7. runtime candidate comparison;
+8. architecture option comparison;
+9. proposed benchmark metrics;
+10. proposed next sub-milestones.
+
+---
+
+# 48. External Research Rules
+
+If internet research is available:
+
+- use current authoritative sources where possible;
+- prefer official model/runtime documentation;
+- record exact source URLs and access date in the closeout;
+- distinguish vendor claims from measured local evidence;
+- do not treat public benchmark scores as proof of Vocab performance.
+
+If internet research is not available:
+
+- say so;
+- do not fabricate current model details;
+- provide repository/runtime findings and identify external research as still required.
+
+No external research may trigger downloads or installs.
+
+---
+
+# 49. Read-Only Commands
+
+Use read-only commands as needed.
+
+Examples include:
+
+- `git status`;
+- `git log`;
+- `git diff`;
+- `grep`;
+- `rg`;
+- `sed`;
+- `cat`;
+- `find`;
+- `docker inspect`;
+- `docker compose ps`;
+- `docker exec` for read-only inspection;
+- `ollama list` if read-only;
+- `nvidia-smi`;
+- SQLite read-only schema/query-plan inspection;
+- PostgreSQL `SELECT`.
+
+Do not use commands that mutate data or runtime state.
+
+---
+
+# 50. Tests in This Reconnaissance
+
+Do not modify tests.
+
+You may run existing tests where doing so helps establish current behavior, but do not launch expensive fresh inference suites unless clearly necessary.
+
+Prefer inspecting:
+
+- existing test coverage;
+- fixture architecture;
+- benchmark/probe scripts;
+- current failure tests.
+
+Report which reliability cases already have regression coverage and which do not.
+
+---
+
+# 51. Closeout Status
+
+Expected closeout status:
+
+**PASS — reconnaissance complete**
+
+if the required architectural analysis is completed.
+
+The closeout should not be marked PARTIAL merely because no implementation occurred; implementation is explicitly out of scope.
+
+Use PARTIAL only if important required reconnaissance evidence could not be obtained.
+
+---
+
+# 52. Required Closeout Structure
+
+Create:
+
+`milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_closeout.md`
+
+Use at least this structure:
+
+# M004.6.0 Closeout
+
+## 1. Executive Result
+
+PASS / PARTIAL / FAIL
+
+## 2. Starting State
+
+Git/runtime/model/data identity.
+
+## 3. Documents Reviewed
+
+Exact files.
+
+## 4. Current Implemented AI Pipeline
+
+Diagram + source mapping.
+
+## 5. Current AI Stage Matrix
+
+Detailed table.
+
+## 6. Model Authority Analysis
+
+Code-owned vs model-owned structure.
+
+## 7. `Utilitarian` Failure Reconstruction
+
+Retained evidence only.
+
+## 8. Failure Taxonomy
+
+Observed + theoretical.
+
+## 9. Core-Selection Deep Dive
+
+Current design + alternatives.
+
+## 10. Semantic-Grouping Deep Dive
+
+Current design + alternatives.
+
+## 11. Paraphrase / Synonym / Etymology Audit
+
+Current responsibilities and risks.
+
+## 12. Deterministic Opportunities
+
+What should move out of AI.
+
+## 13. Embedding Architecture Assessment
+
+Use cases, projection, storage, dataset integration.
+
+## 14. Exact Retrieval Performance Finding
+
+SQLite/indexing issue separately.
+
+## 15. Current Model/Runtime Inventory
+
+Actual server state.
+
+## 16. Alternative Model Research
+
+Candidates and rationale.
+
+## 17. Runtime / Constrained-Decoding Research
+
+Ollama vs alternatives.
+
+## 18. Specialized Routing / Multi-Model Assessment
+
+Small model, escalation, verifier, crew analysis.
+
+## 19. Fine-Tuning Assessment
+
+Whether/when justified.
+
+## 20. Reliability Benchmark Design
+
+Corpus, repetitions, metrics, human review.
+
+## 21. Architecture Options
+
+At least three coherent alternatives.
+
+## 22. Recommended Architecture Direction
+
+Clear recommendation.
+
+## 23. Proposed M004.6 Sub-Milestones
+
+Small sequenced next steps.
+
+## 24. Risks / Unknowns
+
+What remains unresolved.
+
+## 25. No-Change Confirmation
+
+Confirm no source/runtime/data/model mutation.
+
+## 26. Final Git Status
+
+Literal output.
+
+## 27. STOP Gate
+
+Product Owner / Architect review required before implementation.
+
+---
+
+# 53. Success Criteria
+
+M004.6.0 succeeds when we can answer, with repository/runtime evidence:
+
+1. Exactly what AI is currently doing.
+2. Exactly what structure the model still controls.
+3. Why structural failures such as `Utilitarian` remain possible.
+4. Which failure classes can be made impossible by code.
+5. Which tasks truly require an LLM.
+6. Where embeddings may reduce stochastic work.
+7. Whether smaller models deserve controlled testing.
+8. Whether GPT-OSS should remain baseline, specialist, escalation model, or candidate for replacement.
+9. Whether Ollama provides sufficient constrained-generation guarantees.
+10. Whether a deterministic multi-model architecture is preferable to one large model.
+11. What must be benchmarked before architectural commitment.
+12. What the next smallest M004.6 milestones should be.
+
+The output should allow the Architect/Product Owner to choose the next direction without another broad repository reconnaissance.
+
+---
+
+# 54. Architectural Principle to Preserve
+
+Do not lose the central project lesson:
+
+> Running a local model is not the architecture.
+
+The target architecture is:
+
+    authoritative deterministic evidence
+        ↓
+    deterministic retrieval/preprocessing
+        ↓
+    the smallest appropriate learned model for the semantic task
+        ↓
+    code-owned assembly/topology
+        ↓
+    deterministic validation
+        ↓
+    explicit accept or fail
+
+Use local AI where it adds genuine semantic value.
+
+Do not delegate correctness to it merely because it is capable of generating text.
+
+---
+
+# 55. Final Instruction
+
+This milestone is intentionally exhaustive in analysis and intentionally conservative in action.
+
+DO NOT IMPLEMENT THE RECOMMENDATION.
+
+DO NOT FIX `UTILITARIAN`.
+
+DO NOT DOWNLOAD OR CHANGE MODELS.
+
+DO NOT CHANGE THE RUNTIME.
+
+DO NOT MODIFY THE DATASET.
+
+DO NOT MUTATE GIT.
+
+Produce the closeout, report findings, and STOP for Architect/Product Owner review.
+
+**End of M004.6.0 prompt**
