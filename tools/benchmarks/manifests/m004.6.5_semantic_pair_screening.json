@@ -1,0 +1,28 @@
+{
+  "benchmark_id": "m004.6.5-semantic-pair-screening",
+  "benchmark_version": 1,
+  "reference_artifact": "/home/chuck/.local/share/vocab-app/benchmarks/m004.6.4/20260910T062518Z/reference_pairs_adjudicated_v2.json",
+  "source_partitions_artifact": "/home/chuck/.local/share/vocab-app/benchmarks/m004.6.3/20260910T042434Z/partitions.json",
+  "embedding_model": {
+    "name": "nomic-embed-text:latest",
+    "source": "Ollama library / nomic-ai/nomic-embed-text",
+    "license": "Apache-2.0",
+    "dimension": 768,
+    "approximate_model_size_bytes": 274000000,
+    "runtime": "Ollama /api/embed",
+    "expected_device": "existing Ollama host GPU/CPU policy",
+    "rationale": "One compact local sentence-embedding model with practical dimensionality and permissive licensing; no embedding model was already installed and no Python embedding stack is present."
+  },
+  "representation": {
+    "version": "definition-focused-v1",
+    "template": "{lemma} [{pos}]: {definitions joined by '; '}",
+    "normalization": "Unicode-preserving whitespace collapse; no lexical evidence beyond lemma, POS, and definitions"
+  },
+  "seeds": [],
+  "top_k_values": [2, 3, 5],
+  "thresholds": [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9],
+  "optional_qwen_confirmation": false,
+  "qwen_call_limit": 500,
+  "uncertain_pair_ids": ["P010", "P029"],
+  "large_partition_names": ["bank:noun", "runner:noun", "set:noun", "run:verb"]
+}
