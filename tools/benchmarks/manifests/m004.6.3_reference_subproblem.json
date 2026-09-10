@@ -1,0 +1,21 @@
+{
+  "benchmark_id": "m004.6.3-reference-subproblem",
+  "benchmark_version": 1,
+  "words": ["charge", "running", "cleave", "quark"],
+  "selected_partitions": [
+    {"word": "charge", "pos": "noun", "material_labels": [], "rationale": "19-sense, 171-pair high-polysemy anchor"},
+    {"word": "running", "pos": "adj", "material_labels": [], "rationale": "10-sense inflected/derived-word partition"},
+    {"word": "cleave", "pos": "verb", "material_labels": [], "rationale": "6-sense semantic-boundary/contronym partition"},
+    {"word": "quark", "pos": "noun", "material_labels": [], "rationale": "3-sense technical/specialized partition"}
+  ],
+  "pair_policy": "all within selected POS/material-label partition; no semantic pruning",
+  "material_boundary_policy": "production-material-label-partition-v1",
+  "models": ["gpt-oss:20b", "qwen3:8b"],
+  "equivalence_contract": "same-distinct-uncertain-v1",
+  "clustering_policy": "conservative-majority-union-find-v1",
+  "ranking_contract": "fixed-key-v1",
+  "seed_sequence": [4100, 4101, 4102],
+  "attempts_per_pair_model": 3,
+  "maximum_total_calls": 1500,
+  "artifact_root": "~/.local/share/vocab-app/benchmarks/m004.6.3"
+}
