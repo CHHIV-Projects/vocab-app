@@ -1,0 +1,36 @@
+{
+  "benchmark_id": "m004.6.2-tier1",
+  "benchmark_version": 1,
+  "tier": 1,
+  "intended_words": [
+    "archipelago",
+    "running",
+    "runner",
+    "happiness",
+    "run",
+    "set",
+    "meander",
+    "phone",
+    "utilitarian",
+    "bank",
+    "charge",
+    "mouse",
+    "justice",
+    "awful",
+    "literally",
+    "cleave",
+    "wicked",
+    "quark"
+  ],
+  "fixture_generation": {
+    "version": "reconstructed-pos-local-gloss-v1",
+    "method": "read-only lexical lookup; each materially populated POS uses up to six unique source glosses as stable code-owned candidates",
+    "minimum_unique_glosses": 2,
+    "maximum_candidates": 6
+  },
+  "models": ["gpt-oss:20b", "qwen3:8b"],
+  "contracts": ["subset-array-v1", "fixed-key-v1"],
+  "seed_sequence": [3000, 3001, 3002, 3003, 3004],
+  "attempts_per_configuration": 5,
+  "artifact_root": "~/.local/share/vocab-app/benchmarks/m004.6.2"
+}
