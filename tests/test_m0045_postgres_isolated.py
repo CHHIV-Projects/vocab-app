@@ -26,7 +26,11 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
             cursor.execute("select version from schema_migrations")
             self.assertEqual(
                 {row["version"] for row in cursor.fetchall()},
-                {"002_m0045_lexical_versioning", "003_m004610_consolidation_persistence"},
+                {
+                    "002_m0045_lexical_versioning",
+                    "003_m004610_consolidation_persistence",
+                    "004_m004610_1_pair_ordering_collation_correction",
+                },
             )
         self.connection.commit()
 
