@@ -1,0 +1,25 @@
+{
+  "benchmark_id": "M004.6.7-screening-failure-characterization-and-alternative-candidate-reduction",
+  "benchmark_version": 1,
+  "reference_artifact": "/home/chuck/.local/share/vocab-app/benchmarks/m004.6.6/20260910T234324Z/reference_adjudicated_v3.json",
+  "phase_b_summary": "/home/chuck/.local/share/vocab-app/benchmarks/m004.6.6/20260910T234324Z/phase_b_summary.json",
+  "scope": "benchmark-only; no production synthesis, consolidation, persistence, model, embedding, or git mutation",
+  "deterministic_structural_policy": {
+    "identity": "m004.6.7-structural-candidate-policy-v1",
+    "outputs": ["retain_for_semantic_review", "no_structural_candidate_signal"],
+    "merge_authority": false
+  },
+  "candidate_proposal": {
+    "identity": "m004.6.7-qwen-candidate-proposal-v1",
+    "model": "qwen3:8b",
+    "think": false,
+    "temperature": 0,
+    "num_predict": 8192,
+    "num_ctx": 32768,
+    "seeds": [101, 202],
+    "max_candidates_per_alias": 12,
+    "maximum_total_calls": 100,
+    "max_projected_context_tokens": 32000,
+    "required_representative_partitions": ["charge:noun", "running:adj", "cleave:verb", "bank:noun", "scale:noun"]
+  }
+}
