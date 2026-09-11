@@ -10,8 +10,9 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         import psycopg
+        from psycopg.rows import dict_row
         from vocab_migrations import apply_migrations
-        cls.connection = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"])
+        cls.connection = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"], row_factory=dict_row)
         apply_migrations(cls.connection)
 
     @classmethod
@@ -23,7 +24,11 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
         self.assertEqual(apply_migrations(self.connection), [])
         with self.connection.cursor() as cursor:
             cursor.execute("select version from schema_migrations")
-            self.assertEqual({row[0] for row in cursor.fetchall()}, {"002_m0045_lexical_versioning"})
+            self.assertEqual(
+                {row["version"] for row in cursor.fetchall()},
+                {"002_m0045_lexical_versioning", "003_m004610_consolidation_persistence"},
+            )
+        self.connection.commit()
 
     def test_save_projection_versioning_and_flag_idempotency(self):
         from vocab_persistence import PostgresPersistence
@@ -37,10 +42,12 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
         self.assertFalse(persistence.flag_candidate(candidate, "test"))
         with self.connection.cursor() as cursor:
             cursor.execute("select count(*), min(count), max(count) from vocabulary where lower(word)='isolated'")
-            self.assertEqual(tuple(cursor.fetchone()), (1, 1, 1))
+            row = cursor.fetchone()
+            self.assertEqual((row["count"], row["min"], row["max"]), (1, 1, 1))
 
     def test_save_returns_durable_accepted_version_after_new_connection(self):
         import psycopg
+        from psycopg.rows import dict_row
         from vocab_persistence import PostgresPersistence
 
         candidate = {
@@ -73,7 +80,7 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
         self.assertEqual(saved["evidence_set_hash"], candidate["evidence_set_hash"])
 
         self.connection.close()
-        reopened = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"])
+        reopened = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"], row_factory=dict_row)
         try:
             reloaded = PostgresPersistence(reopened).load_active_version(candidate["normalized_lemma"])
             self.assertIsNotNone(reloaded)
@@ -85,10 +92,10 @@ class IsolatedPostgresM0045Tests(unittest.TestCase):
             self.assertEqual(reloaded["normalized_lemma"], candidate["normalized_lemma"])
             with reopened.cursor() as cursor:
                 cursor.execute("select count(*) from vocabulary where lower(word)=lower(%s)", (candidate["normalized_lemma"],))
-                self.assertEqual(cursor.fetchone()[0], 1)
+                self.assertEqual(cursor.fetchone()["count"], 1)
         finally:
             reopened.close()
-            self.connection = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"])
+            self.connection = psycopg.connect(os.environ["M0045_TEST_DATABASE_URL"], row_factory=dict_row)
 
 
 if __name__ == "__main__":
