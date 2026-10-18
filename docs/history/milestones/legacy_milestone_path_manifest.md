@@ -1,0 +1,64 @@
+# Legacy Milestone Path Manifest
+
+Each entry maps one legacy pre-Repo-Control file from its original repository-root path to its preserved archive path. All 58 source files were moved without content changes.
+
+| Original path | Archived path |
+|---|---|
+| `milestones/001_repository_and_project_control_foundation_closeout.md` | `docs/history/milestones/001_repository_and_project_control_foundation_closeout.md` |
+| `milestones/001_repository_and_project_control_foundation_prompt.md` | `docs/history/milestones/001_repository_and_project_control_foundation_prompt.md` |
+| `milestones/002.1_repo_control_integration_baseline_and_m002_evidence_comparison_closeout.md` | `docs/history/milestones/002.1_repo_control_integration_baseline_and_m002_evidence_comparison_closeout.md` |
+| `milestones/002.1_repo_control_integration_baseline_and_m002_evidence_comparison_prompt.md` | `docs/history/milestones/002.1_repo_control_integration_baseline_and_m002_evidence_comparison_prompt.md` |
+| `milestones/002_architecture_and_integration_reconnaissance_closeout.md` | `docs/history/milestones/002_architecture_and_integration_reconnaissance_closeout.md` |
+| `milestones/002_architecture_and_integration_reconnaissance_prompt.md` | `docs/history/milestones/002_architecture_and_integration_reconnaissance_prompt.md` |
+| `milestones/003_bounded_refactor_and_characterization_tests_closeout.md` | `docs/history/milestones/003_bounded_refactor_and_characterization_tests_closeout.md` |
+| `milestones/003_bounded_refactor_and_characterization_tests_prompt.md` | `docs/history/milestones/003_bounded_refactor_and_characterization_tests_prompt.md` |
+| `milestones/004.1_external_service_runtime_configuration_and_functional_validation_closeout.md` | `docs/history/milestones/004.1_external_service_runtime_configuration_and_functional_validation_closeout.md` |
+| `milestones/004.1_external_service_runtime_configuration_and_functional_validation_prompt.md` | `docs/history/milestones/004.1_external_service_runtime_configuration_and_functional_validation_prompt.md` |
+| `milestones/004.2_lexical_evidence_architecture_and_wiktionary_reconnaissance_closeout.md` | `docs/history/milestones/004.2_lexical_evidence_architecture_and_wiktionary_reconnaissance_closeout.md` |
+| `milestones/004.2_lexical_evidence_architecture_and_wiktionary_reconnaissance_prompt.md` | `docs/history/milestones/004.2_lexical_evidence_architecture_and_wiktionary_reconnaissance_prompt.md` |
+| `milestones/004.3.1_first_production_wiktionary_lexical_dataset_build_closeout.md` | `docs/history/milestones/004.3.1_first_production_wiktionary_lexical_dataset_build_closeout.md` |
+| `milestones/004.3.1_first_production_wiktionary_lexical_dataset_build_prompt.md` | `docs/history/milestones/004.3.1_first_production_wiktionary_lexical_dataset_build_prompt.md` |
+| `milestones/004.3_local_wiktionary_wordnet_lexical_engine_closeout.md` | `docs/history/milestones/004.3_local_wiktionary_wordnet_lexical_engine_closeout.md` |
+| `milestones/004.3_local_wiktionary_wordnet_lexical_engine_prompt.md` | `docs/history/milestones/004.3_local_wiktionary_wordnet_lexical_engine_prompt.md` |
+| `milestones/004.4_bounded_gpt-oss_lexical_synthesis_and_deterministic_validation_closeout.md` | `docs/history/milestones/004.4_bounded_gpt-oss_lexical_synthesis_and_deterministic_validation_closeout.md` |
+| `milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md` | `docs/history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md` |
+| `milestones/004.5_learner_facing_lexical_ui_and_save_versioning_prompt.md` | `docs/history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_prompt.md` |
+| `milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_closeout.md` | `docs/history/milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_closeout.md` |
+| `milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_prompt.md` | `docs/history/milestones/004.6.0_local_ai_reliability_and_architecture_reconnaissance_prompt.md` |
+| `milestones/004.6.10.1_sense_id_ordering_postgresql_collation_correction_closeout.md` | `docs/history/milestones/004.6.10.1_sense_id_ordering_postgresql_collation_correction_closeout.md` |
+| `milestones/004.6.10.1_sense_id_ordering_postgresql_collation_correction_prompt.md` | `docs/history/milestones/004.6.10.1_sense_id_ordering_postgresql_collation_correction_prompt.md` |
+| `milestones/004.6.10_pairwise_consolidation_persistence_and_resumable_state_foundation_closeout.md` | `docs/history/milestones/004.6.10_pairwise_consolidation_persistence_and_resumable_state_foundation_closeout.md` |
+| `milestones/004.6.10_pairwise_consolidation_persistence_and_resumable_state_foundation_prompt.md` | `docs/history/milestones/004.6.10_pairwise_consolidation_persistence_and_resumable_state_foundation_prompt.md` |
+| `milestones/004.6.11_bounded_qwen_pair_judgment_provider_and_resumable_orchestration_integration_closeout.md` | `docs/history/milestones/004.6.11_bounded_qwen_pair_judgment_provider_and_resumable_orchestration_integration_closeout.md` |
+| `milestones/004.6.11_bounded_qwen_pair_judgment_provider_and_resumable_orchestration_integration_prompt.md` | `docs/history/milestones/004.6.11_bounded_qwen_pair_judgment_provider_and_resumable_orchestration_integration_prompt.md` |
+| `milestones/004.6.12_consolidation_workflow_integration_and_cached_internal_activation_closeout.md` | `docs/history/milestones/004.6.12_consolidation_workflow_integration_and_cached_internal_activation_closeout.md` |
+| `milestones/004.6.12_consolidation_workflow_integration_and_cached_internal_activation_prompt.md` | `docs/history/milestones/004.6.12_consolidation_workflow_integration_and_cached_internal_activation_prompt.md` |
+| `milestones/004.6.13.1_merge_recognition_regression_isolation_and_contract_correction_closeout.md` | `docs/history/milestones/004.6.13.1_merge_recognition_regression_isolation_and_contract_correction_closeout.md` |
+| `milestones/004.6.13.1_merge_recognition_regression_isolation_and_contract_correction_prompt.md` | `docs/history/milestones/004.6.13.1_merge_recognition_regression_isolation_and_contract_correction_prompt.md` |
+| `milestones/004.6.13.2_semantic_contract_calibration_benchmark_closeout.md` | `docs/history/milestones/004.6.13.2_semantic_contract_calibration_benchmark_closeout.md` |
+| `milestones/004.6.13.2_semantic_contract_calibration_benchmark_prompt.md` | `docs/history/milestones/004.6.13.2_semantic_contract_calibration_benchmark_prompt.md` |
+| `milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md` | `docs/history/milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md` |
+| `milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_prompt.md` | `docs/history/milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_prompt.md` |
+| `milestones/004.6.13_qwen_pair_contract_hardening_and_semantic_reliability_gate_closeout.md` | `docs/history/milestones/004.6.13_qwen_pair_contract_hardening_and_semantic_reliability_gate_closeout.md` |
+| `milestones/004.6.13_qwen_pair_contract_hardening_and_semantic_reliability_gate_prompt.md` | `docs/history/milestones/004.6.13_qwen_pair_contract_hardening_and_semantic_reliability_gate_prompt.md` |
+| `milestones/004.6.1_core_selection_contract_and_schema_conformance_microbenchmark_closeout.md` | `docs/history/milestones/004.6.1_core_selection_contract_and_schema_conformance_microbenchmark_closeout.md` |
+| `milestones/004.6.1_core_selection_contract_and_schema_conformance_microbenchmark_prompt.md` | `docs/history/milestones/004.6.1_core_selection_contract_and_schema_conformance_microbenchmark_prompt.md` |
+| `milestones/004.6.2_tiered_benchmark_harness_closeout.md` | `docs/history/milestones/004.6.2_tiered_benchmark_harness_closeout.md` |
+| `milestones/004.6.2_tiered_benchmark_harness_prompt.md` | `docs/history/milestones/004.6.2_tiered_benchmark_harness_prompt.md` |
+| `milestones/004.6.3_learner_meaning_consolidation_and_bounded_model_comparison_closeout.md` | `docs/history/milestones/004.6.3_learner_meaning_consolidation_and_bounded_model_comparison_closeout.md` |
+| `milestones/004.6.3_learner_meaning_consolidation_and_bounded_model_comparison_prompt.md` | `docs/history/milestones/004.6.3_learner_meaning_consolidation_and_bounded_model_comparison_prompt.md` |
+| `milestones/004.6.4_consolidation_policy_and_batched_judgment_experiment_closeout.md` | `docs/history/milestones/004.6.4_consolidation_policy_and_batched_judgment_experiment_closeout.md` |
+| `milestones/004.6.4_consolidation_policy_and_batched_judgment_experiment_prompt.md` | `docs/history/milestones/004.6.4_consolidation_policy_and_batched_judgment_experiment_prompt.md` |
+| `milestones/004.6.5_high_recall_semantic_pair_screening_experiment_closeout.md` | `docs/history/milestones/004.6.5_high_recall_semantic_pair_screening_experiment_closeout.md` |
+| `milestones/004.6.5_high_recall_semantic_pair_screening_experiment_prompt.md` | `docs/history/milestones/004.6.5_high_recall_semantic_pair_screening_experiment_prompt.md` |
+| `milestones/004.6.6_expanded_semantic_screening_reference_validation_closeout.md` | `docs/history/milestones/004.6.6_expanded_semantic_screening_reference_validation_closeout.md` |
+| `milestones/004.6.6_expanded_semantic_screening_reference_validation_prompt.md` | `docs/history/milestones/004.6.6_expanded_semantic_screening_reference_validation_prompt.md` |
+| `milestones/004.6.7_screening_failure_characterization_and_alternative_candidate_reduction_reconnaissance_closeout.md` | `docs/history/milestones/004.6.7_screening_failure_characterization_and_alternative_candidate_reduction_reconnaissance_closeout.md` |
+| `milestones/004.6.7_screening_failure_characterization_and_alternative_candidate_reduction_reconnaissance_prompt.md` | `docs/history/milestones/004.6.7_screening_failure_characterization_and_alternative_candidate_reduction_reconnaissance_prompt.md` |
+| `milestones/004.6.8_consolidation_architecture_selection_and_production_integration_plan_closeout.md` | `docs/history/milestones/004.6.8_consolidation_architecture_selection_and_production_integration_plan_closeout.md` |
+| `milestones/004.6.8_consolidation_architecture_selection_and_production_integration_plan_prompt.md` | `docs/history/milestones/004.6.8_consolidation_architecture_selection_and_production_integration_plan_prompt.md` |
+| `milestones/004.6.9_pairwise_consolidation_domain_and_offline_engine_foundation_closeout.md` | `docs/history/milestones/004.6.9_pairwise_consolidation_domain_and_offline_engine_foundation_closeout.md` |
+| `milestones/004.6.9_pairwise_consolidation_domain_and_offline_engine_foundation_prompt.md` | `docs/history/milestones/004.6.9_pairwise_consolidation_domain_and_offline_engine_foundation_prompt.md` |
+| `milestones/004_self_hosted_postgresql_and_always_on_service_baseline_closeout.md` | `docs/history/milestones/004_self_hosted_postgresql_and_always_on_service_baseline_closeout.md` |
+| `milestones/004_self_hosted_postgresql_and_always_on_service_baseline_prompt.md` | `docs/history/milestones/004_self_hosted_postgresql_and_always_on_service_baseline_prompt.md` |
+| `milestones/M004.4_bounded_gpt-oss_lexical_synthesis_and_deterministic_validation_prompt.md` | `docs/history/milestones/M004.4_bounded_gpt-oss_lexical_synthesis_and_deterministic_validation_prompt.md` |
