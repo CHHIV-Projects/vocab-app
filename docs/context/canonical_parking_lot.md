@@ -2,20 +2,20 @@
 
 **Document role:** Forward-looking record of evidence-backed deferred or conditional Vocab work  
 **Project:** Vocab App  
-**Current milestone:** M001.001 Repo Control onboarding
+**Current milestone:** M001.003 Vocab shared-procedure reconciliation
 
 This is a planning aid, not an active prompt, bug tracker, architecture decision, or commitment. Product Owner approval and a separate milestone are required before implementation. Remove items when completed, rejected, superseded, or otherwise resolved; preserve history in milestone closeouts.
 
 ## VCAP-001 — M004.5 browser lifecycle acceptance
 
 - **Status:** Deferred; requires a bounded Product Owner-approved product milestone.
-- **Evidence:** [M004.5 closeout](../../milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) leaves desktop/mobile browser validation and Product Owner retest pending.
+- **Evidence:** [M004.5 closeout](../history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) leaves desktop/mobile browser validation and Product Owner retest pending.
 - **Next action:** Verify deployed-source parity, then validate the approved desktop/mobile Save, Retry, Refresh, and Flag lifecycle using safe test data.
 
 ## VCAP-002 — Reverse-direction translation validation
 
 - **Status:** Conditional on the Product Owner retaining translation as a product requirement.
-- **Evidence:** [M004.1 closeout](../../milestones/004.1_external_service_runtime_configuration_and_functional_validation_closeout.md) reports partial status because the required reverse-language provider check failed.
+- **Evidence:** [M004.1 closeout](../history/milestones/004.1_external_service_runtime_configuration_and_functional_validation_closeout.md) reports partial status because the required reverse-language provider check failed.
 - **Next action:** Confirm product requirement first; if retained, separately diagnose and validate both directions without changing success reporting to hide provider failures.
 
 ## VCAP-003 — Exact lexical lookup indexing/performance
@@ -33,7 +33,7 @@ This is a planning aid, not an active prompt, bug tracker, architecture decision
 ## VCAP-005 — Alternatives to automatic Qwen sense consolidation
 
 - **Status:** Explicitly NO-GO for automatic Qwen3:8B consolidation in product v1; no reconsideration authorized.
-- **Evidence:** [M004.6.13.3 closeout](../../milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md) records `NO_GO` after failing its KEEP→MERGE disagreement gate.
+- **Evidence:** [M004.6.13.3 closeout](../history/milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md) records `NO_GO` after failing its KEEP→MERGE disagreement gate.
 - **Next action:** Preserve source senses. Any different architecture or renewed research requires an explicit new Product Owner/Architect decision and new acceptance criteria; do not resume prompt tuning implicitly.
 
 ## VCAP-006 — Provenance of uncommitted M004.6.13 V2 changes

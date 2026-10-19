@@ -1,11 +1,11 @@
 # Vocab App — Project Context
 
 **Document role:** Current Vocab product context  
-**Last reconciled:** 2026-10-17  
+**Last reconciled:** 2026-10-19
 **Repository:** `/home/chuck/projects/vocab-app`  
 **Canonical branch:** `main`  
 **Remote:** `CHHIV-Projects/vocab-app` (`origin`)  
-**Current Repo Control milestone root:** `milestones` until the approved M001.002 cutover
+**Current Repo Control milestone root:** `docs/milestones/`
 
 ## Purpose and product direction
 
@@ -19,7 +19,7 @@ The current repository is the canonical Linux-hosted checkout at `/home/chuck/pr
 
 The committed application is Python 3.12, Streamlit, and PostgreSQL. Docker Compose defines the application and PostgreSQL 17 services. The application reads a versioned local Wiktionary/Wiktextract SQLite projection, optionally adds NLTK WordNet evidence, and uses an internal Ollama endpoint for GPT-OSS:20b lexical synthesis. Runtime configuration is not proof that a currently deployed image matches this source; check deployment identity before browser acceptance.
 
-Repo Control onboarding M001.000 is CLOSED. M001.001 is the active governing-document and shared-Skill onboarding milestone at the time of this document's reconciliation.
+Repo Control milestones M001.000, M001.001, and M001.002 are CLOSED. M001.003 is the active shared-procedure reconciliation milestone. The canonical shared-procedure release is materialized and hash-locked in the repository as part of this work; project-specific safety and product constraints remain in local overlays.
 
 The local lexical data root is configured through `VOCAB_LEXICAL_ROOT` and mounted read-only in Compose. The writable synthesis cache and failure diagnostics use `VOCAB_RUNTIME_ROOT`. PostgreSQL connection values are supplied through environment variables. Never copy secret values into documentation, prompts, or logs.
 
@@ -36,7 +36,7 @@ The previous project context recorded `wiktionary-20260901` as the active datase
 | M004.5: learner UI and accepted versions | Substantial implementation exists, including Save, Retry, Refresh, Flag, source details, and accepted-version persistence. The closeout remains PARTIAL: full desktop/mobile browser lifecycle acceptance and a Product Owner browser retest remain outstanding. |
 | M004.6.0–M004.6.13.3: local-AI reliability and sense consolidation | Research and benchmarks are complete. The final M004.6.13.3 gate is **NO-GO** for automatic Qwen3:8B sense consolidation in product v1. Do not treat earlier experiment recommendations as authorization to continue this path. |
 
-See the [M004.5 closeout](../../milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) and [M004.6.13.3 closeout](../../milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md) for the accepted details and limitations.
+See the [M004.5 closeout](../history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) and [M004.6.13.3 closeout](../history/milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md) for the accepted details and limitations.
 
 ## Current incomplete and deferred work
 
@@ -63,7 +63,7 @@ These items are not a new roadmap or permission to expand an active milestone. T
 
 Lexical source records retain source locators, source hashes, dataset/importer/schema identities, stable sense/evidence IDs, and dataset version. Synthesis consumes a deterministic projection of this evidence; accepted versions retain candidate/evidence snapshots and identity fields. Refresh is an explicit comparison against current evidence. Dataset creation and activation are controlled, separate operations.
 
-Do not rewrite historical milestone evidence to make current status appear cleaner. The original V2 context, architecture/workflow duplicates, and legacy coding rules are preserved under [docs/history/context](../history/context/README.md). The historical milestone corpus remains in the temporary `milestones/` root until the separately approved cutover.
+Do not rewrite historical milestone evidence to make current status appear cleaner. The original V2 context, architecture/workflow duplicates, and legacy coding rules are preserved under [docs/history/context](../history/context/README.md). The 58-file legacy milestone corpus is preserved under [docs/history/milestones](../history/milestones/README.md); active Repo Control lifecycle artifacts are under `docs/milestones/`.
 
 ## Product safety boundaries
 
@@ -71,4 +71,4 @@ Production PostgreSQL, learner records, mounted lexical datasets, shared-host co
 
 ## Near-term boundary
 
-The current authorized work is Repo Control onboarding. After it is accepted, the recommended next step is the bounded milestone-root/central-registry cutover. The first product milestone after onboarding may address M004.5 browser acceptance; this context does not select or authorize that milestone.
+The current authorized work is M001.003 shared-procedure reconciliation. Product behavior is unchanged by this onboarding work. Any subsequent product milestone, including possible M004.5 browser acceptance, requires separate Product Owner scope and authorization.
