@@ -19,7 +19,7 @@ The current repository is the canonical Linux-hosted checkout at `/home/chuck/pr
 
 The committed application is Python 3.12, Streamlit, and PostgreSQL. Docker Compose defines the application and PostgreSQL 17 services. The application reads a versioned local Wiktionary/Wiktextract SQLite projection, optionally adds NLTK WordNet evidence, and uses an internal Ollama endpoint for GPT-OSS:20b lexical synthesis. Runtime configuration is not proof that a currently deployed image matches this source; check deployment identity before browser acceptance.
 
-Repo Control milestones M001.000, M001.001, and M001.002 are CLOSED. M001.003 is the active shared-procedure reconciliation milestone. The canonical shared-procedure release is materialized and hash-locked in the repository as part of this work; project-specific safety and product constraints remain in local overlays.
+Repo Control is authoritative for the currently selected repository milestone, lifecycle, and authorization; consult current Coder context rather than inferring active work from this standing document. M001.000 through M001.003 are closed onboarding milestones. Shared procedure is materialized and hash-locked in the repository; Vocab-specific safety and product constraints remain in local overlays.
 
 The local lexical data root is configured through `VOCAB_LEXICAL_ROOT` and mounted read-only in Compose. The writable synthesis cache and failure diagnostics use `VOCAB_RUNTIME_ROOT`. PostgreSQL connection values are supplied through environment variables. Never copy secret values into documentation, prompts, or logs.
 
@@ -71,4 +71,4 @@ Production PostgreSQL, learner records, mounted lexical datasets, shared-host co
 
 ## Near-term boundary
 
-The current authorized work is M001.003 shared-procedure reconciliation. Product behavior is unchanged by this onboarding work. Any subsequent product milestone, including possible M004.5 browser acceptance, requires separate Product Owner scope and authorization.
+The current authorized work is selected and reported by Repo Control; this standing context does not grant or imply authorization. Any product milestone, including possible M004.5 browser acceptance, requires separate Product Owner scope and authorization.

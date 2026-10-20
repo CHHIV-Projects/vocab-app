@@ -2,7 +2,7 @@
 
 **Document role:** Forward-looking record of evidence-backed deferred or conditional Vocab work  
 **Project:** Vocab App  
-**Current milestone:** M001.003 Vocab shared-procedure reconciliation
+**Current milestone and authorization:** Selected and reported by Repo Control; this planning document does not establish active scope or authorization.
 
 This is a planning aid, not an active prompt, bug tracker, architecture decision, or commitment. Product Owner approval and a separate milestone are required before implementation. Remove items when completed, rejected, superseded, or otherwise resolved; preserve history in milestone closeouts.
 
