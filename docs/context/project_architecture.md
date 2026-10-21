@@ -65,6 +65,27 @@ Save. Saved-state Refresh availability is computed by the workflow's current-evi
 comparison, not the UI. Same-query unsaved Search candidates remain stable across
 ordinary reruns; explicit Search clears them.
 
+Meaning provenance is a read-only display projection: each core/additional meaning's
+canonical `source_sense_ids` resolves only within that candidate's `evidence_snapshot`.
+Counts use unique referenced senses, never prose similarity or the full word's sense
+count. Expanders show linked source glosses, labels and secondary source identities.
+These are recorded references, not verified semantic support. Structural checks
+verify reference identity, source POS and coverage; they do not establish that
+generated wording accurately represents its linked sources. A structurally valid
+candidate can contain semantically misaligned wording, including a different
+grammatical POS in its free text.
+Unrecorded optional fields are explicitly absent; unresolved/cross-POS references
+surface an error rather than borrowing unrelated evidence. No live lexical lookup
+is used by this projection, including for saved versions and Retry.
+
+Candidate/version labels distinguish Search, pending Retry/Refresh and accepted
+versions. Accepted generation origin is loaded from the existing version record;
+pending metadata uses its own candidate, not its base's candidate identity.
+Advanced Details is an explicit identity-field allowlist, not raw candidate,
+provider-response, stage, inference or diagnostic JSON. Private model reasoning is
+not exposed or newly persisted. The UI distinguishes source authority from GPT-OSS
+organization/paraphrase and structural validation from verification of lexical truth.
+
 ## 3. Lexical evidence and authority
 
 The primary source is English Wiktionary extracted with Wiktextract. Controlled dataset builds normalize source records into canonical JSONL and an SQLite projection. The versioned dataset is selected by an `active` pointer under `VOCAB_LEXICAL_ROOT`; deployment mounts the data read-only. `vocab_lexical_engine.py` stores entries, senses, forms, sounds, relations, and an FTS5 table. Exact normalized-lemma indexing has a known performance limitation recorded in project context; don't mutate the production projection in place.

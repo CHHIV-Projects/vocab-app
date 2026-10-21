@@ -131,7 +131,7 @@ class IsolatedConnectionLifecycleTests(unittest.TestCase):
 
     def test_pending_retry_and_refresh_save_preserve_immutable_history(self):
         from vocab_lexical_engine import evidence_set_hash
-        from vocab_workflow import LexicalWorkflow
+        from vocab_workflow import LexicalState, LexicalWorkflow, candidate_provenance
 
         evidence = {
             "normalized_lemma": self.word, "schema_version": "synthesis-evidence-v1",
@@ -157,6 +157,12 @@ class IsolatedConnectionLifecycleTests(unittest.TestCase):
             second_result = workflow.save(pending)
         second = independent.load_active_version(self.word)
         self.assertEqual(second["version_number"], 2)
+        self.assertEqual(second["origin"], "retry")
+        details = candidate_provenance(LexicalState(
+            self.word, candidate=second["candidate_snapshot"], saved_version=second, origin="saved"
+        ))
+        self.assertEqual(details["Produced by"], "Retry")
+        self.assertEqual(details["Candidate identity"], second["candidate_identity"])
         self.assertEqual(second["active_version_id"], second_result["active_version_id"])
         self.assertNotEqual(second["candidate_identity"], first["candidate_identity"])
         changed_evidence = dict(evidence, wordnet_version="test-only-changed")
@@ -174,6 +180,7 @@ class IsolatedConnectionLifecycleTests(unittest.TestCase):
             third_result = workflow.save(pending)
         third = independent.load_active_version(self.word)
         self.assertEqual(third["version_number"], 3)
+        self.assertEqual(third["origin"], "refresh")
         self.assertEqual(third["active_version_id"], third_result["active_version_id"])
         self.assertEqual(third["candidate_snapshot"], refresh_candidate)
         self.assertEqual(third["evidence_snapshot"], changed_evidence)

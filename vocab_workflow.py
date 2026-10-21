@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from dataclasses import dataclass
 from typing import Any
 
@@ -180,12 +181,65 @@ def source_detail_rows(candidate: dict[str, Any]) -> list[dict[str, Any]]:
                     for example in sense.get("examples", [])
                 ],
                 "sense_id": sense.get("sense_id"),
+                "source_locator": entry.get("source_locator"),
+                "dataset_version": entry.get("dataset_version"),
+                "importer_version": entry.get("importer_version"),
+                "source_record_hash": entry.get("source_record_hash"),
                 "relations": [
                     {"type": relation.get("type", ""), "target": str(relation.get("target", ""))}
                     for relation in sense.get("relations", [])
                 ],
             })
     return rows
+
+
+def meaning_source_rows(candidate: dict[str, Any], meaning: dict[str, Any], pos: str) -> list[dict[str, Any]]:
+    """Resolve only this meaning's canonical references within its own snapshot."""
+    source_ids = list(dict.fromkeys(meaning.get("source_sense_ids", [])))
+    rows = source_detail_rows(candidate)
+    selected = []
+    for sense_id in source_ids:
+        matches = [row for row in rows if row["sense_id"] == sense_id]
+        if len(matches) != 1 or matches[0]["pos"] != pos:
+            raise ValueError(f"Meaning provenance cannot resolve source sense {sense_id} for {pos}")
+        selected.append(matches[0])
+    return selected
+
+
+def candidate_provenance(state: LexicalState) -> dict[str, Any]:
+    """Project technical identity only; never copy raw diagnostics or model responses."""
+    candidate = state.candidate or {}
+    evidence = candidate.get("evidence_snapshot", {})
+    saved = state.saved_version or {}
+    accepted = state.origin == "saved"
+    origin = saved.get("origin") if accepted else state.origin
+    origins = {"search": "Search", "retry": "Retry", "refresh": "Refresh"}
+    details = {
+        "Viewing": "Saved accepted version" if accepted else f"Unsaved {origins.get(state.origin, 'unknown-origin')} candidate",
+        "Produced by": origins.get(origin, "Not recorded"),
+        "Accepted version number" if accepted else "Base accepted version number": saved.get("version_number"),
+        "Accepted version ID" if accepted else "Base accepted version ID": saved.get("id"),
+        "Candidate identity": hashlib.sha256(json.dumps(candidate, sort_keys=True, separators=(",", ":")).encode()).hexdigest() if candidate else None,
+        "Evidence hash": candidate.get("evidence_set_hash"),
+        "Source datasets": evidence.get("wiktionary_versions"),
+        "Supplemental WordNet version": evidence.get("wordnet_version"),
+        "Evidence schema": evidence.get("schema_version"),
+        "Synthesis model": candidate.get("model"),
+        "Model digest": candidate.get("model_digest"),
+        "Synthesis prompt": candidate.get("prompt_version"),
+        "Grouping policy": candidate.get("policy_version"),
+        "Candidate schema": candidate.get("schema_version"),
+        "Evidence packer": candidate.get("packer_version"),
+        "Deterministic validator": candidate.get("validator_version"),
+        "Validation status": candidate.get("validation_status"),
+    }
+    details["Source datasets"] = ", ".join(
+        value for value in evidence.get("wiktionary_versions", []) if isinstance(value, str)
+    )
+    return {
+        key: value if isinstance(value, (str, int, float)) and value != "" else "Not recorded"
+        for key, value in details.items()
+    }
 
 
 def deduplicated_forms(candidate: dict[str, Any]) -> list[str]:

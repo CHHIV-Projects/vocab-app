@@ -1,7 +1,7 @@
 # Vocab App — Project Context
 
 **Document role:** Current Vocab product context  
-**Last reconciled:** 2026-10-19
+**Last reconciled:** 2026-10-21
 **Repository:** `/home/chuck/projects/vocab-app`  
 **Canonical branch:** `main`  
 **Remote:** `CHHIV-Projects/vocab-app` (`origin`)  
@@ -33,14 +33,14 @@ The previous project context recorded `wiktionary-20260901` as the active datase
 | M004–M004.1: self-hosted runtime, persistence, and external services | M004 established the container/PostgreSQL baseline. M004.1 remains a partial historical closeout because reverse-direction translation was not validated successfully; whether translation remains required is a Product Owner decision. |
 | M004.2–M004.3.1: lexical evidence and production dataset | Local Wiktionary/Wiktextract evidence, normalized stable identities, SQLite runtime projection, and supplemental WordNet were implemented and validated for the scoped milestones. |
 | M004.4: lexical synthesis | Bounded GPT-OSS synthesis and deterministic validation were implemented; representative examples passed, not every possible inference. |
-| M004.5: learner UI and accepted versions | Substantial implementation exists, including Save, Retry, Refresh, Flag, source details, and accepted-version persistence. The closeout remains PARTIAL: full desktop/mobile browser lifecycle acceptance and a Product Owner browser retest remain outstanding. |
+| M004.5: learner UI and accepted versions | Historical closeout remains PARTIAL as a historical record. M002.000 subsequently completed and Product Owner accepted the isolated desktop/physical-mobile lifecycle baseline, including durable versions and guarded pending Retry/Refresh candidates. |
 | M004.6.0–M004.6.13.3: local-AI reliability and sense consolidation | Research and benchmarks are complete. The final M004.6.13.3 gate is **NO-GO** for automatic Qwen3:8B sense consolidation in product v1. Do not treat earlier experiment recommendations as authorization to continue this path. |
 
 See the [M004.5 closeout](../history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) and [M004.6.13.3 closeout](../history/milestones/004.6.13.3_relation_only_semantic_contract_and_final_qwen_consolidation_exit_gate_closeout.md) for the accepted details and limitations.
 
 ## Current incomplete and deferred work
 
-- Complete M004.5 desktop/mobile browser and lifecycle acceptance only under a bounded, Product Owner-approved milestone. Verify that deployed code matches the reviewed source before testing real Save/Retry/Refresh/Flag behavior.
+- M004.5 lifecycle acceptance was completed by accepted [M002.000](../milestones/M002.000_learner_lifecycle_baseline_acceptance_closeout.md). Future UI changes still require source-parity and safe-target checks; this acceptance does not authorize production rollout.
 - Reassess the M004.1 translation issue only if the Product Owner confirms translation remains in scope.
 - The production lexical projection has known exact-lemma indexing/performance work; dataset/index changes require a controlled build and explicit activation, not in-place edits to mounted production data.
 - Multiple-choice practice remains an evidenced product direction, but has no current implementation authorization.
@@ -63,6 +63,11 @@ These items are not a new roadmap or permission to expand an active milestone. T
 
 Lexical source records retain source locators, source hashes, dataset/importer/schema identities, stable sense/evidence IDs, and dataset version. Synthesis consumes a deterministic projection of this evidence; accepted versions retain candidate/evidence snapshots and identity fields. Refresh is an explicit comparison against current evidence. Dataset creation and activation are controlled, separate operations.
 
+Meaning inspectability exposes linked source meanings from the exact candidate
+snapshot. Structural validation checks reference identity, source POS and coverage,
+not semantic fidelity of generated wording. Recorded linkage is not verified support;
+the learner UI states this limitation rather than implying semantic entailment.
+
 Do not rewrite historical milestone evidence to make current status appear cleaner. The original V2 context, architecture/workflow duplicates, and legacy coding rules are preserved under [docs/history/context](../history/context/README.md). The 58-file legacy milestone corpus is preserved under [docs/history/milestones](../history/milestones/README.md); active Repo Control lifecycle artifacts are under `docs/milestones/`.
 
 ## Product safety boundaries
@@ -71,4 +76,4 @@ Production PostgreSQL, learner records, mounted lexical datasets, shared-host co
 
 ## Near-term boundary
 
-The current authorized work is selected and reported by Repo Control; this standing context does not grant or imply authorization. Any product milestone, including possible M004.5 browser acceptance, requires separate Product Owner scope and authorization.
+The current authorized work is selected and reported by Repo Control; this standing context does not grant or imply authorization. Any product milestone requires separate Product Owner scope and authorization.

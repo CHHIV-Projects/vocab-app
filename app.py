@@ -18,7 +18,10 @@ from vocab_persistence import PostgresPersistence
 from vocab_translation import SUPPORTED_LANGUAGES, translate_text
 from vocab_lexical_engine import resolve_active_database
 from vocab_synthesis import OllamaProvider, SynthesisRuntime
-from vocab_workflow import LexicalWorkflow, deduplicated_forms, source_detail_rows, sort_pos_sections
+from vocab_workflow import (
+    LexicalWorkflow, candidate_provenance, deduplicated_forms,
+    meaning_source_rows, source_detail_rows, sort_pos_sections,
+)
 
 # --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
@@ -154,6 +157,29 @@ with st.sidebar:
         else:
             st.caption("No logs recorded yet.")
 
+def render_learner_meaning(candidate, meaning, pos):
+    st.markdown(f"**{meaning['definition']}**")
+    if meaning.get("labels"):
+        st.caption(" · ".join(meaning["labels"]))
+    if meaning.get("synonyms"):
+        st.caption("Synonyms: " + ", ".join(item["term"] for item in meaning["synonyms"]))
+    sources = meaning_source_rows(candidate, meaning, pos)
+    if not sources:
+        st.caption("Source mapping not recorded for this meaning.")
+        return
+    label = "source meaning" if len(sources) == 1 else "source meanings"
+    with st.expander(f"{len(sources)} linked {label}"):
+        st.caption("These are the source references recorded for this generated meaning. Checks verify reference identity, source POS and coverage, not that the generated wording accurately represents those sources.")
+        for index, source in enumerate(sources, start=1):
+            st.write(f"Wiktionary source meaning {index}")
+            st.write(" · ".join(source["glosses"]) or "Source gloss not recorded.")
+            if source["labels"]:
+                st.caption("Source labels: " + ", ".join(source["labels"]))
+            st.caption("Dataset: " + (source["dataset_version"] or "Not recorded"))
+            st.caption("Source sense ID: " + str(source["sense_id"]))
+            st.caption("Source locator: " + (source["source_locator"] or "Not recorded"))
+
+
 # --- MAIN TABS ---
 tab1, tab2, tab3 = st.tabs(["📖 Dictionary", "🌍 Translator", "🧠 Practice"])
 
@@ -183,6 +209,14 @@ with tab1:
                 st.header(f"{word_to_show.title()}")
                 if lexical_state.origin == "saved":
                     st.success("Saved accepted version")
+                provenance = candidate_provenance(lexical_state)
+                if lexical_state.origin == "saved":
+                    st.caption(f"Accepted version: {provenance['Accepted version number']} · Produced by: {provenance['Produced by']}")
+                else:
+                    st.info(provenance["Viewing"])
+                    if lexical_state.saved_version:
+                        st.caption(f"Based on accepted version: {provenance['Base accepted version number']}")
+                st.caption("Wiktionary/Wiktextract provides source evidence. GPT-OSS organizes and paraphrases learner meanings. Deterministic checks validate evidence references and structural completeness, not lexical truth.")
                 actions = st.columns(4)
                 with actions[0]:
                     if st.button("Save", disabled=not lexical_state.actions["save"], key=f"save_lexical_{word_to_show}"):
@@ -218,22 +252,13 @@ with tab1:
                 for section in sort_pos_sections(content.get("pos_sections", [])):
                     st.subheader(section["pos"].title())
                     for meaning in section.get("core_meanings", []):
-                        st.markdown(f"**{meaning['definition']}**")
-                        if meaning.get("labels"):
-                            st.caption(" · ".join(meaning["labels"]))
+                        render_learner_meaning(candidate, meaning, section["pos"])
                     additional = section.get("additional_meanings", [])
                     if additional:
                         count_label = f"{len(additional)} additional meaning" + ("s" if len(additional) != 1 else "")
                         with st.expander(count_label):
                             for meaning in additional:
-                                st.markdown(f"- **{meaning['definition']}**")
-                                if meaning.get("labels"):
-                                    st.caption(" · ".join(meaning["labels"]))
-                                if meaning.get("synonyms"):
-                                    st.caption("Synonyms: " + ", ".join(item["term"] for item in meaning["synonyms"]))
-                    for meaning in section.get("core_meanings", []):
-                        if meaning.get("synonyms"):
-                            st.caption("Synonyms: " + ", ".join(item["term"] for item in meaning["synonyms"]))
+                                render_learner_meaning(candidate, meaning, section["pos"])
                 facts = candidate.get("deterministic", {})
                 us_ipa = facts.get("us_pronunciations", [])
                 if us_ipa:
@@ -249,6 +274,7 @@ with tab1:
                 if audio_bytes:
                     st.audio(audio_bytes.getvalue(), format="audio/mpeg")
                 with st.expander("Source Details"):
+                    st.write("Source evidence used for this exact candidate/version, not a fresh dataset lookup.")
                     for detail in source_detail_rows(candidate):
                         st.markdown(f"**{detail['pos']} meaning evidence**")
                         st.write(" · ".join(detail["glosses"]))
@@ -258,10 +284,8 @@ with tab1:
                             st.caption("Example: " + str(example))
                     st.caption("WordNet remains separate supplemental evidence.")
                 with st.expander("Advanced Details"):
-                    advanced = {key: candidate.get(key) for key in ("evidence_set_hash", "wiktionary_versions", "wordnet_version", "model", "model_digest", "prompt_version", "policy_version", "schema_version", "packer_version", "validator_version", "inference", "attempt_id", "validation_status")}
-                    advanced["candidate_origin"] = lexical_state.origin
-                    advanced["accepted_version_id"] = lexical_state.saved_version.get("id") if lexical_state.saved_version else None
-                    st.json(advanced, expanded=False)
+                    st.caption("Technical identity for the displayed candidate. Missing optional metadata is shown as Not recorded. Private model reasoning is not displayed.")
+                    st.json(provenance, expanded=False)
                 if candidate.get("etymology"):
                     with st.expander("Etymology"):
                         st.write(candidate["etymology"].get("summary", ""))

@@ -6,11 +6,9 @@
 
 This is a planning aid, not an active prompt, bug tracker, architecture decision, or commitment. Product Owner approval and a separate milestone are required before implementation. Remove items when completed, rejected, superseded, or otherwise resolved; preserve history in milestone closeouts.
 
-## VCAP-001 — M004.5 browser lifecycle acceptance
-
-- **Status:** Deferred; requires a bounded Product Owner-approved product milestone.
-- **Evidence:** [M004.5 closeout](../history/milestones/004.5_learner_facing_lexical_ui_and_save_versioning_closeout.md) leaves desktop/mobile browser validation and Product Owner retest pending.
-- **Next action:** Verify deployed-source parity, then validate the approved desktop/mobile Save, Retry, Refresh, and Flag lifecycle using safe test data.
+VCAP-001 (M004.5 browser lifecycle acceptance) was completed and retired by accepted
+[M002.000](../milestones/M002.000_learner_lifecycle_baseline_acceptance_closeout.md);
+the historical M004.5 closeout is preserved unchanged.
 
 ## VCAP-002 — Reverse-direction translation validation
 
