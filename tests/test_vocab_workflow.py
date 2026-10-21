@@ -1,5 +1,6 @@
 import unittest
 import os
+from copy import deepcopy
 from unittest.mock import patch
 
 from vocab_lexical_engine import evidence_set_hash
@@ -113,6 +114,94 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(reconciled.actions["save"])
         self.assertFalse(reconciled.actions["retry"])
         synthesize.assert_not_called()
+
+    def saved_version(self):
+        return {
+            "normalized_lemma": "fixture", "lexical_entry_id": 2,
+            "lexical_entry_version_id": 7, "active_version_id": 7,
+            "candidate_identity": "accepted", "evidence_set_hash": self.candidate["evidence_set_hash"],
+            "candidate_snapshot": deepcopy(self.candidate), "evidence_snapshot": deepcopy(self.evidence),
+        }
+
+    def test_pending_candidates_survive_only_matching_authoritative_base(self):
+        saved = self.saved_version()
+        for origin in ("retry", "refresh"):
+            with self.subTest(origin=origin):
+                pending = LexicalState(" Fixture ", candidate=deepcopy(self.candidate),
+                                       saved_version=deepcopy(saved), origin=origin)
+                pending.candidate["content"]["marker"] = "pending"
+                preserved = reconcile_saved_state(pending, "FIXTURE", FakePersistence(saved))
+                self.assertIs(preserved.candidate, pending.candidate)
+                self.assertEqual(preserved.origin, origin)
+                self.assertTrue(preserved.actions["save"])
+                for key in ("lexical_entry_id", "lexical_entry_version_id", "active_version_id",
+                            "candidate_identity", "evidence_set_hash"):
+                    with self.subTest(changed=key):
+                        changed = dict(saved, **{key: "changed"})
+                        resolved = reconcile_saved_state(pending, "fixture", FakePersistence(changed))
+                        self.assertEqual(resolved.origin, "saved")
+                        self.assertIs(resolved.candidate, changed["candidate_snapshot"])
+                        incomplete = deepcopy(pending)
+                        incomplete.saved_version.pop(key)
+                        self.assertEqual(reconcile_saved_state(incomplete, "fixture", FakePersistence(saved)).origin, "saved")
+                self.assertIsNone(reconcile_saved_state(pending, "fixture", FakePersistence(None)))
+                self.assertIsNone(reconcile_saved_state(pending, "other", FakePersistence(None)))
+
+    def test_query_and_candidate_lemma_guards_for_all_transient_origins(self):
+        for origin in ("search", "saved", "retry", "refresh"):
+            for changed in ("query", "candidate"):
+                with self.subTest(origin=origin, changed=changed):
+                    state = LexicalState("fixture", candidate=deepcopy(self.candidate),
+                                         saved_version=self.saved_version(), origin=origin)
+                    if changed == "query":
+                        state.query = "other"
+                    else:
+                        state.candidate["normalized_lemma"] = "other"
+                    self.assertIsNone(reconcile_saved_state(state, "fixture", FakePersistence(None)))
+                    saved = self.saved_version()
+                    resolved = reconcile_saved_state(state, "fixture", FakePersistence(saved))
+                    self.assertEqual(resolved.origin, "saved")
+                    self.assertIs(resolved.candidate, saved["candidate_snapshot"])
+
+    def test_pending_evidence_integrity_and_retry_snapshot_identity(self):
+        saved = self.saved_version()
+        for origin in ("retry", "refresh"):
+            pending = LexicalState("fixture", candidate=deepcopy(self.candidate),
+                                   saved_version=saved, origin=origin)
+            pending.candidate["evidence_snapshot"]["wordnet_version"] = "changed"
+            self.assertEqual(reconcile_saved_state(pending, "fixture", FakePersistence(saved)).origin, "saved")
+            pending.candidate["evidence_set_hash"] = evidence_set_hash(pending.candidate["evidence_snapshot"])
+            resolved = reconcile_saved_state(pending, "fixture", FakePersistence(saved))
+            self.assertEqual(resolved.origin, "refresh" if origin == "refresh" else "saved")
+            pending.failure = {"code": "invalid"}
+            self.assertEqual(reconcile_saved_state(pending, "fixture", FakePersistence(saved)).origin, "saved")
+
+    def test_workflow_resolves_refresh_and_reuses_unsaved_search_candidate(self):
+        saved = self.saved_version()
+        persistence = FakePersistence(saved)
+        workflow = LexicalWorkflow("unused", persistence, FakeProvider())
+        for changed in (False, True):
+            current_evidence = deepcopy(self.evidence)
+            if changed:
+                current_evidence["wordnet_version"] = "changed"
+            with patch("vocab_workflow.lookup", return_value={"entries": [1]}), \
+                 patch("vocab_workflow.project_synthesis_evidence", return_value=current_evidence), \
+                 patch("vocab_workflow.synthesize_word") as synth:
+                resolved = workflow.reconcile_authoritative_state("fixture")
+            self.assertEqual(resolved.actions["refresh"], changed)
+            synth.assert_not_called()
+        persistence.saved = None
+        current = LexicalState("fixture", candidate=self.candidate)
+        with patch("vocab_workflow.synthesize_word") as synth:
+            resolved = workflow.reconcile_authoritative_state("fixture", current)
+        self.assertIs(resolved.candidate, current.candidate)
+        synth.assert_not_called()
+        pending = LexicalState("fixture", candidate=self.candidate, saved_version=saved, origin="retry")
+        with patch("vocab_workflow.synthesize_word", return_value={"result": deepcopy(self.candidate)}) as synth:
+            resolved = workflow.reconcile_authoritative_state("fixture", pending)
+        synth.assert_called_once()
+        self.assertIsNone(resolved.saved_version)
+        self.assertEqual(resolved.origin, "search")
 
 
 if __name__ == "__main__":

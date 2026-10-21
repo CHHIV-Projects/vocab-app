@@ -33,16 +33,43 @@ class LexicalState:
 
 
 def reconcile_saved_state(state: LexicalState | None, query: str, persistence: Any) -> LexicalState | None:
-    """Only authoritative PostgreSQL state may mark a word as saved."""
+    """Resolve accepted authority while retaining candidates bound to that authority."""
     normalized = query.strip().casefold()
     saved = persistence.load_active_version(normalized)
+    matching_candidate = (
+        state is not None
+        and state.failure is None
+        and state.candidate is not None
+        and state.query.strip().casefold() == normalized
+        and state.candidate.get("normalized_lemma", "").strip().casefold() == normalized
+    )
     if not saved:
-        if state is not None and state.origin == "saved":
+        if matching_candidate and state.origin in ("search", "saved"):
             return LexicalState(normalized, candidate=state.candidate, saved_version=None, origin="search")
         return None
+    if matching_candidate and state.origin in ("retry", "refresh") and state.saved_version:
+        base = state.saved_version
+        identity_fields = (
+            "lexical_entry_id", "lexical_entry_version_id", "active_version_id",
+            "candidate_identity", "evidence_set_hash",
+        )
+        same_base = (
+            base.get("normalized_lemma") == saved.get("normalized_lemma") == normalized
+            and all(base.get(key) is not None and base[key] == saved.get(key) for key in identity_fields)
+            and base["lexical_entry_version_id"] == base["active_version_id"]
+        )
+        evidence = state.candidate.get("evidence_snapshot")
+        candidate_hash = state.candidate.get("evidence_set_hash")
+        if (
+            same_base
+            and evidence is not None
+            and evidence_set_hash(evidence) == candidate_hash
+            and (state.origin == "refresh" or candidate_hash == saved["evidence_set_hash"])
+        ):
+            return LexicalState(normalized, candidate=state.candidate, saved_version=saved, origin=state.origin)
     return LexicalState(
         normalized,
-        candidate=saved.get("candidate_snapshot") or (state.candidate if state else None),
+        candidate=saved["candidate_snapshot"],
         saved_version=saved,
         origin="saved",
     )
@@ -57,16 +84,13 @@ class LexicalWorkflow:
 
     def reconcile_authoritative_state(self, word: str, current: LexicalState | None = None) -> LexicalState:
         normalized = word.strip().casefold()
-        saved = self.persistence.load_active_version(normalized)
-        if saved:
-            evidence = saved["evidence_snapshot"]
-            current_lookup = lookup(self.database_path, normalized)
-            current_hash = evidence_set_hash(project_synthesis_evidence(current_lookup)) if current_lookup.get("entries") else None
-            return LexicalState(normalized, candidate=saved["candidate_snapshot"], saved_version=saved, origin="saved", refresh_available=current_hash is not None and current_hash != saved["evidence_set_hash"])
-
-        if current and current.origin == "saved":
-            candidate = current.candidate or self.search(normalized).candidate
-            return LexicalState(normalized, candidate=candidate, saved_version=None, origin="search")
+        resolved = reconcile_saved_state(current, normalized, self.persistence)
+        if resolved is not None:
+            if resolved.origin == "saved":
+                current_lookup = lookup(self.database_path, normalized)
+                current_hash = evidence_set_hash(project_synthesis_evidence(current_lookup)) if current_lookup.get("entries") else None
+                resolved.refresh_available = current_hash is not None and current_hash != resolved.saved_version["evidence_set_hash"]
+            return resolved
 
         result = synthesize_word(self.database_path, normalized, self.provider, self.runtime)
         candidate = enrich_candidate(result["result"], self.provider)

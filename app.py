@@ -18,7 +18,7 @@ from vocab_persistence import PostgresPersistence
 from vocab_translation import SUPPORTED_LANGUAGES, translate_text
 from vocab_lexical_engine import resolve_active_database
 from vocab_synthesis import OllamaProvider, SynthesisRuntime
-from vocab_workflow import LexicalWorkflow, deduplicated_forms, reconcile_saved_state, source_detail_rows, sort_pos_sections
+from vocab_workflow import LexicalWorkflow, deduplicated_forms, source_detail_rows, sort_pos_sections
 
 # --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
@@ -173,11 +173,9 @@ with tab1:
 
         try:
             with log_performance(f"Lexical: Resolve '{word_to_show}'"):
-                authoritative = reconcile_saved_state(st.session_state.get("lexical_state"), word_to_show, get_persistence())
-                if authoritative is not None:
-                    lexical_state = authoritative
-                else:
-                    lexical_state = get_lexical_workflow().search(word_to_show)
+                lexical_state = get_lexical_workflow().reconcile_authoritative_state(
+                    word_to_show, st.session_state.get("lexical_state")
+                )
             st.session_state.lexical_state = lexical_state
             candidate = lexical_state.candidate
             if candidate:
@@ -193,7 +191,7 @@ with tab1:
                             if not persisted or not persisted.get("active_version_id"):
                                 raise ValueError("Save verification failed before durable commit")
                             st.session_state.lexical_state = get_lexical_workflow().search(word_to_show)
-                            st.success("Saved accepted version")
+                            st.rerun()
                         except Exception as error:
                             st.error(f"Save failed. The entry was not saved: {error}")
                 with actions[1]:

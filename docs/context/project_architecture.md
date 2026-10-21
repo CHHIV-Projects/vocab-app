@@ -55,6 +55,16 @@ exact word lookup
 
 Search for an already-saved word first reconciles against PostgreSQL. Retry uses the saved evidence snapshot after verifying its hash; it does not silently switch to current lexical data. Refresh is enabled only when the full current evidence identity differs. Save validates the candidate, writes versioned data transactionally, and verifies the durable active pointer/projection before presenting success.
 
+Every Dictionary rerun uses the workflow's single reconciliation boundary. Accepted
+versions remain PostgreSQL authority; a transient Retry/Refresh candidate can coexist
+with that accepted base. It survives reruns only for the same normalized query/lemma
+and matching entry, active version, candidate identity and evidence identity.
+Changed/missing bases or a different query invalidate pending candidates. Retry
+retains the exact saved evidence; Refresh can carry changed evidence until explicit
+Save. Saved-state Refresh availability is computed by the workflow's current-evidence
+comparison, not the UI. Same-query unsaved Search candidates remain stable across
+ordinary reruns; explicit Search clears them.
+
 ## 3. Lexical evidence and authority
 
 The primary source is English Wiktionary extracted with Wiktextract. Controlled dataset builds normalize source records into canonical JSONL and an SQLite projection. The versioned dataset is selected by an `active` pointer under `VOCAB_LEXICAL_ROOT`; deployment mounts the data read-only. `vocab_lexical_engine.py` stores entries, senses, forms, sounds, relations, and an FTS5 table. Exact normalized-lemma indexing has a known performance limitation recorded in project context; don't mutate the production projection in place.
@@ -72,6 +82,16 @@ Etymology summaries are a separate bounded generation over supplied source etymo
 ## 5. PostgreSQL persistence and migrations
 
 The app constructs `PostgresPersistence.from_env()` using `VOCAB_DB_HOST`, `VOCAB_DB_PORT`, `VOCAB_DB_NAME`, `VOCAB_DB_USER`, and `VOCAB_DB_PASSWORD`. Do not expose credential values.
+
+After migrations commit, the long-lived application connection uses autocommit so
+ordinary reads do not leave an implicit transaction open. Accepted-version Save
+retains an explicit transaction for the entry, version, active pointer, and practice
+projection; these commit together before the verification read. A transaction
+nested inside a pre-existing implicit read transaction would only release a
+savepoint, not make the Save durable.
+
+After a successful Save, the Streamlit page reruns to reload authoritative saved
+state and regenerate action controls, rather than retaining pre-Save button states.
 
 The schema retains a lightweight `vocabulary` row for existing practice/count behavior and adds:
 

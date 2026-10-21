@@ -85,6 +85,7 @@ class PostgresPersistence:
         from vocab_migrations import apply_migrations
         if not connection.__class__.__module__.startswith("unittest.mock"):
             apply_migrations(connection)
+        connection.autocommit = True
         return persistence
 
     def _verify_durable_version(self, normalized_lemma: str, expected_version_id: int, candidate_identity: str, evidence_set_hash: str, idempotent: bool = False) -> dict[str, Any]:
