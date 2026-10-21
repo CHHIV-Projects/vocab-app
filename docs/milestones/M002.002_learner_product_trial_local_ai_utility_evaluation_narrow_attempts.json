@@ -1,0 +1,1271 @@
+{
+  "artifact_sha256": {
+    "manifest.json": "6af5382df7821fff6d6013bc5d6fabef35d39858481a6671a3c67c545a3e9a8d",
+    "repeat-1-sense-1.json": "b0636ad8b8f3ed1adb03aa3f27e25ce0356baa2c336fd3ee7c498d271d6f08a8",
+    "repeat-1-sense-2.json": "bd30647ed5eb6807cd55ab78041c8adbdc56d583fe107a004ff51e8148205e39",
+    "repeat-1-sense-3.json": "a53b1cf9e075809d380e8e64537e698b0dd803e2d8c2e16d9aca411c3fe575c7",
+    "repeat-1-sense-4.json": "96cfdc7ad72a48c245f9b096680ad2ff75f2a79263c73db27dd0676d68d44200",
+    "repeat-1-sense-5.json": "ff3284ea767946808ad8cde2ef7b0205c9339b50b55749b6a1be4d5ece15ef6f",
+    "repeat-1-sense-6.json": "d5335e946ae89a9401c677d5425afe9fa7a0d9dc0127ce1cb60384dd14040775",
+    "repeat-1-sense-7.json": "8be0558bd560c7b7820da4728e29f8dbb8879dad20f7e4e0c77f3e78fa926949",
+    "repeat-2-sense-1.json": "c05b591b2ca01c029e29c651e15f13b46c099e0ffa8308e3f0b098c8ad5a55ee",
+    "repeat-2-sense-2.json": "1eb936b8f1737c012670a98e2a2d5889fd40bcff8daeb5c562544be42efe6364",
+    "repeat-2-sense-3.json": "56389c78cc994c969850f5de02f9ba3bb2088aadf389ff7ae319089b6dbea128",
+    "repeat-2-sense-4.json": "24290cc8cf272ef5f821f8ca5ca23b182607f3ab787cd7a67240e64d81a12fd2",
+    "repeat-2-sense-5.json": "581a162293e2fc883f543ed794a6e263a4a9d99ec105e0f4c04e320451315b3a",
+    "repeat-2-sense-6.json": "f4e349a083a83d9910c4376a00c4eda8bf4f6c646d4a65e9f97496ba8caba983",
+    "repeat-2-sense-7.json": "410d316808af3fd4437c86484ba537b91a9f6a532d51f90d10e5794da33c25fe",
+    "repeat-3-sense-1.json": "ef7e30d1a9f53f8a169a6b9a5f581258d7d0e7d31281ae3f2facd6e37a04a9ff",
+    "repeat-3-sense-2.json": "b07c1a5c04d93cc203500c18df30fc3e80e4af78c8af5b1a30e413596fb54b27",
+    "repeat-3-sense-3.json": "cce819c79990d2ebe719a0f4d6435e18bd93455ee2e3116db0db302ec3505282",
+    "repeat-3-sense-4.json": "0365b9dfbfe8aeb310a558ed510f29e15f482347a5e0a1e907befb8d8015c5a5",
+    "repeat-3-sense-5.json": "81221428dc6118526e7fd1e564a698c863207638a82eb9616440cd8fc74146dc",
+    "repeat-3-sense-6.json": "28ad1c2a9b3b69ac6e79265a82fd947209c2aa60abd8c32b4d03a404f0edd246",
+    "repeat-3-sense-7.json": "ef2dceb413834d95cc2f6c655234d85df6edf14dcc32aaeda750c9231c19ed47"
+  },
+  "attempts": 21,
+  "code_sha256": "b7d2f4fba27b60f83835e8bdc38c52972736ac837185b50680a83e2065b39b16",
+  "comparison": "NON-EQUIVALENT",
+  "contract": "m002002-one-fixed-source-v1",
+  "human_reviewed": 0,
+  "inference_options": {
+    "num_ctx": 16384,
+    "num_predict": 3200,
+    "temperature": 0,
+    "think": "low"
+  },
+  "latency_seconds": {
+    "max": 4.555642644059844,
+    "median": 0.8223982289200649,
+    "min": 0.6228242570068687,
+    "sum": 20.4926879882114
+  },
+  "manifest_sha256": "6af5382df7821fff6d6013bc5d6fabef35d39858481a6671a3c67c545a3e9a8d",
+  "model": {
+    "capabilities": [
+      "completion",
+      "tools",
+      "thinking"
+    ],
+    "details": {
+      "context_length": 131072,
+      "embedding_length": 2880,
+      "families": [
+        "gptoss"
+      ],
+      "family": "gptoss",
+      "format": "gguf",
+      "parameter_size": "20.9B",
+      "parent_model": "",
+      "quantization_level": "MXFP4"
+    },
+    "digest": "17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+    "model": "gpt-oss:20b",
+    "modified_at": "2026-08-03T05:11:05.694253837Z",
+    "name": "gpt-oss:20b",
+    "size": 13793441244
+  },
+  "records": [
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:34.495253+00:00",
+      "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "useful",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"useful\",\"source_pos\":\"adj\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:57fb48543661805af56012e4\",\"text\":{\"bold_text_offsets\":[[6,12]],\"tags\":[\"collocation\"],\"text\":\"prove useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:1f6fc9e497b4567e62e4a928\",\"text\":{\"bold_text_offsets\":[[12,18]],\"tags\":[\"collocation\"],\"text\":\"practically useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:b261457999a980868636c697\",\"text\":{\"bold_text_offsets\":[[14,20]],\"text\":\"That’s a very useful tool for gardeners.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:efb513b6097138108e1a3426\",\"text\":{\"bold_text_offsets\":[[36,42]],\"text\":\"She found the information extremely useful.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:951ebfcc294ea46ccf3e9a26\",\"text\":{\"bold_text_offsets\":[[161,167]],\"ref\":\"1960 December, Cecil J. Allen, “Operating a mountain main line: the Bern-Lötschberg-Simplon: Part One”, in Trains Illustrated, page 743:\",\"text\":\"In the early days troubles were experienced with oscillation from the rod drive and with the transformers, but were overcome later, and these machines performed useful service until superseded by more modern locomotives less costly in maintenance.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:8a8ca1cfe49352727cd580df\",\"text\":{\"bold_text_offsets\":[[284,290]],\"ref\":\"2013 July–August, Lee S. Langston, “The Adaptable Gas Turbine”, in American Scientist:\",\"text\":\"Turbines have been around for a long time—windmills and water wheels are early examples. The name comes from the Latin turbo, meaning vortex, and thus the defining property of a turbine is that a fluid or gas turns the blades of a rotor, which is attached to a shaft that can perform useful work.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"Having a practical or beneficial use.\"],\"raw_glosses\":[],\"relations\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:c8f61c5717d03632e70f3ce4\",\"target\":\"handy\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:865da9d6df8a1d251573adfd\",\"target\":\"noteful\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:84fcf2c67ee4b40073972198\",\"target\":\"salutary\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:778946f3e3f380c76baa0889\",\"target\":\"serviceable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:9b7cfa29fcf3e304ea1f0a34\",\"target\":\"utilitarian\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:4c8dac57b496e3495b37b7d6\",\"target\":\"utile\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:b21fb96dbda7bf5ed9ade1e8\",\"target\":\"purposive\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:ceb0773b27c77efa18d29de3\",\"target\":\"profitable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e6761622b1a699334214b9a8\",\"target\":\"unuseful\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:ac4a289b552f54c98afc71d9\",\"target\":\"useless\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e7db5d6603114376021eae00\",\"target\":\"unusable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:4554e9ef67b2ddce389fa109\",\"target\":\"unutilizable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e73071e592ffcc02732eb714\",\"target\":\"inutile\",\"type\":\"antonyms\"}],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "a231e1122fb6219398bc4939e708d4e27c646c6ae64bea56b725ca4f4a6ef71d",
+      "provider_seconds": 4.555627626017667,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:34.494647975Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 19,
+        "eval_duration": 111975000,
+        "load_duration": 3741733235,
+        "message": {
+          "content": "{\"definition\":\"It means something that can be used in a helpful or useful way.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 2330,
+        "prompt_eval_duration": 7150000,
+        "total_duration": 4554504999
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Having a practical or beneficial use."
+        ],
+        "pos": "adj",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:29.939604+00:00",
+      "status": "validated",
+      "total_seconds": 4.555642644059844,
+      "validation_seconds": 8.175033144652843e-06,
+      "wording": "It means something that can be used in a helpful or useful way."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:35.498854+00:00",
+      "evidence_set_hash": "cc4fafaa92724a201c02cc3a43314f0f6963f15a59126c912f1619303a83ae51",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "quartz",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"quartz\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:f4e23e78cb8fb0dd46e9838c\",\"text\":{\"bold_text_offsets\":[[86,92]],\"ref\":\"1883, George Downing Liveing, James Dewar, “On the Ultra-Violet Spectra of the Elements”, in Philosophical Transactions of the Royal Society, volume 174, Barrison and Sons, part I, page 188:\",\"text\":\"The telescope and collimator have each an object-glass consisting of a single lens of quartz 1½ inch diameter and a focal length of 18½ inches for the sodium yellow light, but not more than 16 inches for the highest rays measured.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:b66d916d5319e673bb6322fc\",\"text\":{\"bold_text_offsets\":[[133,139]],\"ref\":\"1892 April 7, Armiger Barczinsky, “The Golden Snail”, in Sylvanus Urban (pseudonym of Edward Cave), editor, The Gentleman's Magazine, volume 272, page 331:\",\"text\":\"Subsequently, the old Malay brought him the present specimen in a state of torpidity, telling him he had found it in a cavity of the quartz reef.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:9c2ed1c5e9e7a682a4780326\",\"text\":{\"bold_text_offsets\":[[52,58]],\"ref\":\"1948, Theodore Roethke, “The Shape of the Fire”, in The Lost Son and Other Poems, Garden City, N.Y.: Doubleday & Company, →OCLC; republished in The Collected Poems of Theodore Roethke, London: Faber and Faber […], 1968, →OCLC, page 62:\",\"text\":\"My meat eats me. Who waits at the gate? / Mother of quartz, your words writhe into my ear. / Renew the light, lewd whisper.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"raw_glosses\":[\"(mineralogy) The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense\",\"source_order\":1,\"tags\":[\"countable\",\"uncountable\"],\"topics\":[\"chemistry\",\"geography\",\"geology\",\"mineralogy\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "48b8c6f02dc24afd204a892159f56c11f2b32e2796803c08bed0d9d8d770553f",
+      "provider_seconds": 1.0032923779217526,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:35.498384138Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 42,
+        "eval_duration": 251575000,
+        "load_duration": 258486936,
+        "message": {
+          "content": "{\"definition\":\"Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂). It appears in many crystalline and amorphous shapes and can be found almost anywhere.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 970,
+        "prompt_eval_duration": 6813000,
+        "total_duration": 1002075987
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:34.495536+00:00",
+      "status": "validated",
+      "total_seconds": 1.0033119739964604,
+      "validation_seconds": 1.1700903996825218e-05,
+      "wording": "Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂). It appears in many crystalline and amorphous shapes and can be found almost anywhere."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:36.229421+00:00",
+      "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "phone",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"phone\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:2cadff35e132828014069bd5\",\"text\":{\"bold_text_offsets\":[[16,21]],\"text\":\"Daragh's on the phone at the moment. He'll call you when he's finished.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:121e2b8518acb436512c06be\",\"text\":{\"bold_text_offsets\":[[3,8]],\"text\":\"My phone ran out of battery.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:fa2356b9022348c129797e88\",\"text\":{\"bold_text_offsets\":[[25,30]],\"text\":\"There's an old-fashioned phone in the doctor's waiting room - it doesn't work anymore, of course.\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc.\"],\"raw_glosses\":[],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "00d4950fb6c85bfd2673f6242ec756eab3bddc403ef362c83c8bf0ebba456b77",
+      "provider_seconds": 0.73029011010658,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:36.228840908Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 32,
+        "eval_duration": 189340000,
+        "load_duration": 265834114,
+        "message": {
+          "content": "{\"definition\":\"A device that lets people talk and share sounds instantly over a distance, usually small enough to carry around and often able to run software.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 624,
+        "prompt_eval_duration": 6696000,
+        "total_duration": 729122269
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:35.499108+00:00",
+      "status": "validated",
+      "total_seconds": 0.7303078930126503,
+      "validation_seconds": 9.146984666585922e-06,
+      "wording": "A device that lets people talk and share sounds instantly over a distance, usually small enough to carry around and often able to run software."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:37.047869+00:00",
+      "error": "Model output was not exactly one JSON object",
+      "error_code": "parse_not_exact_object",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense:example:102e467d1cd0f71232fb1a8d\",\"text\":{\"bold_text_offsets\":[[4,11]],\"text\":\"the lantern of the cupola of the Capitol at Washington, or that of the Florence cathedral\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"raw_glosses\":[\"(architecture) A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense\",\"source_order\":5,\"tags\":[],\"topics\":[\"architecture\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "41c9b5f8368ea38da9f837d7eaf1688bd29eb48da3d0f4548f4e72d4245249e9",
+      "provider_seconds": 0.8181943580275401,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:37.047280913Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 73,
+        "eval_duration": 438178000,
+        "load_duration": 266441563,
+        "message": {
+          "content": "",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 385,
+        "prompt_eval_duration": 47448000,
+        "total_duration": 816995419
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A smaller and secondary cupola crowning a larger one, for ornament, or to admit light."
+        ],
+        "pos": "noun",
+        "source_order": 5,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:36.229648+00:00",
+      "status": "rejected",
+      "total_seconds": 0.8182160990545526
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:37.877549+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A lantern pinion or trundle wheel.\"],\"raw_glosses\":[\"(engineering) A lantern pinion or trundle wheel.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense\",\"source_order\":6,\"tags\":[],\"topics\":[\"engineering\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "83688b1fea69ef52f728fb40f61f6c5bb46a2a443e1c324d1f03666661423e76",
+      "provider_seconds": 0.8294045479269698,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:37.87694312Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 18,
+        "eval_duration": 105038000,
+        "load_duration": 268050806,
+        "message": {
+          "content": "{\"definition\":\"An engineering term for a lantern pinion or trundle wheel.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 309,
+        "prompt_eval_duration": 6741000,
+        "total_duration": 828201151
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A lantern pinion or trundle wheel."
+        ],
+        "pos": "noun",
+        "source_order": 6,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:37.048123+00:00",
+      "status": "validated",
+      "total_seconds": 0.8294209879823029,
+      "validation_seconds": 6.953021511435509e-06,
+      "wording": "An engineering term for a lantern pinion or trundle wheel."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:38.565562+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"raw_glosses\":[\"(steam engines) A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense\",\"source_order\":7,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "04b562f654d7f8644095c50c8795d052edfc30db39ca15bff1f994a1872d33cd",
+      "provider_seconds": 0.6877614459954202,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:38.564987251Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 34,
+        "eval_duration": 204556000,
+        "load_duration": 263070117,
+        "message": {
+          "content": "{\"definition\":\"A cage used in a stuffing box around a piston rod to separate packing and create a chamber for steam or similar fluids; also called lantern brass.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 322,
+        "prompt_eval_duration": 6803000,
+        "total_duration": 686506903
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass."
+        ],
+        "pos": "noun",
+        "source_order": 7,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:37.877777+00:00",
+      "status": "validated",
+      "total_seconds": 0.6877796299522743,
+      "validation_seconds": 9.497045539319515e-06,
+      "wording": "A cage used in a stuffing box around a piston rod to separate packing and create a chamber for steam or similar fluids; also called lantern brass."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:39.431540+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"Aristotle's lantern\"],\"raw_glosses\":[\"(zoology) Aristotle's lantern\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense\",\"source_order\":10,\"tags\":[],\"topics\":[\"biology\",\"natural-sciences\",\"zoology\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "732697611d8279e6185f40acfb26463c932fd52e6e7681255be2010eb2e11589",
+      "provider_seconds": 0.8656473230803385,
+      "repeat": 1,
+      "response": {
+        "created_at": "2026-10-21T16:51:39.431012236Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 31,
+        "eval_duration": 182324000,
+        "load_duration": 254885452,
+        "message": {
+          "content": "{\"definition\":\"A specialized feeding structure found in certain marine animals, notably sea urchins, that is sometimes referred to as Aristotle's lantern.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 302,
+        "prompt_eval_duration": 6663000,
+        "total_duration": 864353407
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Aristotle's lantern"
+        ],
+        "pos": "noun",
+        "source_order": 10,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:38.565875+00:00",
+      "status": "validated",
+      "total_seconds": 0.865659756003879,
+      "validation_seconds": 6.100977770984173e-06,
+      "wording": "A specialized feeding structure found in certain marine animals, notably sea urchins, that is sometimes referred to as Aristotle's lantern."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:40.273209+00:00",
+      "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "useful",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"useful\",\"source_pos\":\"adj\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:57fb48543661805af56012e4\",\"text\":{\"bold_text_offsets\":[[6,12]],\"tags\":[\"collocation\"],\"text\":\"prove useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:1f6fc9e497b4567e62e4a928\",\"text\":{\"bold_text_offsets\":[[12,18]],\"tags\":[\"collocation\"],\"text\":\"practically useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:b261457999a980868636c697\",\"text\":{\"bold_text_offsets\":[[14,20]],\"text\":\"That’s a very useful tool for gardeners.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:efb513b6097138108e1a3426\",\"text\":{\"bold_text_offsets\":[[36,42]],\"text\":\"She found the information extremely useful.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:951ebfcc294ea46ccf3e9a26\",\"text\":{\"bold_text_offsets\":[[161,167]],\"ref\":\"1960 December, Cecil J. Allen, “Operating a mountain main line: the Bern-Lötschberg-Simplon: Part One”, in Trains Illustrated, page 743:\",\"text\":\"In the early days troubles were experienced with oscillation from the rod drive and with the transformers, but were overcome later, and these machines performed useful service until superseded by more modern locomotives less costly in maintenance.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:8a8ca1cfe49352727cd580df\",\"text\":{\"bold_text_offsets\":[[284,290]],\"ref\":\"2013 July–August, Lee S. Langston, “The Adaptable Gas Turbine”, in American Scientist:\",\"text\":\"Turbines have been around for a long time—windmills and water wheels are early examples. The name comes from the Latin turbo, meaning vortex, and thus the defining property of a turbine is that a fluid or gas turns the blades of a rotor, which is attached to a shaft that can perform useful work.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"Having a practical or beneficial use.\"],\"raw_glosses\":[],\"relations\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:c8f61c5717d03632e70f3ce4\",\"target\":\"handy\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:865da9d6df8a1d251573adfd\",\"target\":\"noteful\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:84fcf2c67ee4b40073972198\",\"target\":\"salutary\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:778946f3e3f380c76baa0889\",\"target\":\"serviceable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:9b7cfa29fcf3e304ea1f0a34\",\"target\":\"utilitarian\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:4c8dac57b496e3495b37b7d6\",\"target\":\"utile\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:b21fb96dbda7bf5ed9ade1e8\",\"target\":\"purposive\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:ceb0773b27c77efa18d29de3\",\"target\":\"profitable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e6761622b1a699334214b9a8\",\"target\":\"unuseful\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:ac4a289b552f54c98afc71d9\",\"target\":\"useless\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e7db5d6603114376021eae00\",\"target\":\"unusable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:4554e9ef67b2ddce389fa109\",\"target\":\"unutilizable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e73071e592ffcc02732eb714\",\"target\":\"inutile\",\"type\":\"antonyms\"}],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "a231e1122fb6219398bc4939e708d4e27c646c6ae64bea56b725ca4f4a6ef71d",
+      "provider_seconds": 0.8413910029921681,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:40.272668242Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 20,
+        "eval_duration": 118106000,
+        "load_duration": 248510633,
+        "message": {
+          "content": "{\"definition\":\"It may serve a practical or helpful purpose, but this is not certain.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 2342,
+        "prompt_eval_duration": 7052000,
+        "total_duration": 840061542
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Having a practical or beneficial use."
+        ],
+        "pos": "adj",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:39.431801+00:00",
+      "status": "validated",
+      "total_seconds": 0.8414034869056195,
+      "validation_seconds": 6.100977770984173e-06,
+      "wording": "It may serve a practical or helpful purpose, but this is not certain."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:41.233209+00:00",
+      "evidence_set_hash": "cc4fafaa92724a201c02cc3a43314f0f6963f15a59126c912f1619303a83ae51",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "quartz",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"quartz\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:f4e23e78cb8fb0dd46e9838c\",\"text\":{\"bold_text_offsets\":[[86,92]],\"ref\":\"1883, George Downing Liveing, James Dewar, “On the Ultra-Violet Spectra of the Elements”, in Philosophical Transactions of the Royal Society, volume 174, Barrison and Sons, part I, page 188:\",\"text\":\"The telescope and collimator have each an object-glass consisting of a single lens of quartz 1½ inch diameter and a focal length of 18½ inches for the sodium yellow light, but not more than 16 inches for the highest rays measured.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:b66d916d5319e673bb6322fc\",\"text\":{\"bold_text_offsets\":[[133,139]],\"ref\":\"1892 April 7, Armiger Barczinsky, “The Golden Snail”, in Sylvanus Urban (pseudonym of Edward Cave), editor, The Gentleman's Magazine, volume 272, page 331:\",\"text\":\"Subsequently, the old Malay brought him the present specimen in a state of torpidity, telling him he had found it in a cavity of the quartz reef.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:9c2ed1c5e9e7a682a4780326\",\"text\":{\"bold_text_offsets\":[[52,58]],\"ref\":\"1948, Theodore Roethke, “The Shape of the Fire”, in The Lost Son and Other Poems, Garden City, N.Y.: Doubleday & Company, →OCLC; republished in The Collected Poems of Theodore Roethke, London: Faber and Faber […], 1968, →OCLC, page 62:\",\"text\":\"My meat eats me. Who waits at the gate? / Mother of quartz, your words writhe into my ear. / Renew the light, lewd whisper.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"raw_glosses\":[\"(mineralogy) The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense\",\"source_order\":1,\"tags\":[\"countable\",\"uncountable\"],\"topics\":[\"chemistry\",\"geography\",\"geology\",\"mineralogy\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "48b8c6f02dc24afd204a892159f56c11f2b32e2796803c08bed0d9d8d770553f",
+      "provider_seconds": 0.9597156919771805,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:41.232621957Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 41,
+        "eval_duration": 245387000,
+        "load_duration": 264719494,
+        "message": {
+          "content": "{\"definition\":\"Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂) and occurring in many forms—both crystal and glassy—in almost every environment.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 968,
+        "prompt_eval_duration": 6778000,
+        "total_duration": 958479042
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:40.273470+00:00",
+      "status": "validated",
+      "total_seconds": 0.9597337560262531,
+      "validation_seconds": 9.21695027500391e-06,
+      "wording": "Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂) and occurring in many forms—both crystal and glassy—in almost every environment."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:41.895296+00:00",
+      "error": "Model output was not exactly one JSON object",
+      "error_code": "parse_not_exact_object",
+      "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "phone",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"phone\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:2cadff35e132828014069bd5\",\"text\":{\"bold_text_offsets\":[[16,21]],\"text\":\"Daragh's on the phone at the moment. He'll call you when he's finished.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:121e2b8518acb436512c06be\",\"text\":{\"bold_text_offsets\":[[3,8]],\"text\":\"My phone ran out of battery.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:fa2356b9022348c129797e88\",\"text\":{\"bold_text_offsets\":[[25,30]],\"text\":\"There's an old-fashioned phone in the doctor's waiting room - it doesn't work anymore, of course.\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc.\"],\"raw_glosses\":[],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "00d4950fb6c85bfd2673f6242ec756eab3bddc403ef362c83c8bf0ebba456b77",
+      "provider_seconds": 0.6617373829940334,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:41.894730529Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 48,
+        "eval_duration": 287985000,
+        "load_duration": 248844134,
+        "message": {
+          "content": "",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 611,
+        "prompt_eval_duration": 64154000,
+        "total_duration": 660456692
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:41.233537+00:00",
+      "status": "rejected",
+      "total_seconds": 0.6617527110502124
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:42.518357+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense:example:102e467d1cd0f71232fb1a8d\",\"text\":{\"bold_text_offsets\":[[4,11]],\"text\":\"the lantern of the cupola of the Capitol at Washington, or that of the Florence cathedral\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"raw_glosses\":[\"(architecture) A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense\",\"source_order\":5,\"tags\":[],\"topics\":[\"architecture\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "41c9b5f8368ea38da9f837d7eaf1688bd29eb48da3d0f4548f4e72d4245249e9",
+      "provider_seconds": 0.6228113630786538,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:42.517807496Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 28,
+        "eval_duration": 163857000,
+        "load_duration": 267755238,
+        "message": {
+          "content": "{\"definition\":\"A small, secondary dome that sits on top of a larger dome, used for decoration or to let light in.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 398,
+        "prompt_eval_duration": 6656000,
+        "total_duration": 621558964
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A smaller and secondary cupola crowning a larger one, for ornament, or to admit light."
+        ],
+        "pos": "noun",
+        "source_order": 5,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:41.895528+00:00",
+      "status": "validated",
+      "total_seconds": 0.6228242570068687,
+      "validation_seconds": 6.592017598450184e-06,
+      "wording": "A small, secondary dome that sits on top of a larger dome, used for decoration or to let light in."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:43.320806+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A lantern pinion or trundle wheel.\"],\"raw_glosses\":[\"(engineering) A lantern pinion or trundle wheel.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense\",\"source_order\":6,\"tags\":[],\"topics\":[\"engineering\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "83688b1fea69ef52f728fb40f61f6c5bb46a2a443e1c324d1f03666661423e76",
+      "provider_seconds": 0.8022052840096876,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:43.320357791Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 18,
+        "eval_duration": 105052000,
+        "load_duration": 253107950,
+        "message": {
+          "content": "{\"definition\":\"An engineering term for a lantern pinion or trundle wheel.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 309,
+        "prompt_eval_duration": 6741000,
+        "total_duration": 801008660
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A lantern pinion or trundle wheel."
+        ],
+        "pos": "noun",
+        "source_order": 6,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:42.518584+00:00",
+      "status": "validated",
+      "total_seconds": 0.8022172260098159,
+      "validation_seconds": 5.920999683439732e-06,
+      "wording": "An engineering term for a lantern pinion or trundle wheel."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:44.013262+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"raw_glosses\":[\"(steam engines) A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense\",\"source_order\":7,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "04b562f654d7f8644095c50c8795d052edfc30db39ca15bff1f994a1872d33cd",
+      "provider_seconds": 0.6922185079893097,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:44.0127602Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 37,
+        "eval_duration": 223574000,
+        "load_duration": 253753641,
+        "message": {
+          "content": "{\"definition\":\"A cage used in steam engines that fits around a piston rod, dividing the packing into two parts and creating a chamber to receive steam; also called lantern brass.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 322,
+        "prompt_eval_duration": 6732000,
+        "total_duration": 691065063
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass."
+        ],
+        "pos": "noun",
+        "source_order": 7,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:43.321026+00:00",
+      "status": "validated",
+      "total_seconds": 0.6922311210073531,
+      "validation_seconds": 6.241025403141975e-06,
+      "wording": "A cage used in steam engines that fits around a piston rod, dividing the packing into two parts and creating a chamber to receive steam; also called lantern brass."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:44.857570+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"Aristotle's lantern\"],\"raw_glosses\":[\"(zoology) Aristotle's lantern\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense\",\"source_order\":10,\"tags\":[],\"topics\":[\"biology\",\"natural-sciences\",\"zoology\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "732697611d8279e6185f40acfb26463c932fd52e6e7681255be2010eb2e11589",
+      "provider_seconds": 0.844070150051266,
+      "repeat": 2,
+      "response": {
+        "created_at": "2026-10-21T16:51:44.857083531Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 25,
+        "eval_duration": 146205000,
+        "load_duration": 263529974,
+        "message": {
+          "content": "{\"definition\":\"A specialized feeding apparatus found in some marine mollusks, often referred to as Aristotle’s lantern.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 299,
+        "prompt_eval_duration": 6642000,
+        "total_duration": 842893984
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Aristotle's lantern"
+        ],
+        "pos": "noun",
+        "source_order": 10,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:44.013481+00:00",
+      "status": "validated",
+      "total_seconds": 0.8440837650559843,
+      "validation_seconds": 7.112976163625717e-06,
+      "wording": "A specialized feeding apparatus found in some marine mollusks, often referred to as Aristotle’s lantern."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:45.697072+00:00",
+      "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "useful",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"useful\",\"source_pos\":\"adj\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:57fb48543661805af56012e4\",\"text\":{\"bold_text_offsets\":[[6,12]],\"tags\":[\"collocation\"],\"text\":\"prove useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:1f6fc9e497b4567e62e4a928\",\"text\":{\"bold_text_offsets\":[[12,18]],\"tags\":[\"collocation\"],\"text\":\"practically useful\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:b261457999a980868636c697\",\"text\":{\"bold_text_offsets\":[[14,20]],\"text\":\"That’s a very useful tool for gardeners.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:efb513b6097138108e1a3426\",\"text\":{\"bold_text_offsets\":[[36,42]],\"text\":\"She found the information extremely useful.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:951ebfcc294ea46ccf3e9a26\",\"text\":{\"bold_text_offsets\":[[161,167]],\"ref\":\"1960 December, Cecil J. Allen, “Operating a mountain main line: the Bern-Lötschberg-Simplon: Part One”, in Trains Illustrated, page 743:\",\"text\":\"In the early days troubles were experienced with oscillation from the rod drive and with the transformers, but were overcome later, and these machines performed useful service until superseded by more modern locomotives less costly in maintenance.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:example:8a8ca1cfe49352727cd580df\",\"text\":{\"bold_text_offsets\":[[284,290]],\"ref\":\"2013 July–August, Lee S. Langston, “The Adaptable Gas Turbine”, in American Scientist:\",\"text\":\"Turbines have been around for a long time—windmills and water wheels are early examples. The name comes from the Latin turbo, meaning vortex, and thus the defining property of a turbine is that a fluid or gas turns the blades of a rotor, which is attached to a shaft that can perform useful work.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"Having a practical or beneficial use.\"],\"raw_glosses\":[],\"relations\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:c8f61c5717d03632e70f3ce4\",\"target\":\"handy\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:865da9d6df8a1d251573adfd\",\"target\":\"noteful\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:84fcf2c67ee4b40073972198\",\"target\":\"salutary\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:778946f3e3f380c76baa0889\",\"target\":\"serviceable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:9b7cfa29fcf3e304ea1f0a34\",\"target\":\"utilitarian\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:4c8dac57b496e3495b37b7d6\",\"target\":\"utile\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:b21fb96dbda7bf5ed9ade1e8\",\"target\":\"purposive\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:synonyms:ceb0773b27c77efa18d29de3\",\"target\":\"profitable\",\"type\":\"synonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e6761622b1a699334214b9a8\",\"target\":\"unuseful\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:ac4a289b552f54c98afc71d9\",\"target\":\"useless\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e7db5d6603114376021eae00\",\"target\":\"unusable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:4554e9ef67b2ddce389fa109\",\"target\":\"unutilizable\",\"type\":\"antonyms\"},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense:antonyms:e73071e592ffcc02732eb714\",\"target\":\"inutile\",\"type\":\"antonyms\"}],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "a231e1122fb6219398bc4939e708d4e27c646c6ae64bea56b725ca4f4a6ef71d",
+      "provider_seconds": 0.8392125921091065,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:45.69652082Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 20,
+        "eval_duration": 118150000,
+        "load_duration": 250737264,
+        "message": {
+          "content": "{\"definition\":\"It may serve a practical or helpful purpose, but this is not certain.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 2342,
+        "prompt_eval_duration": 7000000,
+        "total_duration": 838058546
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Having a practical or beneficial use."
+        ],
+        "pos": "adj",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:44.857836+00:00",
+      "status": "validated",
+      "total_seconds": 0.8392309760674834,
+      "validation_seconds": 8.776085451245308e-06,
+      "wording": "It may serve a practical or helpful purpose, but this is not certain."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:46.633268+00:00",
+      "evidence_set_hash": "cc4fafaa92724a201c02cc3a43314f0f6963f15a59126c912f1619303a83ae51",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "quartz",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"quartz\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:f4e23e78cb8fb0dd46e9838c\",\"text\":{\"bold_text_offsets\":[[86,92]],\"ref\":\"1883, George Downing Liveing, James Dewar, “On the Ultra-Violet Spectra of the Elements”, in Philosophical Transactions of the Royal Society, volume 174, Barrison and Sons, part I, page 188:\",\"text\":\"The telescope and collimator have each an object-glass consisting of a single lens of quartz 1½ inch diameter and a focal length of 18½ inches for the sodium yellow light, but not more than 16 inches for the highest rays measured.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:b66d916d5319e673bb6322fc\",\"text\":{\"bold_text_offsets\":[[133,139]],\"ref\":\"1892 April 7, Armiger Barczinsky, “The Golden Snail”, in Sylvanus Urban (pseudonym of Edward Cave), editor, The Gentleman's Magazine, volume 272, page 331:\",\"text\":\"Subsequently, the old Malay brought him the present specimen in a state of torpidity, telling him he had found it in a cavity of the quartz reef.\",\"type\":\"quotation\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense:example:9c2ed1c5e9e7a682a4780326\",\"text\":{\"bold_text_offsets\":[[52,58]],\"ref\":\"1948, Theodore Roethke, “The Shape of the Fire”, in The Lost Son and Other Poems, Garden City, N.Y.: Doubleday & Company, →OCLC; republished in The Collected Poems of Theodore Roethke, London: Faber and Faber […], 1968, →OCLC, page 62:\",\"text\":\"My meat eats me. Who waits at the gate? / Mother of quartz, your words writhe into my ear. / Renew the light, lewd whisper.\",\"type\":\"quotation\"}}],\"form_of\":[],\"glosses\":[\"The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"raw_glosses\":[\"(mineralogy) The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense\",\"source_order\":1,\"tags\":[\"countable\",\"uncountable\"],\"topics\":[\"chemistry\",\"geography\",\"geology\",\"mineralogy\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "48b8c6f02dc24afd204a892159f56c11f2b32e2796803c08bed0d9d8d770553f",
+      "provider_seconds": 0.935868369997479,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:46.632761933Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 41,
+        "eval_duration": 245485000,
+        "load_duration": 248782721,
+        "message": {
+          "content": "{\"definition\":\"Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂) and occurring in many forms—both crystal and glassy—in almost every environment.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 968,
+        "prompt_eval_duration": 6801000,
+        "total_duration": 934783623
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "The most abundant mineral on the earth's surface, of chemical composition silicon dioxide, SiO₂. It occurs in a variety of forms, both crystalline and amorphous. Found in every environment."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:45.697380+00:00",
+      "status": "validated",
+      "total_seconds": 0.93588099302724,
+      "validation_seconds": 6.3820043578743935e-06,
+      "wording": "Quartz is the most common mineral on Earth’s surface, made of silicon dioxide (SiO₂) and occurring in many forms—both crystal and glassy—in almost every environment."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:47.273747+00:00",
+      "error": "Model output was not exactly one JSON object",
+      "error_code": "parse_not_exact_object",
+      "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "phone",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"phone\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:2cadff35e132828014069bd5\",\"text\":{\"bold_text_offsets\":[[16,21]],\"text\":\"Daragh's on the phone at the moment. He'll call you when he's finished.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:121e2b8518acb436512c06be\",\"text\":{\"bold_text_offsets\":[[3,8]],\"text\":\"My phone ran out of battery.\",\"type\":\"example\"}},{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense:example:fa2356b9022348c129797e88\",\"text\":{\"bold_text_offsets\":[[25,30]],\"text\":\"There's an old-fashioned phone in the doctor's waiting room - it doesn't work anymore, of course.\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc.\"],\"raw_glosses\":[],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense\",\"source_order\":1,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "00d4950fb6c85bfd2673f6242ec756eab3bddc403ef362c83c8bf0ebba456b77",
+      "provider_seconds": 0.6402068840106949,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:47.273173347Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 48,
+        "eval_duration": 286361000,
+        "load_duration": 280357457,
+        "message": {
+          "content": "",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 611,
+        "prompt_eval_duration": 15151000,
+        "total_duration": 639011272
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A device for transmitting conversations and other sounds in real time across distances, now often a small portable unit also capable of running software etc."
+        ],
+        "pos": "noun",
+        "source_order": 1,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:46.633517+00:00",
+      "status": "rejected",
+      "total_seconds": 0.6402250280370936
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:48.096146+00:00",
+      "error": "Model output was not exactly one JSON object",
+      "error_code": "parse_not_exact_object",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[{\"evidence_id\":\"WIK-EVID:WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense:example:102e467d1cd0f71232fb1a8d\",\"text\":{\"bold_text_offsets\":[[4,11]],\"text\":\"the lantern of the cupola of the Capitol at Washington, or that of the Florence cathedral\",\"type\":\"example\"}}],\"form_of\":[],\"glosses\":[\"A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"raw_glosses\":[\"(architecture) A smaller and secondary cupola crowning a larger one, for ornament, or to admit light.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense\",\"source_order\":5,\"tags\":[],\"topics\":[\"architecture\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "41c9b5f8368ea38da9f837d7eaf1688bd29eb48da3d0f4548f4e72d4245249e9",
+      "provider_seconds": 0.8220567629905418,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:48.095667724Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 73,
+        "eval_duration": 438643000,
+        "load_duration": 276338537,
+        "message": {
+          "content": "",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 385,
+        "prompt_eval_duration": 46340000,
+        "total_duration": 820840653
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A smaller and secondary cupola crowning a larger one, for ornament, or to admit light."
+        ],
+        "pos": "noun",
+        "source_order": 5,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:47.274069+00:00",
+      "status": "rejected",
+      "total_seconds": 0.822070820024237
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:48.918767+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A lantern pinion or trundle wheel.\"],\"raw_glosses\":[\"(engineering) A lantern pinion or trundle wheel.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense\",\"source_order\":6,\"tags\":[],\"topics\":[\"engineering\",\"natural-sciences\",\"physical-sciences\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "83688b1fea69ef52f728fb40f61f6c5bb46a2a443e1c324d1f03666661423e76",
+      "provider_seconds": 0.8223859969293699,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:48.918295099Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 18,
+        "eval_duration": 105066000,
+        "load_duration": 270939901,
+        "message": {
+          "content": "{\"definition\":\"An engineering term for a lantern pinion or trundle wheel.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 309,
+        "prompt_eval_duration": 6752000,
+        "total_duration": 821325434
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A lantern pinion or trundle wheel."
+        ],
+        "pos": "noun",
+        "source_order": 6,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:48.096364+00:00",
+      "status": "validated",
+      "total_seconds": 0.8223982289200649,
+      "validation_seconds": 5.980953574180603e-06,
+      "wording": "An engineering term for a lantern pinion or trundle wheel."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:49.595907+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"raw_glosses\":[\"(steam engines) A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass.\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense\",\"source_order\":7,\"tags\":[],\"topics\":[]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "04b562f654d7f8644095c50c8795d052edfc30db39ca15bff1f994a1872d33cd",
+      "provider_seconds": 0.676900678081438,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:49.595446854Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 37,
+        "eval_duration": 223454000,
+        "load_duration": 242591513,
+        "message": {
+          "content": "{\"definition\":\"A cage used in steam engines that fits around a piston rod, dividing the packing into two parts and creating a chamber to receive steam; also called lantern brass.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 322,
+        "prompt_eval_duration": 6778000,
+        "total_duration": 675820310
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "A kind of cage inserted in a stuffing box and surrounding a piston rod, to separate the packing into two parts and form a chamber between for the reception of steam, etc.; a lantern brass."
+        ],
+        "pos": "noun",
+        "source_order": 7,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:48.918989+00:00",
+      "status": "validated",
+      "total_seconds": 0.6769132820190862,
+      "validation_seconds": 6.210990250110626e-06,
+      "wording": "A cage used in steam engines that fits around a piston rod, dividing the packing into two parts and creating a chamber to receive steam; also called lantern brass."
+    },
+    {
+      "comparison": "NON-EQUIVALENT: one source and definition-only schema; no grouping/core",
+      "contract": "m002002-one-fixed-source-v1",
+      "ended_at": "2026-10-21T16:51:50.437529+00:00",
+      "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+      "human_reviewed": false,
+      "human_reviewer": null,
+      "lemma": "lantern",
+      "prompt": "{\"authority\":\"Write one concise learner-friendly paraphrase of only the supplied source sense. Preserve uncertainty. Do not invent facts. Do not output IDs, POS, labels or other fields.\",\"lemma\":\"lantern\",\"source_pos\":\"noun\",\"source_sense\":{\"alt_of\":[],\"examples\":[],\"form_of\":[],\"glosses\":[\"Aristotle's lantern\"],\"raw_glosses\":[\"(zoology) Aristotle's lantern\"],\"relations\":[],\"sense_id\":\"WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense\",\"source_order\":10,\"tags\":[],\"topics\":[\"biology\",\"natural-sciences\",\"zoology\"]},\"task\":\"Return exactly one JSON object with exactly the key definition.\"}",
+      "prompt_sha256": "732697611d8279e6185f40acfb26463c932fd52e6e7681255be2010eb2e11589",
+      "provider_seconds": 0.8413707499857992,
+      "repeat": 3,
+      "response": {
+        "created_at": "2026-10-21T16:51:50.437008008Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 25,
+        "eval_duration": 145972000,
+        "load_duration": 264929458,
+        "message": {
+          "content": "{\"definition\":\"A specialized feeding apparatus found in some marine mollusks, often referred to as Aristotle’s lantern.\"}",
+          "role": "assistant"
+        },
+        "model": "gpt-oss:20b",
+        "prompt_eval_count": 299,
+        "prompt_eval_duration": 6660000,
+        "total_duration": 840250237
+      },
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "definition"
+        ],
+        "type": "object"
+      },
+      "seed": null,
+      "semantic_classification": "UNJUDGED",
+      "source": {
+        "glosses": [
+          "Aristotle's lantern"
+        ],
+        "pos": "noun",
+        "source_order": 10,
+        "source_sense_id": "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense"
+      },
+      "started_at": "2026-10-21T16:51:49.596141+00:00",
+      "status": "validated",
+      "total_seconds": 0.8413833529921249,
+      "validation_seconds": 6.441958248615265e-06,
+      "wording": "A specialized feeding apparatus found in some marine mollusks, often referred to as Aristotle’s lantern."
+    }
+  ],
+  "run_path": "/home/chuck/.local/share/vocab-app/benchmarks/m002.002/narrow-20261021-a2",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "definition": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "definition"
+    ],
+    "type": "object"
+  },
+  "semantic_classification": "UNJUDGED",
+  "source_senses": 7,
+  "validated": 17,
+  "wording_variants_by_source": {
+    "WIK:wiktionary-20260901:m004.3-v1:en:1592fe2b137be1842602f5b9:content:7c62411e22c5b39e476d1b0b:1:sense": 2,
+    "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:3f6ca0c9e7d847597bbb4091:1:sense": 1,
+    "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:76b511592e299c2fbe106ac9:1:sense": 2,
+    "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:83105eb6ff2d293d412e3c04:1:sense": 2,
+    "WIK:wiktionary-20260901:m004.3-v1:en:377d9d4adfabced39d1d8079:content:ea61877afabe26b54ac088ba:1:sense": 1,
+    "WIK:wiktionary-20260901:m004.3-v1:en:416daba873617c647e3bd3da:content:d71d7259df70b053f08f67dd:1:sense": 2,
+    "WIK:wiktionary-20260901:m004.3-v1:en:a2b0c22283a8c8b1ec90ab69:content:87d29b1d9c9723d6468b4c54:1:sense": 1
+  }
+}

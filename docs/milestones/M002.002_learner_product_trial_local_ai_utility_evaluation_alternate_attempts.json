@@ -1,0 +1,1384 @@
+{
+  "alternate_models": {
+    "ministral-3:14b": {
+      "capabilities": [
+        "vision",
+        "completion",
+        "tools"
+      ],
+      "details": {
+        "context_length": 262144,
+        "embedding_length": 5120,
+        "families": [
+          "mistral3"
+        ],
+        "family": "mistral3",
+        "format": "gguf",
+        "parameter_size": "13.9B",
+        "parent_model": "",
+        "quantization_level": "Q4_K_M"
+      },
+      "digest": "4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
+      "model": "ministral-3:14b",
+      "modified_at": "2026-10-21T17:53:13.514297059Z",
+      "name": "ministral-3:14b",
+      "size": 9082537546
+    },
+    "qwen3.5:9b": {
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking",
+        "vision"
+      ],
+      "details": {
+        "context_length": 262144,
+        "embedding_length": 4096,
+        "families": [
+          "qwen35"
+        ],
+        "family": "qwen35",
+        "format": "gguf",
+        "parameter_size": "9.0B",
+        "parent_model": "model.gguf",
+        "quantization_level": "Q4_K_M"
+      },
+      "digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+      "model": "qwen3.5:9b",
+      "modified_at": "2026-10-21T17:32:32.263579052Z",
+      "name": "qwen3.5:9b",
+      "size": 6550825550
+    }
+  },
+  "alternate_results": {
+    "attempts": [
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26380449000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3449,
+          "prompt_eval_duration": 4231457999,
+          "total_duration": 42445571120
+        },
+        "ended_at": "2026-10-21T17:33:14.871284+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00035043107345700264,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "lantern",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 42.44848856108729,
+            "ended_at": "2026-10-21T17:33:14.870737+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:32:32.422205+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 42.44848856108729,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:32:32.421601+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 42.449673483963124
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26277564000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 2909,
+          "prompt_eval_duration": 530023000,
+          "total_duration": 27168395583
+        },
+        "ended_at": "2026-10-21T17:33:42.043247+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 3.989401739090681e-05,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "useful",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.171056207967922,
+            "ended_at": "2026-10-21T17:33:42.042903+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:33:14.871820+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.171056207967922,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:33:14.871647+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.171595801017247
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 27348659000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 10873,
+          "prompt_eval_duration": 1962763000,
+          "total_duration": 29673897816
+        },
+        "ended_at": "2026-10-21T17:34:11.722755+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "607e8510c4377060a8588941ee2d4135b259380380d981f79532bfd1133ad639",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006014769896864891,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bread",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 29.676931163063273,
+            "ended_at": "2026-10-21T17:34:11.721961+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:33:42.044954+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 29.676931163063273,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:33:42.043904+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 29.678847023053095
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26408680000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3480,
+          "prompt_eval_duration": 634997000,
+          "total_duration": 27498757721
+        },
+        "ended_at": "2026-10-21T17:34:39.225694+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00015212304424494505,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "phone",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.50160691596102,
+            "ended_at": "2026-10-21T17:34:39.225214+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:34:11.723569+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.50160691596102,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:34:11.723204+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.502486409968697
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26765887000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6643,
+          "prompt_eval_duration": 1189121000,
+          "total_duration": 28335638760
+        },
+        "ended_at": "2026-10-21T17:35:07.571456+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "38e6a1fb282a1bc8e7c350bbcd744ca08ff993a1bfe0cd00ef182345111312f8",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006552379345521331,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "jelly",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 28.338701291941106,
+            "ended_at": "2026-10-21T17:35:07.566003+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:34:39.227229+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 28.338701291941106,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:34:39.226225+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 28.345226599019952
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26828305000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6839,
+          "prompt_eval_duration": 1234352000,
+          "total_duration": 28477490334
+        },
+        "ended_at": "2026-10-21T17:35:36.054015+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "116fa67ed98c0d6ae40f4028c2b1620be048d7518a7c2162acb1ef5bbd427ad7",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006669590948149562,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "staff",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 28.480344858951867,
+            "ended_at": "2026-10-21T17:35:36.053363+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:35:07.572939+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 28.480344858951867,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:35:07.571971+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 28.48203959898092
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26987834000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 8085,
+          "prompt_eval_duration": 1460868000,
+          "total_duration": 28890691873
+        },
+        "ended_at": "2026-10-21T17:36:04.952302+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "df72f15a13b6c2f090741712276172cb6388db685b7a6e2e43fe55514fc2d7dd",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00160886999219656,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bank",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 28.894181678071618,
+            "ended_at": "2026-10-21T17:36:04.951258+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:35:36.056995+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 28.894181678071618,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:35:36.054793+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 28.89750482502859
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26982197000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 7388,
+          "prompt_eval_duration": 1328852000,
+          "total_duration": 28774126167
+        },
+        "ended_at": "2026-10-21T17:36:33.732610+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "96afba364864d21b3594680c6afc0317cfff0759bdcdfd266a367b6ca1016423",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0016091610305011272,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "draft",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 28.776780060026795,
+            "ended_at": "2026-10-21T17:36:33.731799+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:36:04.954936+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 28.776780060026795,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:36:04.952896+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 28.779709614929743
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26359220000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3449,
+          "prompt_eval_duration": 35621000,
+          "total_duration": 26859961459
+        },
+        "ended_at": "2026-10-21T17:37:00.596941+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00035879702772945166,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "lantern",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.862768786028028,
+            "ended_at": "2026-10-21T17:37:00.596417+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:36:33.733608+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.862768786028028,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:36:33.733035+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.863901461008936
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26269008000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 2909,
+          "prompt_eval_duration": 35477000,
+          "total_duration": 26712041274
+        },
+        "ended_at": "2026-10-21T17:37:27.312607+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 3.805093001574278e-05,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "useful",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.71475362603087,
+            "ended_at": "2026-10-21T17:37:27.312256+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:37:00.597476+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.71475362603087,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:37:00.597310+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.715293128043413
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 27358981000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 10873,
+          "prompt_eval_duration": 36525000,
+          "total_duration": 27840472398
+        },
+        "ended_at": "2026-10-21T17:37:55.158575+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "607e8510c4377060a8588941ee2d4135b259380380d981f79532bfd1133ad639",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006138109602034092,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bread",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.843220475013368,
+            "ended_at": "2026-10-21T17:37:55.157684+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:37:27.314384+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.843220475013368,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:37:27.313296+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.845274181920104
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26419058000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3480,
+          "prompt_eval_duration": 35753000,
+          "total_duration": 26948404514
+        },
+        "ended_at": "2026-10-21T17:38:22.111455+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00015458697453141212,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "phone",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.951557844062336,
+            "ended_at": "2026-10-21T17:38:22.110964+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:37:55.159369+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.951557844062336,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:37:55.159009+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.95244248805102
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26778490000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6643,
+          "prompt_eval_duration": 36354000,
+          "total_duration": 27217382446
+        },
+        "ended_at": "2026-10-21T17:38:49.334288+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "38e6a1fb282a1bc8e7c350bbcd744ca08ff993a1bfe0cd00ef182345111312f8",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006338780513033271,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "jelly",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.220554662053473,
+            "ended_at": "2026-10-21T17:38:49.333570+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:38:22.112945+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.220554662053473,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:38:22.111979+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.222304784925655
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26855139000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6839,
+          "prompt_eval_duration": 38370000,
+          "total_duration": 27356406954
+        },
+        "ended_at": "2026-10-21T17:39:16.696080+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "116fa67ed98c0d6ae40f4028c2b1620be048d7518a7c2162acb1ef5bbd427ad7",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006583940703421831,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "staff",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.35952406702563,
+            "ended_at": "2026-10-21T17:39:16.695441+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:38:49.335838+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.35952406702563,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:38:49.334876+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.361199220991693
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26988831000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 8085,
+          "prompt_eval_duration": 37411000,
+          "total_duration": 27476461076
+        },
+        "ended_at": "2026-10-21T17:39:44.179421+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "df72f15a13b6c2f090741712276172cb6388db685b7a6e2e43fe55514fc2d7dd",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0014971130294725299,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bank",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.479358682059683,
+            "ended_at": "2026-10-21T17:39:44.178416+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:39:16.698979+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.479358682059683,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:39:16.696877+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.48253916297108
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26967760000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 7388,
+          "prompt_eval_duration": 39350000,
+          "total_duration": 27517018238
+        },
+        "ended_at": "2026-10-21T17:40:11.702823+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "96afba364864d21b3594680c6afc0317cfff0759bdcdfd266a367b6ca1016423",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0015655000461265445,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "draft",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.519852275028825,
+            "ended_at": "2026-10-21T17:40:11.702008+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:39:44.182070+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.519852275028825,
+        "repeat": 2,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:39:44.180000+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.522818897967227
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26363102000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3449,
+          "prompt_eval_duration": 38400000,
+          "total_duration": 26848692358
+        },
+        "ended_at": "2026-10-21T17:40:38.555772+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00034736504312604666,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "lantern",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.85135996597819,
+            "ended_at": "2026-10-21T17:40:38.555234+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:40:11.703835+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.85135996597819,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:40:11.703269+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.852498262072913
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26274822000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 2909,
+          "prompt_eval_duration": 38348000,
+          "total_duration": 26703305697
+        },
+        "ended_at": "2026-10-21T17:41:05.262922+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "cc0de8d405e8c099648b39a04dd58c8db8c27df2b43e00ddffe020d986e15ab0",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 4.303001333028078e-05,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "useful",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.706172544974834,
+            "ended_at": "2026-10-21T17:41:05.262580+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:40:38.556381+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.706172544974834,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:40:38.556196+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.706720223999582
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 27357103000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 10873,
+          "prompt_eval_duration": 39801000,
+          "total_duration": 27836170189
+        },
+        "ended_at": "2026-10-21T17:41:33.104753+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "607e8510c4377060a8588941ee2d4135b259380380d981f79532bfd1133ad639",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0005978909321129322,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bread",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.839183790027164,
+            "ended_at": "2026-10-21T17:41:33.103927+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:41:05.264668+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.839183790027164,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:41:05.263619+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.841128806001507
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26413279000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 3480,
+          "prompt_eval_duration": 38630000,
+          "total_duration": 26972275526
+        },
+        "ended_at": "2026-10-21T17:42:00.081387+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "2b9a7e489ac45682e2ce55bb0c4a9e6a873b9e1c6a79626dbb99732bd07bde2f",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00016217201482504606,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "phone",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 26.975274721044116,
+            "ended_at": "2026-10-21T17:42:00.080918+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:41:33.105605+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 26.975274721044116,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:41:33.105226+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 26.976155758020468
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26773174000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6643,
+          "prompt_eval_duration": 36178000,
+          "total_duration": 27245920562
+        },
+        "ended_at": "2026-10-21T17:42:27.332320+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "38e6a1fb282a1bc8e7c350bbcd744ca08ff993a1bfe0cd00ef182345111312f8",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006161249475553632,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "jelly",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.24872073601,
+            "ended_at": "2026-10-21T17:42:27.331617+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:42:00.082828+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.24872073601,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:42:00.081888+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.250427057035267
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26836325000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 6839,
+          "prompt_eval_duration": 37253000,
+          "total_duration": 27346305929
+        },
+        "ended_at": "2026-10-21T17:42:54.683650+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "116fa67ed98c0d6ae40f4028c2b1620be048d7518a7c2162acb1ef5bbd427ad7",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0006320240208879113,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "staff",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.34924776700791,
+            "ended_at": "2026-10-21T17:42:54.683029+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:42:27.333706+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.34924776700791,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:42:27.332785+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.35086082597263
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 27008463000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 8085,
+          "prompt_eval_duration": 36743000,
+          "total_duration": 27510132554
+        },
+        "ended_at": "2026-10-21T17:43:22.200703+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "df72f15a13b6c2f090741712276172cb6388db685b7a6e2e43fe55514fc2d7dd",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.00149832502938807,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "bank",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.513133010012098,
+            "ended_at": "2026-10-21T17:43:22.199686+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:42:54.686476+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.513133010012098,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:42:54.684409+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.51628946699202
+      },
+      {
+        "cache_hit": false,
+        "details": {
+          "done": true,
+          "done_reason": "length",
+          "eval_count": 3200,
+          "eval_duration": 26980261000,
+          "message_content": "",
+          "message_content_truncated": false,
+          "prompt_eval_count": 7388,
+          "prompt_eval_duration": 39084000,
+          "total_duration": 27513532569
+        },
+        "ended_at": "2026-10-21T17:43:49.720730+00:00",
+        "error": "Ollama ended generation at the output limit",
+        "error_code": "output_truncated",
+        "evidence_set_hash": "96afba364864d21b3594680c6afc0317cfff0759bdcdfd266a367b6ca1016423",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0015583159402012825,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "draft",
+        "model": "qwen3.5:9b",
+        "model_digest": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 27.51658796798438,
+            "ended_at": "2026-10-21T17:43:49.719938+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:43:22.203268+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 27.51658796798438,
+        "repeat": 3,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:43:22.201281+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 27.51944542909041
+      },
+      {
+        "cache_hit": false,
+        "details": {},
+        "ended_at": "2026-10-21T17:53:13.689122+00:00",
+        "error": "{'status': 400, 'error': '\"ministral-3:14b\" does not support thinking'}",
+        "error_code": "provider_incompatible",
+        "evidence_set_hash": "8a5256d598b42de38ede7bcfd4f842570d5a26dd8bf0a05c96a7778420808487",
+        "fresh_generation": true,
+        "function_timings": [
+          {
+            "elapsed_seconds": 0.0003489389782771468,
+            "stage": "pack_evidence"
+          }
+        ],
+        "human_reviewed": false,
+        "lemma": "lantern",
+        "model": "ministral-3:14b",
+        "model_digest": "4760c35aeb9d9e9c6174c2492562c0b999e80a222804fd96b1915ab72bbcdcf7",
+        "provider_calls": [
+          {
+            "elapsed_seconds": 0.048556211055256426,
+            "ended_at": "2026-10-21T17:53:13.688551+00:00",
+            "stage": "scaffold",
+            "started_at": "2026-10-21T17:53:13.639955+00:00"
+          }
+        ],
+        "provider_elapsed_seconds": 0.048556211055256426,
+        "repeat": 1,
+        "semantic_classification": "UNJUDGED",
+        "started_at": "2026-10-21T17:53:13.639383+00:00",
+        "status": "rejected",
+        "synthesis_elapsed_seconds": 0.04972999298479408
+      }
+    ],
+    "bundle_bytes": 15633363096,
+    "finished_at": "2026-10-21T17:53:13.689415+00:00",
+    "provider_seconds": 677.2415998481447
+  },
+  "artifact_sha256": {
+    "installed-before.json": "9fa45c486c0f2930d93876e0677183ef8da6a7b3f388b431654ae28fdfbc31ce",
+    "manifest.json": "c7b41ed333e2cb93b6a12c0eb010107d4b8a51d1fed2a7452f281e085e51bcb5",
+    "ministral-3-14b/disposition.json": "0f386fbc7cc0796eed3925310f43d012363160c9d5144b318153cc1ad100d07d",
+    "ministral-3-14b/license-0.json": "33eb0cb3692070e55a2de6a041a56a01886ffbf8dfffe4c592a6e80a25f6a757",
+    "ministral-3-14b/model.json": "f1f2d08b8231654e3d83fdbfe7fcb2910dee1abde97f34af36fbd8910c7debac",
+    "ministral-3-14b/provider-error-001.json": "58c701c011177d76aa50328d61c88bc48d2df5631beb06491876d14aa259e32a",
+    "ministral-3-14b/pull.json": "36f579d4c4606f9ff3c022585bab9c993c9fb9f0aec51523d0a81a7065d0eb31",
+    "ministral-3-14b/r1-lantern/attempt.json": "064ae766620c621704525b8f282e7d3bdec16535a69403e0927a4143227e3f79",
+    "ministral-3-14b/r1-lantern/call-001.json": "390b32187bb9a9047e3be814602973b2eccd76e8c1313e9cdfe8b9cb896eda0d",
+    "ministral-3-14b/r1-lantern/failure.json": "c0a410d5fc9ff7e2959025e0828a76fa391a673e4d0573e5c9ee26183ed8423a",
+    "ministral-3-14b/r1-lantern/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "ministral-3-14b/r1-lantern/summary.json": "64185895a6d23c787279b259728faa00a1811ab6287d0b88ed36fbc2f784d4a6",
+    "ministral-3-14b/registry-manifest.json": "cfae8c52239759ca80e59db25c04c26c06b68a61586eedf2661ae34391a432b6",
+    "ministral-3-14b/runtime-before-call-001.json": "c8cdda2058dfad73596cb9baef30bb2a825485859ad54c8d9cf5a10a457b0c8c",
+    "ministral-3-14b/show.json": "7bfbfccd521977b0290abd22496a8047d39f2becf1f76dbc3682a949cd606cbd",
+    "qwen3.5-9b/disposition.json": "1667e6fe80bd025d162d765ec5c33d7ad318e731a7afe6da3c73a3c57f2ca540",
+    "qwen3.5-9b/license-0.json": "e5a3861f5e4c3acd1d0f70c422f71b4c9f376738b5038ad69fdf169815d6091d",
+    "qwen3.5-9b/model.json": "1a272ef3d495045c75808db356914571a35ff483dd5ad6537658b2cffa2f3f40",
+    "qwen3.5-9b/provider-response-001.json": "a964a8cf7c80afbe63188bba2a1a1f08ffcac5bdbf5b6c1af3a4f450633514ad",
+    "qwen3.5-9b/provider-response-002.json": "2509c74618f4681a9cbe84342f4efe3a4a8b17fad2bbf3b352bf5e1ee24fad2c",
+    "qwen3.5-9b/provider-response-003.json": "1db65f3e7dfaaf50cdfb0fdb8f97b4faef78876f047daf4efb99aeb0c3422199",
+    "qwen3.5-9b/provider-response-004.json": "91c889cce1516a81d167187c57f2ac62e9d65e90bbb3120fa28296ade39ab855",
+    "qwen3.5-9b/provider-response-005.json": "0111d976682bc673e8c51a0079071d803ea8b4fb9484c7b9b8403706683e0871",
+    "qwen3.5-9b/provider-response-006.json": "68749179cdeb31ce5acac22e61fedb6003c9cb1f298d87f9a642169f23821a3c",
+    "qwen3.5-9b/provider-response-007.json": "da6b215aa9dfaf07b8c9d88ade4074465d325376e1ecf34a91e1f688c705b6aa",
+    "qwen3.5-9b/provider-response-008.json": "b77132744469ee2d10e8fd6be90e35c3929e7eec43ec3197e43074080c6ce6da",
+    "qwen3.5-9b/provider-response-009.json": "87636ca247b9d505018d706f421aa60fa4d4ab999eacfa82b5e2e0163456ee3b",
+    "qwen3.5-9b/provider-response-010.json": "4cc6c1c0422f807a30f1f6fd6be2e0283b8c9113f4b6f2c88391e38afae479f4",
+    "qwen3.5-9b/provider-response-011.json": "175b0e3e51bc56fa92243b7993aa09379a59f22a133b0196066d22c76ebce115",
+    "qwen3.5-9b/provider-response-012.json": "af23655f92ec7660f29f748087af778725b3fb00d804c47e2647d42de64867f5",
+    "qwen3.5-9b/provider-response-013.json": "4758a08f434191b2287b8cc700d6280d62f22778f1e5e17c4e54c8549caffe33",
+    "qwen3.5-9b/provider-response-014.json": "34136ef3f03e3ea0ad593b382b6561c4ece067a65d88d949470beb76d0322f8a",
+    "qwen3.5-9b/provider-response-015.json": "1bb7cc25a0dbbabd613fafbb23557157b1b454e0e764657e77bbc43a77f1af96",
+    "qwen3.5-9b/provider-response-016.json": "897416885451c9e942e4627cbab8adb277e58fcc7792ed8b883def9b2819b8e2",
+    "qwen3.5-9b/provider-response-017.json": "4d281f986cdc46404beab9bda2ba10aefcc932b33948d817bffab4b71e6d9a11",
+    "qwen3.5-9b/provider-response-018.json": "8e7fa1c9ef97621462471ec686ea1e5f3257958660549368a5e6ec9a52c6ba55",
+    "qwen3.5-9b/provider-response-019.json": "491c8b030bc3f2fe42bfe0d161539d447ad931de4da95ad76889b3b9b98a2bdb",
+    "qwen3.5-9b/provider-response-020.json": "1fe61ca28a601b111e0131b5f1a35445dce1e9686b1d2c9dd7ba3a4f74a4dab7",
+    "qwen3.5-9b/provider-response-021.json": "2ee0f1674f3436c0e49b9a0c58820c88a8a046cd3c1ae4ac9c3026c2e85f5fa1",
+    "qwen3.5-9b/provider-response-022.json": "059e8b05d031a2849e3b13ebace3fc2ccfbd996395b92c430f97c7a17a626cbf",
+    "qwen3.5-9b/provider-response-023.json": "6eaa6d69c882a132d6ad4e18a650db81a91a99e8685907f94fb8947a10d92e76",
+    "qwen3.5-9b/provider-response-024.json": "8c1d88390e035fe1ca1e9c0af9bf27d44732abf209e17cbeec8601cefba800a5",
+    "qwen3.5-9b/pull.json": "36f579d4c4606f9ff3c022585bab9c993c9fb9f0aec51523d0a81a7065d0eb31",
+    "qwen3.5-9b/r1-bank/attempt.json": "d821d948374e5f56d809c995dba1c2f1b95bd04ba186dd45897ed16576d628d0",
+    "qwen3.5-9b/r1-bank/call-001.json": "20eecffb18df72bbbbb66937917dac16c001c8bb172f10e72a71f78c856f7921",
+    "qwen3.5-9b/r1-bank/failure.json": "c11b259724b2deddd0d85702b78f123521e3ae64007d9b36f89532e6049e8d26",
+    "qwen3.5-9b/r1-bank/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-bank/summary.json": "6768472114faa954713a3412728200d51b7b90840a44231774a1e90ebabe947a",
+    "qwen3.5-9b/r1-bread/attempt.json": "703e1b650c8ee95992152a9aef19976d0aa19585e9bfa429c15604e7d332db10",
+    "qwen3.5-9b/r1-bread/call-001.json": "ba9df94ac40e42456e098d88c8672e0971fddb6edb9c94a35d4749933fd7b85f",
+    "qwen3.5-9b/r1-bread/failure.json": "b7c6c27dc60f0029e527455e3a17450f16057c279a4b50617adfa25fbc884f81",
+    "qwen3.5-9b/r1-bread/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-bread/summary.json": "c9e65cefea1536ebdba065dc1702e734524526be1019f174cefb7b3061b2c262",
+    "qwen3.5-9b/r1-draft/attempt.json": "49ff35a8f20b01753d8b202f87b20d380bc93cd6d083e5ea6ff07bf5b66b45de",
+    "qwen3.5-9b/r1-draft/call-001.json": "82745271b8cc7081ad9e3d3c6bba3a5f43f5db0342da38a9b0be132d48513e42",
+    "qwen3.5-9b/r1-draft/failure.json": "fef7263b4966ead7fb3a661ee678111475e714916a22422f2acaa123e0ee3f3e",
+    "qwen3.5-9b/r1-draft/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-draft/summary.json": "3b0737901f37e0ab31c3ff7f4b29b28051becafa37b5b4d3f31747bd2e3285a2",
+    "qwen3.5-9b/r1-jelly/attempt.json": "6db5d5586702b53faf66304a2dccf4e7dcf56847ee50c11d00cfe2d35cf250f9",
+    "qwen3.5-9b/r1-jelly/call-001.json": "8fcb20c4f394bb81d8231eeda5cb371830725ee1fc6b859df992278ad3489702",
+    "qwen3.5-9b/r1-jelly/failure.json": "879e057ba53246e1b59ceb72ab548aa08f3d78efb35c9f3a5e076288f7786107",
+    "qwen3.5-9b/r1-jelly/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-jelly/summary.json": "755cc148932ff1966b9fcd44dd25d8e904f380a54810d7bdde9d34045d2718ee",
+    "qwen3.5-9b/r1-lantern/attempt.json": "7e22649e25e21edb96b0b371da887420a21eea73cb23a02217ddbbf68777a2b6",
+    "qwen3.5-9b/r1-lantern/call-001.json": "95cc1a376e7096043bca633793658550706c2ffc42ef6115707271ffd80f73e6",
+    "qwen3.5-9b/r1-lantern/failure.json": "c0a5dc73bca2ad58ec479f3efabd141daaa73b895d84eced49922b738adf8696",
+    "qwen3.5-9b/r1-lantern/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-lantern/summary.json": "b1368f136230fa11658c9e6752bf708826b5fb05c15a0e1a768388dec6dcbd6e",
+    "qwen3.5-9b/r1-phone/attempt.json": "3d3272d0a77cdbc5595af324c16db178823fa53f6dd5d0aaf9d2f531c055ff7b",
+    "qwen3.5-9b/r1-phone/call-001.json": "371688bd849c6e7b5ef49c694aeacc084e7141364223b62fa92f9d93fddaf314",
+    "qwen3.5-9b/r1-phone/failure.json": "a568a88098e8b901878a9f0abd13a814937de8d419dafc57320b5bc2f1fc47c3",
+    "qwen3.5-9b/r1-phone/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-phone/summary.json": "36b8d65254a6c560a0a424372edc71daef6245aed13c4c27b34b3ed620952a8d",
+    "qwen3.5-9b/r1-staff/attempt.json": "7e7a48f858f865297902eeb4e85118261df27b9a6dd92b50885d4b13ad1961a4",
+    "qwen3.5-9b/r1-staff/call-001.json": "20bb87d1a851ea8374535a5f9a69a73131c921c76955ff75c080312c71e6a649",
+    "qwen3.5-9b/r1-staff/failure.json": "040c73c04f018e823822ece310313a311c71cbc3c804f046265ba620374a8ef6",
+    "qwen3.5-9b/r1-staff/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-staff/summary.json": "0bef5d3e7474f4b8563e478f7d8d9b12456f9401a16559a34474e90d5179ca59",
+    "qwen3.5-9b/r1-useful/attempt.json": "3d8c1af38668d21e7111e1d9159f04ebe7ec2433c7625fd1e27bf4766d8df633",
+    "qwen3.5-9b/r1-useful/call-001.json": "5b5eac59b1ed4f23739e6c1bf64c697340507580c93cedaa598f5c75c01f2b61",
+    "qwen3.5-9b/r1-useful/failure.json": "11a438d67b1f137a6ae7bbf5ee408dfcd94d5f0ff2f65cfbfc205d926a4c0ce2",
+    "qwen3.5-9b/r1-useful/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r1-useful/summary.json": "bf8cb252f422619ba706ccae18fba25495e090d9773e460343eed050648dbbc6",
+    "qwen3.5-9b/r2-bank/attempt.json": "43e8197ee05a49463e0c1ff951430adc4abf31814b1dd13202c28fb0c753a044",
+    "qwen3.5-9b/r2-bank/call-001.json": "d0e05b9599c4742f02a3bd1cd991bea627d2857baa2ac99c89bdda766be19738",
+    "qwen3.5-9b/r2-bank/failure.json": "dc72188eccb49900bbeb65b3e5158333b73b04ca64d956b9ac816f95339d16a4",
+    "qwen3.5-9b/r2-bank/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-bank/summary.json": "b7e8575c625afe68d58ac0143df2c8e64ca657449fb68ce2d119b66c3322d73c",
+    "qwen3.5-9b/r2-bread/attempt.json": "be4403afe0e9d4040865f31fdd501504f7b02d9d5a89be731330da51b3fbb2f6",
+    "qwen3.5-9b/r2-bread/call-001.json": "5c825771eff2f1eadcdfb2ccff90095b4732415b769002eca427ef90755c8110",
+    "qwen3.5-9b/r2-bread/failure.json": "4aa843787a2ab42cf8089ca072764ee1c528bbf7e9c389899d05d51ec249a935",
+    "qwen3.5-9b/r2-bread/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-bread/summary.json": "f9962e896d7bd3d7a52f3f395285b01b148529abdb771aafd3861537f9aa9a80",
+    "qwen3.5-9b/r2-draft/attempt.json": "5324cedc9eead58baa87bea4dd2118f5f7771d6a504593dbe7c0cfc15ccb53b0",
+    "qwen3.5-9b/r2-draft/call-001.json": "4808fa3f525e5626d1b9f13fc48c59ab58d5196e57be6de89df02efeedb9be65",
+    "qwen3.5-9b/r2-draft/failure.json": "8f538125255f991c6ea4622daf04ad1617e969037af2c810498d6137e9352ec4",
+    "qwen3.5-9b/r2-draft/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-draft/summary.json": "ce0d6c670cc0f4e706d30d74b8fac6e1fad3cd072309d9d008e4c0e08316f3ac",
+    "qwen3.5-9b/r2-jelly/attempt.json": "48bfc081221f52c3f374f5a373d8bca8f2e488d92f7867aa51008453f61f5c8f",
+    "qwen3.5-9b/r2-jelly/call-001.json": "875ad2e45e03d44824a198e5852739ed540cd90852b0b520598d3ae2419471c3",
+    "qwen3.5-9b/r2-jelly/failure.json": "d2c0402fa0f1ca05a894ec845a4b3247eda1c8b2d36ddbaf7fef9297e839c910",
+    "qwen3.5-9b/r2-jelly/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-jelly/summary.json": "5bf5c3386d0346f6f19e98c8b080f44e11f02818418e4a93c5fc7581e7e9ac9e",
+    "qwen3.5-9b/r2-lantern/attempt.json": "287f31d2a5dff1946d1c248ac40c3e287bb47ebb46d447cb875fa080fb1b8585",
+    "qwen3.5-9b/r2-lantern/call-001.json": "641ef48999674102c09f2f89074677901cd99ebac98478978888aa7c04518993",
+    "qwen3.5-9b/r2-lantern/failure.json": "1bde17753ee1042b22f33630e8e83e939c7a83a85a800c1184c3527a103346e6",
+    "qwen3.5-9b/r2-lantern/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-lantern/summary.json": "c7ff9fe284e7ddc715271ce66589c18e71267dae0a31806c8e9ffe24d8fa2035",
+    "qwen3.5-9b/r2-phone/attempt.json": "787aeb91b7aba59e64a605c116029d6b6a3b3410fec5ac7580ec98d2b9acc6df",
+    "qwen3.5-9b/r2-phone/call-001.json": "cf8489d73d2fd884618111563fcf1d87aa621cd6f9c6e4036f2f7f2ac1ee72d2",
+    "qwen3.5-9b/r2-phone/failure.json": "88a7a3437afd20ddb6d64bdabebc82e0f2c995341cc45eec2856a68f65ff719d",
+    "qwen3.5-9b/r2-phone/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-phone/summary.json": "f81b9fe9d801552054612bdfcdfbfc8e90a4ae4bf8b2655576fc934c7f288b35",
+    "qwen3.5-9b/r2-staff/attempt.json": "72cb4e1897e1abfb0854fc630407ca8044bff5d32367b03a464c4cf5c0438432",
+    "qwen3.5-9b/r2-staff/call-001.json": "89ad859ea552076e2d533a1c3faba11e8518d6100b3aa30a9f1dbaaa477fc9a3",
+    "qwen3.5-9b/r2-staff/failure.json": "462f95ae440636b6ce9ee668010ad16a628e417b1862e93c7a8be88b4a04bdf7",
+    "qwen3.5-9b/r2-staff/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-staff/summary.json": "1bcfdd1d0067d700506cc6f406c21859e69038675a6764487b360682065f027c",
+    "qwen3.5-9b/r2-useful/attempt.json": "72948cba62b2de241f0b6b889c8d2820f8d237271f4e2544f6175f29a8f21f16",
+    "qwen3.5-9b/r2-useful/call-001.json": "f844f057fa5b79f25bd358fbd547711c2e15f66daf83729821b02dca93259959",
+    "qwen3.5-9b/r2-useful/failure.json": "e87339048a39122ddab2e4fc638ba6767a36c9e4a70811fa8da6f89878e21ef3",
+    "qwen3.5-9b/r2-useful/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r2-useful/summary.json": "0293b81a630285568eaf3e54209250f928b1d3a289f40ee14aebcc004093da64",
+    "qwen3.5-9b/r3-bank/attempt.json": "a642854d3c7e6eaa2d8b5258390099d62fbf532c89028319276bd8b364723441",
+    "qwen3.5-9b/r3-bank/call-001.json": "f64118698f18a465f8fd1d17c33e7ddffd943c63fbee53ca76c20d72578914c6",
+    "qwen3.5-9b/r3-bank/failure.json": "bb56d9569eb980b492831655520b80cc2376cc0ca3498feae7350455033177c2",
+    "qwen3.5-9b/r3-bank/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-bank/summary.json": "56fc564147e18c88c8c204f47ebf246355417042e61f1db4bac43494812aac53",
+    "qwen3.5-9b/r3-bread/attempt.json": "b35eb7cb5c861e552f1c9d120942d3135136a7f994c8d0ea198709fa0ea7c6ec",
+    "qwen3.5-9b/r3-bread/call-001.json": "6b34dec0a273343a564bbf345bfd51e08aef2533fc7f528f83af452ae5677a53",
+    "qwen3.5-9b/r3-bread/failure.json": "a396f48e1f9aa55436757b45723d01a6488d26aa962a9dca2f9bee9089f45a65",
+    "qwen3.5-9b/r3-bread/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-bread/summary.json": "7f44c6e3e3ff00171c2a0eb8506d93180877b29e71f9ae0de442ec51f603c5a0",
+    "qwen3.5-9b/r3-draft/attempt.json": "c32c497f75b029bb62bb79d49a89335b2dfcc08250da3ad665eba29c339f3bbe",
+    "qwen3.5-9b/r3-draft/call-001.json": "c0b08ac950385afe8488471b1f0e784fd39dbff825384c57d2eb210e08fb2b93",
+    "qwen3.5-9b/r3-draft/failure.json": "3756c772d6abdab0e0c2faca05a1ec9ce52e65dcaf3f4881098c08211f287dfd",
+    "qwen3.5-9b/r3-draft/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-draft/summary.json": "16c6c82e5f54339f1994140006a902684bb308e38c4f170f7eaf68fd24469782",
+    "qwen3.5-9b/r3-jelly/attempt.json": "d741aaa252381cfbb590a94b702b51952c6c36313fb17592758a9a35e0996ca4",
+    "qwen3.5-9b/r3-jelly/call-001.json": "a9cbd4086bd40c5fb4830fbde0dfb9d5db86741bb52c67dce19c9a0311beafe2",
+    "qwen3.5-9b/r3-jelly/failure.json": "dcb744b321c4350947c1cf1a7853be55fdacfdc3e8d97861814c903aee22ad92",
+    "qwen3.5-9b/r3-jelly/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-jelly/summary.json": "7527f9178ff6e8e79a14609b1f73ee63c909985c51a4cb4929b8e551f4aef134",
+    "qwen3.5-9b/r3-lantern/attempt.json": "80be7a967105078c79b6ec7cd4f4f6ec0150a2b6f46eb676b0f7c6b424929673",
+    "qwen3.5-9b/r3-lantern/call-001.json": "85ebbe0885a9ecda0ce95408623ffcdf46ae14529ae43b40721dfed7c56aaa01",
+    "qwen3.5-9b/r3-lantern/failure.json": "2aaafe3c980af167d788d52add2f6a3b2c56294a66a456f6aeb43e781a347f03",
+    "qwen3.5-9b/r3-lantern/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-lantern/summary.json": "5450776c0a535c302a759d9879fdcf678898f75dc140edd1f89abd4499a7e94c",
+    "qwen3.5-9b/r3-phone/attempt.json": "e8c0e1def8c1b908e0159b3739bd40f51d5951268c5c41910a572be1ec3179bc",
+    "qwen3.5-9b/r3-phone/call-001.json": "0c46db48fcb685883f9b6215b0770370d5802d60a5ec6f00293f1152420dc1a1",
+    "qwen3.5-9b/r3-phone/failure.json": "b7c68342b5cf6e96506bc70503e4e27d3e490ff74392d28bb71df44c60c21521",
+    "qwen3.5-9b/r3-phone/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-phone/summary.json": "3bf1146b5be636fe56066dc3df719917bdae784b233469f7bfb8d890a3f720fa",
+    "qwen3.5-9b/r3-staff/attempt.json": "a3e838d77d9a057e0c53faafc752db2f2ee566d0484d723262f3167dd9660c72",
+    "qwen3.5-9b/r3-staff/call-001.json": "57f3373130c2f3df435506aa74b368ba4269b4c4e1bbc928faf21f1c49ae8bbc",
+    "qwen3.5-9b/r3-staff/failure.json": "cee5f5be9c12db202f0a0925993cbd77344068f93dbb088c633169be94510312",
+    "qwen3.5-9b/r3-staff/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-staff/summary.json": "85e0b5ddd10fa541751db1f1a35155536ea35dfa07d00e97eb940e8e32da0b00",
+    "qwen3.5-9b/r3-useful/attempt.json": "e02f5c2a976a465ff4c8fb03fdcada467b813e313098c01783fa13ab23e38851",
+    "qwen3.5-9b/r3-useful/call-001.json": "ad82196376844719cd308fdac8c9c4baaec897dc0154e8b03f6c6352c650ec33",
+    "qwen3.5-9b/r3-useful/failure.json": "f84cfd98fdbbfdff69ca7df981727af80e9a6f705ce8f7c738741f780a9566ae",
+    "qwen3.5-9b/r3-useful/review.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "qwen3.5-9b/r3-useful/summary.json": "67b67de441add61c1b9e02c26921579ea8d629e90d8256aacba1179be5c24121",
+    "qwen3.5-9b/registry-manifest.json": "e744b9b14da9ab868ec5f5eab49a9dc80fc1eb55281f14a9c59b3f12971e652f",
+    "qwen3.5-9b/runtime-after-call-001.json": "a37425f501fe59bbf5daced9299b6d2e5cdd4137c01d992d09e3039d6a3c138b",
+    "qwen3.5-9b/runtime-after-call-002.json": "ba9dd71cb2fe77b20f801064fa31f014fc9f66826bea413556769ac958c99bbf",
+    "qwen3.5-9b/runtime-after-call-003.json": "30685ae5e46dd8d23b89642e093c89de32c582afba9cbb49914635f70e0160f3",
+    "qwen3.5-9b/runtime-after-call-004.json": "fe24a0f62874c87e41cc3ae9aa6eb7a2c32a5bd7ab13b4459ad391feee76f16a",
+    "qwen3.5-9b/runtime-after-call-005.json": "ae05a366fe50e23bd6260cfbe1859f4028aebb51d9c4f0f913f54fbb437dbb1a",
+    "qwen3.5-9b/runtime-after-call-006.json": "f52f279455aa1db0f8c1ddf3c21b1326d85d0274e066678a7e89428cee304e2e",
+    "qwen3.5-9b/runtime-after-call-007.json": "52952711ad6412a362704b2db2a6fb955ad8146f2896b3aae5d9973298084281",
+    "qwen3.5-9b/runtime-after-call-008.json": "a47946d2824f84f4889fe92c8ab1d4a26722d2e5c7dba1560b83b84bec10c94f",
+    "qwen3.5-9b/runtime-after-call-009.json": "b557feaa48d129c03d106a6f8344076191b4bc76506275d3e42080f3a92cd4d2",
+    "qwen3.5-9b/runtime-after-call-010.json": "dfa149db59eae756186d502b01b305a0f54c0819823584d136e9cd73256ccd91",
+    "qwen3.5-9b/runtime-after-call-011.json": "7c4ff4af6172670c4f8895e771738d57b73db9f6eb1ecba09d217cb976e549ee",
+    "qwen3.5-9b/runtime-after-call-012.json": "38fae09713593f86d7b45448e0790d9b966df3c77df204ff0470d3ede9c97672",
+    "qwen3.5-9b/runtime-after-call-013.json": "bc673f9635254bc8a2b1f4b42cff3fd532974e0f1462e4b678db39e74e48ea8f",
+    "qwen3.5-9b/runtime-after-call-014.json": "e87c904e98c00a1df585fb0cd41d48a5762ce056e8639ea0b1d0f722269baa6b",
+    "qwen3.5-9b/runtime-after-call-015.json": "75d2bc4670b9aff75fbb2ba6d3c4d26f41fbceccd7848c51a4f2de6da2143798",
+    "qwen3.5-9b/runtime-after-call-016.json": "01dd10f5a239e204fb54745fe2cfc9fb280cea8fc5d6255dee15961f9512dd08",
+    "qwen3.5-9b/runtime-after-call-017.json": "7be3b459b7f9427e3d36fab6df474d9993efb8e555f0f4338c835b076328ea07",
+    "qwen3.5-9b/runtime-after-call-018.json": "24bc7d3b898f840c9fed18392b41194a78856d212740e78d5445050db169b75b",
+    "qwen3.5-9b/runtime-after-call-019.json": "be0dc2880f558f94771585dd6b892e34f5f9cb00537e99302c4f19402b501233",
+    "qwen3.5-9b/runtime-after-call-020.json": "64441f269e4201d7cb93d075f6fa74324d963c44074a67501a922c597a6d2c81",
+    "qwen3.5-9b/runtime-after-call-021.json": "8d869af6537307bdd3f6bb89db8e3660666478951d83581e01d98c2642d25c71",
+    "qwen3.5-9b/runtime-after-call-022.json": "90deb30c143d78693d06372cb835c0101163cc9391443ef6668187b1c694c7ce",
+    "qwen3.5-9b/runtime-after-call-023.json": "90f11fed614360a076fa1a6f6c8210c88ad8750f5a62d3e9e4801e26c890e075",
+    "qwen3.5-9b/runtime-after-call-024.json": "e5f6555bfad185b4e93c50bb261928ad514402a06c8db7913a3db6d82bd59abc",
+    "qwen3.5-9b/runtime-before-call-001.json": "c8cdda2058dfad73596cb9baef30bb2a825485859ad54c8d9cf5a10a457b0c8c",
+    "qwen3.5-9b/runtime-before-call-002.json": "a37425f501fe59bbf5daced9299b6d2e5cdd4137c01d992d09e3039d6a3c138b",
+    "qwen3.5-9b/runtime-before-call-003.json": "ba9dd71cb2fe77b20f801064fa31f014fc9f66826bea413556769ac958c99bbf",
+    "qwen3.5-9b/runtime-before-call-004.json": "30685ae5e46dd8d23b89642e093c89de32c582afba9cbb49914635f70e0160f3",
+    "qwen3.5-9b/runtime-before-call-005.json": "fe24a0f62874c87e41cc3ae9aa6eb7a2c32a5bd7ab13b4459ad391feee76f16a",
+    "qwen3.5-9b/runtime-before-call-006.json": "ae05a366fe50e23bd6260cfbe1859f4028aebb51d9c4f0f913f54fbb437dbb1a",
+    "qwen3.5-9b/runtime-before-call-007.json": "f52f279455aa1db0f8c1ddf3c21b1326d85d0274e066678a7e89428cee304e2e",
+    "qwen3.5-9b/runtime-before-call-008.json": "52952711ad6412a362704b2db2a6fb955ad8146f2896b3aae5d9973298084281",
+    "qwen3.5-9b/runtime-before-call-009.json": "a47946d2824f84f4889fe92c8ab1d4a26722d2e5c7dba1560b83b84bec10c94f",
+    "qwen3.5-9b/runtime-before-call-010.json": "b557feaa48d129c03d106a6f8344076191b4bc76506275d3e42080f3a92cd4d2",
+    "qwen3.5-9b/runtime-before-call-011.json": "dfa149db59eae756186d502b01b305a0f54c0819823584d136e9cd73256ccd91",
+    "qwen3.5-9b/runtime-before-call-012.json": "7c4ff4af6172670c4f8895e771738d57b73db9f6eb1ecba09d217cb976e549ee",
+    "qwen3.5-9b/runtime-before-call-013.json": "38fae09713593f86d7b45448e0790d9b966df3c77df204ff0470d3ede9c97672",
+    "qwen3.5-9b/runtime-before-call-014.json": "bc673f9635254bc8a2b1f4b42cff3fd532974e0f1462e4b678db39e74e48ea8f",
+    "qwen3.5-9b/runtime-before-call-015.json": "e87c904e98c00a1df585fb0cd41d48a5762ce056e8639ea0b1d0f722269baa6b",
+    "qwen3.5-9b/runtime-before-call-016.json": "75d2bc4670b9aff75fbb2ba6d3c4d26f41fbceccd7848c51a4f2de6da2143798",
+    "qwen3.5-9b/runtime-before-call-017.json": "01dd10f5a239e204fb54745fe2cfc9fb280cea8fc5d6255dee15961f9512dd08",
+    "qwen3.5-9b/runtime-before-call-018.json": "7be3b459b7f9427e3d36fab6df474d9993efb8e555f0f4338c835b076328ea07",
+    "qwen3.5-9b/runtime-before-call-019.json": "24bc7d3b898f840c9fed18392b41194a78856d212740e78d5445050db169b75b",
+    "qwen3.5-9b/runtime-before-call-020.json": "be0dc2880f558f94771585dd6b892e34f5f9cb00537e99302c4f19402b501233",
+    "qwen3.5-9b/runtime-before-call-021.json": "64441f269e4201d7cb93d075f6fa74324d963c44074a67501a922c597a6d2c81",
+    "qwen3.5-9b/runtime-before-call-022.json": "8d869af6537307bdd3f6bb89db8e3660666478951d83581e01d98c2642d25c71",
+    "qwen3.5-9b/runtime-before-call-023.json": "90deb30c143d78693d06372cb835c0101163cc9391443ef6668187b1c694c7ce",
+    "qwen3.5-9b/runtime-before-call-024.json": "90f11fed614360a076fa1a6f6c8210c88ad8750f5a62d3e9e4801e26c890e075",
+    "qwen3.5-9b/show.json": "e33513958d5827c09988bb18f13be6d2b562643a4b644958898b8f4c4cd944eb",
+    "results.json": "433f170e90df659e40b4f0ac319548ad08c2f4e1be7250b11b648c01799f5c6a",
+    "runtime-initial.json": "c8cdda2058dfad73596cb9baef30bb2a825485859ad54c8d9cf5a10a457b0c8c"
+  },
+  "comparisons": [
+    {
+      "attempts": 8,
+      "errors": {
+        "grouping_validation_failed": 2
+      },
+      "max_seconds": 26.506470858003013,
+      "median_seconds": 13.803006001515314,
+      "model": "gpt-oss:20b",
+      "p95_nearest_rank_seconds": 26.506470858003013,
+      "semantic_classification": "UNJUDGED; baseline lantern overlay separately applicable",
+      "structural_validated": 6,
+      "synthesis_seconds": 111.02579045097809
+    },
+    {
+      "attempts": 24,
+      "errors": {
+        "output_truncated": 24
+      },
+      "max_seconds": 42.449673483963124,
+      "median_seconds": 27.492512786469888,
+      "model": "qwen3.5:9b",
+      "p95_nearest_rank_seconds": 29.678847023053095,
+      "semantic_classification": "UNJUDGED; baseline lantern overlay separately applicable",
+      "structural_validated": 0,
+      "synthesis_seconds": 677.2863825110253
+    },
+    {
+      "attempts": 1,
+      "errors": {
+        "provider_incompatible": 1
+      },
+      "max_seconds": 0.04972999298479408,
+      "median_seconds": 0.04972999298479408,
+      "model": "ministral-3:14b",
+      "p95_nearest_rank_seconds": 0.04972999298479408,
+      "semantic_classification": "UNJUDGED; baseline lantern overlay separately applicable",
+      "structural_validated": 0,
+      "synthesis_seconds": 0.04972999298479408
+    }
+  ],
+  "interpretation": "Provider incompatibility is not a semantic failure or quality comparison. No new human semantic review; preserve prior A2 lantern overlay."
+}

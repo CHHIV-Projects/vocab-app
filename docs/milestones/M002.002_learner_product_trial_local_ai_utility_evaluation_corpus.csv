@@ -1,0 +1,61 @@
+normalized_lemma,stratum,source_senses_by_pos,total_source_senses,inclusion_rationale,pilot,repeat
+bread,normal,noun=7;verb=2,9,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,yes
+chair,normal,name=2;noun=11;verb=3,16,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+door,normal,noun=9;verb=1,10,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+garden,normal,adj=1;name=2;noun=9;verb=3,15,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+hill,normal,name=10;noun=6;verb=2,18,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+island,normal,name=7;noun=10;verb=3,20,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+milk,normal,name=1;noun=7;verb=8,16,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+rain,normal,name=1;noun=3;verb=4,8,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+river,normal,name=5;noun=5;verb=1,11,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+road,normal,adj=2;noun=12,14,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,yes
+school,normal,noun=12;verb=4,16,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+window,normal,noun=12;verb=3,15,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+brave,normal,adj=4;name=2;noun=3;verb=2,11,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+calm,normal,adj=5;noun=4;verb=2,11,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+gentle,normal,adj=6;name=1;noun=3;verb=4,14,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+honest,normal,adj=9;adv=1;verb=1,11,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+narrow,normal,adj=10;noun=1;verb=5,16,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+patient,normal,adj=3;name=1;noun=3,7,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+quiet,normal,adj=6;intj=1;noun=3;verb=2,12,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+useful,normal,adj=1,1,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,yes
+vivid,normal,adj=3;noun=1,4,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+worry,normal,noun=3;verb=6,9,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+admire,normal,name=2;verb=5,7,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+borrow,normal,name=1;noun=5;verb=12,18,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+improve,normal,verb=5,5,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+notice,normal,noun=7;verb=5,12,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,no
+prefer,normal,verb=4,4,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+repair,normal,noun=6;verb=4,10,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+remember,normal,verb=10,10,Ordinary-use seed; first 30 with 1-20 recorded senses,no,no
+explain,normal,verb=5,5,Ordinary-use seed; first 30 with 1-20 recorded senses,yes,yes
+staff,complexity,noun=13;verb=1,14,Polysemy seed; evenly spaced count rank including endpoints,yes,yes
+match,complexity,noun=14;verb=7,21,Polysemy seed; evenly spaced count rank including endpoints,no,no
+bark,complexity,intj=1;name=1;noun=14;verb=7,23,Polysemy seed; evenly spaced count rank including endpoints,no,no
+seal,complexity,name=2;noun=11;symbol=1;verb=15,29,Polysemy seed; evenly spaced count rank including endpoints,yes,no
+cold,complexity,adj=22;adv=3;noun=5,30,Polysemy seed; evenly spaced count rank including endpoints,no,no
+plant,complexity,name=4;noun=19;verb=9,32,Polysemy seed; evenly spaced count rank including endpoints,no,no
+scale,complexity,noun=21;verb=13,34,Polysemy seed; evenly spaced count rank including endpoints,no,no
+draft,complexity,adj=2;noun=24;verb=11,37,Polysemy seed; evenly spaced count rank including endpoints,yes,no
+well,complexity,adj=5;adv=5;intj=7;name=5;noun=16;verb=2,40,Polysemy seed; evenly spaced count rank including endpoints,no,no
+table,complexity,noun=31;verb=10,41,Polysemy seed; evenly spaced count rank including endpoints,no,yes
+fine,complexity,adj=16;adv=3;intj=2;name=1;noun=10;verb=10,42,Polysemy seed; evenly spaced count rank including endpoints,no,no
+bank,complexity,name=3;noun=28;verb=14,45,Polysemy seed; evenly spaced count rank including endpoints,yes,no
+hold,complexity,adj=1;noun=20;verb=25,46,Polysemy seed; evenly spaced count rank including endpoints,no,no
+clear,complexity,adj=20;adv=4;noun=5;verb=20,49,Polysemy seed; evenly spaced count rank including endpoints,no,no
+turn,complexity,noun=23;verb=35,58,Polysemy seed; evenly spaced count rank including endpoints,no,no
+spring,complexity,adj=1;name=3;noun=25;verb=40,69,Polysemy seed; evenly spaced count rank including endpoints,yes,no
+light,complexity,adj=26;adv=1;name=6;noun=25;verb=12,70,Polysemy seed; evenly spaced count rank including endpoints,no,no
+point,complexity,intj=1;name=6;noun=58;verb=21,86,Polysemy seed; evenly spaced count rank including endpoints,no,no
+break,complexity,noun=35;verb=70,105,Polysemy seed; evenly spaced count rank including endpoints,no,no
+draw,complexity,intj=1;noun=17;verb=138,156,Polysemy seed; evenly spaced count rank including endpoints,yes,yes
+lantern,challenge,adj=1;noun=10;verb=1,12,Accepted M002.001 scaffold-shift regression,yes,yes
+jelly,challenge,adj=1;noun=12;verb=3,16,Prompt-named prior observation; not asserted failed,yes,yes
+cobble,challenge,name=1;noun=4;verb=3,8,Prompt-named prior observation; not asserted failed,no,no
+phone,challenge,noun=3;verb=2,5,Prompt-named prior observation; not asserted failed,yes,yes
+vertigo,challenge,name=1;noun=4,5,Prompt-named prior observation; not asserted failed,no,no
+flummox,challenge,verb=2,2,Prompt-named prior observation; not asserted failed,no,no
+quartz,challenge,noun=2,2,Prompt-named prior observation; not asserted failed,yes,no
+archipelago,challenge,noun=5;verb=1,6,Prompt-named prior observation; not asserted failed,no,no
+lead,challenge,adj=2;name=2;noun=39;verb=24,67,Added challenge: heteronym and multi-POS alias stress,no,no
+sanction,challenge,noun=3;verb=3,6,Added challenge: contrasting noun/verb semantics,no,no

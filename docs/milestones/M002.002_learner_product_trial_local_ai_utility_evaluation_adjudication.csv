@@ -1,0 +1,7 @@
+review_id,classification,authority,review_basis,new_independent_human_review,flags
+lantern-006,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 cupola/pinion pairing,false,cross-sense shift; cupola semantic omission
+lantern-007,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 pinion/brass pairing,false,cross-sense shift
+lantern-008,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 brass/railway chain,false,cross-sense shift
+lantern-009,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 railway/barrel chain,false,cross-sense shift
+lantern-010,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 barrel/Aristotle pairing,false,cross-sense shift
+lantern-011,MISALIGNED,PO A2 approved 2026-10-21T16:48:36Z,Corroborates prior PO-reviewed M002.001 Aristotle/verb pairing,false,cross-sense shift; cross-POS semantic contamination
