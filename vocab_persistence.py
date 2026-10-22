@@ -155,6 +155,36 @@ class PostgresPersistence:
         first = next(section for section in projection if section["core_meanings"])
         definition = first["core_meanings"][0]["definition"]
         pos = first["pos"]
+        model_identity = (
+            {"model": candidate["model"], "digest": candidate.get("model_digest")}
+            if candidate.get("model")
+            else {}
+        )
+        prompt_identity = (
+            {"prompt": candidate["prompt_version"]}
+            if candidate.get("prompt_version")
+            else {}
+        )
+        policy_identity = (
+            {"policy": candidate["policy_version"]}
+            if candidate.get("policy_version")
+            else {}
+        )
+        schema_identity = (
+            {"schema": candidate["schema_version"]}
+            if candidate.get("schema_version")
+            else {}
+        )
+        packer_identity = (
+            {"packer": candidate["packer_version"]}
+            if candidate.get("packer_version")
+            else {}
+        )
+        validator_identity = (
+            {"validator": candidate["validator_version"]}
+            if candidate.get("validator_version")
+            else {}
+        )
         saved_result: dict[str, Any] | None = None
         with self.connection.transaction():
             with self.connection.cursor() as cursor:
@@ -194,12 +224,12 @@ class PostgresPersistence:
                         vocabulary_id = vocabulary["id"] if isinstance(vocabulary, dict) else vocabulary[0]
                         cursor.execute("UPDATE vocabulary SET definition=%s, part_of_speech=%s WHERE id=%s", (definition, pos, vocabulary_id))
                     else:
-                        cursor.execute("INSERT INTO vocabulary(word,definition,part_of_speech,source,created_on,count) VALUES (%s,%s,%s,%s,%s,1) RETURNING id", (normalized, definition, pos, "M004.5 lexical synthesis", datetime.now(timezone.utc).date()))
+                        cursor.execute("INSERT INTO vocabulary(word,definition,part_of_speech,source,created_on,count) VALUES (%s,%s,%s,%s,%s,1) RETURNING id", (normalized, definition, pos, "M002.003 deterministic lexical source", datetime.now(timezone.utc).date()))
                         vocabulary_id = _row_value(cursor.fetchone(), "id", 0)
                     cursor.execute("UPDATE lexical_entries SET vocabulary_id=%s, updated_at=now() WHERE id=%s", (vocabulary_id, entry_id))
                     cursor.execute("""INSERT INTO lexical_entry_versions
                         (lexical_entry_id,version_number,candidate_snapshot,evidence_snapshot,evidence_set_hash,dataset_identity,wordnet_identity,model_identity,prompt_identity,policy_identity,schema_identity,packer_identity,validator_identity,inference_identity,candidate_identity,origin)
-                        VALUES (%s,%s,%s::jsonb,%s::jsonb,%s,%s::jsonb,%s,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s,%s) RETURNING id""", (entry_id, version, json.dumps(candidate), json.dumps(evidence), candidate["evidence_set_hash"], json.dumps({"wiktionary": evidence.get("wiktionary_versions")}), evidence.get("wordnet_version"), json.dumps({"model": candidate.get("model"), "digest": candidate.get("model_digest")}), json.dumps({"prompt": candidate.get("prompt_version")}), json.dumps({"policy": candidate.get("policy_version")}), json.dumps({"schema": candidate.get("schema_version")}), json.dumps({"packer": candidate.get("packer_version")}), json.dumps({"validator": candidate.get("validator_version")}), json.dumps(candidate.get("inference", {})), candidate_identity, origin))
+                        VALUES (%s,%s,%s::jsonb,%s::jsonb,%s,%s::jsonb,%s,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,%s,%s) RETURNING id""", (entry_id, version, json.dumps(candidate), json.dumps(evidence), candidate["evidence_set_hash"], json.dumps({"wiktionary": evidence.get("wiktionary_versions")}), evidence.get("wordnet_version"), json.dumps(model_identity), json.dumps(prompt_identity), json.dumps(policy_identity), json.dumps(schema_identity), json.dumps(packer_identity), json.dumps(validator_identity), json.dumps(candidate.get("inference", {})), candidate_identity, origin))
                     version_id = _row_value(cursor.fetchone(), "id", 0)
                     cursor.execute("UPDATE lexical_entries SET active_version_id=%s, updated_at=now() WHERE id=%s", (version_id, entry_id))
                     saved_result = {

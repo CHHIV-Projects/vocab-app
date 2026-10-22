@@ -9,6 +9,7 @@ from pathlib import Path
 from vocab_lexical_engine import (
     build_manifest,
     build_sqlite,
+    active_dataset_status,
     evidence_bundle,
     evidence_set_hash,
     lookup,
@@ -159,6 +160,25 @@ class LexicalEngineTests(unittest.TestCase):
         expected = self.root / "versions" / "fixture-20260906" / "lexical.sqlite"
         expected.parent.mkdir(exist_ok=True)
         self.assertEqual(resolve_active_database(self.root), expected)
+
+    def test_active_dataset_status_reads_identity_and_date_without_mutating_pointer(self):
+        version = "wiktionary-20260901"
+        version_dir = self.root / "versions" / version
+        version_dir.mkdir(parents=True)
+        (version_dir / "manifest.json").write_text(json.dumps({
+            "dataset_version": version,
+            "dump_date": "2026-09-01",
+            "normalized_evidence_sha256": "fixture-hash",
+        }), encoding="utf-8")
+        active = self.root / "active"
+        active.write_text(version + "\n", encoding="utf-8")
+
+        status = active_dataset_status(self.root)
+
+        self.assertEqual(status["dataset_version"], version)
+        self.assertEqual(status["dump_date"], "2026-09-01")
+        self.assertEqual(status["manifest_identity"], "fixture-hash")
+        self.assertEqual(active.read_text(encoding="utf-8"), version + "\n")
 
 
 if __name__ == "__main__":

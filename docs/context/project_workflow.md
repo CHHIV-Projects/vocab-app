@@ -23,7 +23,7 @@ Use existing focused tests where they cover the change. Tests use Python `unitte
 python3 -m unittest tests.test_vocab_workflow
 python3 -m unittest tests.test_vocab_consolidation
 python3 -m unittest discover -s tests -p 'test_*.py'
-python3 -m py_compile app.py vocab_workflow.py vocab_synthesis.py vocab_persistence.py
+python3 -m py_compile app.py vocab_workflow.py vocab_lexical_engine.py vocab_persistence.py
 ```
 
 Choose only checks relevant to the authorized change. PostgreSQL tests may require explicit test-database configuration. Do not run database, browser, model, or production-runtime checks unless the active prompt authorizes them.

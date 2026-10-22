@@ -1,9 +1,7 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import os
-from datetime import datetime
-import re
+import json
 import io
+import os
 import time
 from contextlib import contextmanager
 
@@ -12,30 +10,31 @@ from vocab_domain import (
     shuffle_practice_candidates,
     update_score as apply_score_update,
 )
-from vocab_dictionary import get_dictionary_data
-from vocab_nlp import get_synonyms_nltk
 from vocab_persistence import PostgresPersistence
 from vocab_translation import SUPPORTED_LANGUAGES, translate_text
-from vocab_lexical_engine import resolve_active_database
-from vocab_synthesis import OllamaProvider, SynthesisRuntime
+from vocab_lexical_engine import active_dataset_status
 from vocab_workflow import (
-    LexicalWorkflow, candidate_provenance, deduplicated_forms,
-    meaning_source_rows, source_detail_rows, sort_pos_sections,
+    LexicalWorkflow, deduplicated_forms, meaning_source_rows,
+    sort_pos_sections, source_detail_rows,
 )
 
-# --- NEW: AUDIO & NLP LIBRARIES ---
 from gtts import gTTS
-import nltk
 
 # --- CONFIGURATION ---
-st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="centered")
-
-# --- NLTK SETUP (Run once) ---
-try:
-    nltk.data.find('corpora/wordnet.zip')
-except LookupError:
-    nltk.download('wordnet')
-    nltk.download('omw-1.4')
+st.set_page_config(page_title="Vocab Tracker", page_icon="📖", layout="wide")
+st.markdown(
+    """
+    <style>
+    .block-container { max-width: 1180px; padding: 2rem clamp(1rem, 3vw, 3rem); }
+    @media (max-width: 640px) {
+        .block-container { padding: .75rem .85rem 2rem; }
+        [data-testid="stHorizontalBlock"] { gap: .5rem; flex-wrap: wrap; }
+        [data-testid="column"] { min-width: 100% !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # --- SESSION STATE INITIALIZATION ---
 if 'active_search' not in st.session_state:
@@ -100,21 +99,17 @@ def get_persistence():
 @st.cache_resource
 def get_lexical_workflow():
     root = os.environ.get("VOCAB_LEXICAL_ROOT", "/home/chuck/.local/share/vocab-lexical")
-    return LexicalWorkflow(str(resolve_active_database(root)), get_persistence(), OllamaProvider(), SynthesisRuntime())
+    return LexicalWorkflow(root, get_persistence())
 
 # --- 2. LOGIC HELPERS ---
 
 # --- AUDIO GENERATOR (gTTS) ---
 def get_audio_bytes(text, lang='en'):
-    try:
-        tts = gTTS(text=text, lang=lang)
-        fp = io.BytesIO()
-        tts.write_to_fp(fp)
-        fp.seek(0)
-        return fp
-    except Exception as e:
-        print(f"Audio generation error: {e}")
-        return None
+    tts = gTTS(text=text, lang=lang)
+    fp = io.BytesIO()
+    tts.write_to_fp(fp)
+    fp.seek(0)
+    return fp
 
 def update_score(word, success):
     try:
@@ -127,6 +122,27 @@ st.title("📚 Vocab Builder")
 
 # --- SIDEBAR: HISTORY & LOGS ---
 with st.sidebar:
+    st.header("Lexical dataset")
+    lexical_root = os.environ.get("VOCAB_LEXICAL_ROOT", "/home/chuck/.local/share/vocab-lexical")
+    try:
+        dataset_status = active_dataset_status(lexical_root)
+        st.caption(
+            f"Installed: {dataset_status['dataset_version']}"
+            + (f" · {dataset_status['dump_date']}" if dataset_status.get("dump_date") else "")
+        )
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        st.error(f"Dataset status unavailable: {error}")
+    if st.button("Check dataset status", key="check_dataset_status"):
+        try:
+            dataset_status = active_dataset_status(lexical_root)
+            st.success(
+                f"Installed dataset: {dataset_status['dataset_version']}"
+                + (f" · {dataset_status['dump_date']}" if dataset_status.get("dump_date") else "")
+            )
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            st.error(f"Dataset check failed: {error}")
+    st.caption("Dataset changes are manual; this app does not download or activate updates.")
+    st.markdown("---")
     st.header("Recent History")
     try:
         with log_performance("Sidebar: Fetch History"):
@@ -158,23 +174,25 @@ with st.sidebar:
             st.caption("No logs recorded yet.")
 
 def render_learner_meaning(candidate, meaning, pos):
-    st.markdown(f"**{meaning['definition']}**")
+    definition = meaning.get("definition") or "Source gloss unavailable."
+    st.markdown(f"**{definition}**")
     if meaning.get("labels"):
         st.caption(" · ".join(meaning["labels"]))
     if meaning.get("synonyms"):
         st.caption("Synonyms: " + ", ".join(item["term"] for item in meaning["synonyms"]))
     sources = meaning_source_rows(candidate, meaning, pos)
     if not sources:
-        st.caption("Source mapping not recorded for this meaning.")
+        st.caption("Source mapping is unavailable for this saved historical meaning.")
         return
     label = "source meaning" if len(sources) == 1 else "source meanings"
     with st.expander(f"{len(sources)} linked {label}"):
-        st.caption("These are the source references recorded for this generated meaning. Checks verify reference identity, source POS and coverage, not that the generated wording accurately represents those sources.")
         for index, source in enumerate(sources, start=1):
             st.write(f"Wiktionary source meaning {index}")
             st.write(" · ".join(source["glosses"]) or "Source gloss not recorded.")
             if source["labels"]:
                 st.caption("Source labels: " + ", ".join(source["labels"]))
+            if source.get("topics"):
+                st.caption("Topics: " + ", ".join(source["topics"]))
             st.caption("Dataset: " + (source["dataset_version"] or "Not recorded"))
             st.caption("Source sense ID: " + str(source["sense_id"]))
             st.caption("Source locator: " + (source["source_locator"] or "Not recorded"))
@@ -209,15 +227,84 @@ with tab1:
                 st.header(f"{word_to_show.title()}")
                 if lexical_state.origin == "saved":
                     st.success("Saved accepted version")
-                provenance = candidate_provenance(lexical_state)
+                if lexical_state.dataset_status_error:
+                    st.warning(
+                        "Saved version remains unchanged; current dataset status "
+                        f"could not be checked: {lexical_state.dataset_status_error}"
+                    )
                 if lexical_state.origin == "saved":
-                    st.caption(f"Accepted version: {provenance['Accepted version number']} · Produced by: {provenance['Produced by']}")
+                    st.caption(f"Accepted version: {lexical_state.saved_version.get('version_number', 'Not recorded')}")
+                elif lexical_state.origin == "refresh":
+                    st.info("Candidate from the newer installed lexical dataset · not yet saved")
+                elif lexical_state.candidate.get("schema_version") != "deterministic-lexical-candidate-v1":
+                    st.info("Historical accepted snapshot · preserved without reinterpretation")
                 else:
-                    st.info(provenance["Viewing"])
-                    if lexical_state.saved_version:
-                        st.caption(f"Based on accepted version: {provenance['Base accepted version number']}")
-                st.caption("Wiktionary/Wiktextract provides source evidence. GPT-OSS organizes and paraphrases learner meanings. Deterministic checks validate evidence references and structural completeness, not lexical truth.")
-                actions = st.columns(4)
+                    st.caption("Source-derived meanings from the installed Wiktionary/Wiktextract dataset.")
+                facts = candidate.get("deterministic", {})
+                us_ipa = facts.get("us_pronunciations", [])
+                if us_ipa:
+                    st.caption("U.S. IPA: " + ", ".join(item["ipa"] for item in us_ipa))
+                if st.button("Play pronunciation", key=f"play_pronunciation_{word_to_show}"):
+                    try:
+                        audio_bytes = get_audio_bytes(word_to_show)
+                        st.audio(audio_bytes.getvalue(), format="audio/mpeg")
+                    except Exception as error:
+                        st.error(f"Pronunciation audio unavailable: {error}")
+                for section in sort_pos_sections(content.get("pos_sections", [])):
+                    st.subheader(section["pos"].title())
+                    for meaning in section.get("core_meanings", []):
+                        render_learner_meaning(candidate, meaning, section["pos"])
+                    additional = section.get("additional_meanings", [])
+                    if additional:
+                        st.caption(f"{len(additional)} additional meaning" + ("s" if len(additional) != 1 else ""))
+                all_additional = [
+                    (section["pos"], meaning)
+                    for section in sort_pos_sections(content.get("pos_sections", []))
+                    for meaning in section.get("additional_meanings", [])
+                ]
+                if all_additional:
+                    with st.expander("Expand all meanings"):
+                        for pos, meaning in all_additional:
+                            st.markdown(f"**{pos.title()}**")
+                            render_learner_meaning(candidate, meaning, pos)
+                forms = deduplicated_forms(candidate)
+                if forms:
+                    with st.expander("Forms"):
+                        st.write(", ".join(forms))
+                base_links = facts.get("base_links", [])
+                if base_links:
+                    st.caption("Base/form: " + ", ".join(sorted({item["word"] for item in base_links})))
+                etymology = candidate.get("etymology", [])
+                if isinstance(etymology, dict):
+                    if etymology.get("summary"):
+                        with st.expander("Historical saved etymology"):
+                            st.write(etymology["summary"])
+                elif etymology:
+                    with st.expander("Etymology"):
+                        for item in etymology:
+                            label = item.get("etymology_number")
+                            st.markdown(f"**Etymology {label}**" if label is not None else "**Etymology**")
+                            if item.get("text"):
+                                st.write(item["text"])
+                            if item.get("templates"):
+                                with st.expander("Structured etymology source details"):
+                                    st.json(item["templates"], expanded=False)
+                with st.expander("Source details and provenance"):
+                    st.write("Source evidence attached to this exact saved version or lookup.")
+                    for detail in source_detail_rows(candidate):
+                        st.markdown(f"**{detail['pos']} meaning evidence**")
+                        st.write(" · ".join(detail["glosses"]))
+                        if detail["labels"]:
+                            st.caption("Labels: " + ", ".join(detail["labels"]))
+                        for example in detail["examples"]:
+                            st.caption("Example: " + str(example))
+                        for relation in detail["relations"]:
+                            if relation["type"] == "synonyms":
+                                st.caption(
+                                    f"Synonym source: {relation['target']} · "
+                                    f"{relation['evidence_id']}"
+                                )
+                actions = st.columns(3)
                 with actions[0]:
                     if st.button("Save", disabled=not lexical_state.actions["save"], key=f"save_lexical_{word_to_show}"):
                         try:
@@ -229,66 +316,23 @@ with tab1:
                         except Exception as error:
                             st.error(f"Save failed. The entry was not saved: {error}")
                 with actions[1]:
-                    if st.button("Retry", disabled=not lexical_state.actions["retry"], key=f"retry_lexical_{word_to_show}"):
-                        try:
-                            st.session_state.lexical_state = get_lexical_workflow().retry_saved(lexical_state)
-                            st.rerun()
-                        except Exception as error:
-                            st.error(f"Retry failed. The saved entry was not changed: {error}")
-                with actions[2]:
-                    if st.button("Refresh", disabled=not lexical_state.actions["refresh"], key=f"refresh_lexical_{word_to_show}"):
+                    if st.button(
+                        "Refresh from newer dataset",
+                        disabled=not lexical_state.actions["refresh"],
+                        key=f"refresh_lexical_{word_to_show}",
+                    ):
                         try:
                             st.session_state.lexical_state = get_lexical_workflow().refresh(lexical_state)
                             st.rerun()
                         except Exception as error:
                             st.error(f"Refresh failed. The saved entry was not changed: {error}")
-                with actions[3]:
+                with actions[2]:
                     if st.button("Flag", disabled=not lexical_state.actions["flag"], key=f"flag_lexical_{word_to_show}"):
                         try:
                             get_lexical_workflow().flag(lexical_state)
                             st.success("Flag recorded")
                         except Exception as error:
                             st.error(f"Flag failed: {error}")
-                for section in sort_pos_sections(content.get("pos_sections", [])):
-                    st.subheader(section["pos"].title())
-                    for meaning in section.get("core_meanings", []):
-                        render_learner_meaning(candidate, meaning, section["pos"])
-                    additional = section.get("additional_meanings", [])
-                    if additional:
-                        count_label = f"{len(additional)} additional meaning" + ("s" if len(additional) != 1 else "")
-                        with st.expander(count_label):
-                            for meaning in additional:
-                                render_learner_meaning(candidate, meaning, section["pos"])
-                facts = candidate.get("deterministic", {})
-                us_ipa = facts.get("us_pronunciations", [])
-                if us_ipa:
-                    st.caption("U.S. IPA: " + ", ".join(item["ipa"] for item in us_ipa))
-                forms = deduplicated_forms(candidate)
-                if forms:
-                    with st.expander("Forms"):
-                        st.write(", ".join(forms))
-                base_links = facts.get("base_links", [])
-                if base_links:
-                    st.caption("Base/form: " + ", ".join(sorted({item["word"] for item in base_links})))
-                audio_bytes = get_audio_bytes(word_to_show)
-                if audio_bytes:
-                    st.audio(audio_bytes.getvalue(), format="audio/mpeg")
-                with st.expander("Source Details"):
-                    st.write("Source evidence used for this exact candidate/version, not a fresh dataset lookup.")
-                    for detail in source_detail_rows(candidate):
-                        st.markdown(f"**{detail['pos']} meaning evidence**")
-                        st.write(" · ".join(detail["glosses"]))
-                        if detail["labels"]:
-                            st.caption("Labels: " + ", ".join(detail["labels"]))
-                        for example in detail["examples"]:
-                            st.caption("Example: " + str(example))
-                    st.caption("WordNet remains separate supplemental evidence.")
-                with st.expander("Advanced Details"):
-                    st.caption("Technical identity for the displayed candidate. Missing optional metadata is shown as Not recorded. Private model reasoning is not displayed.")
-                    st.json(provenance, expanded=False)
-                if candidate.get("etymology"):
-                    with st.expander("Etymology"):
-                        st.write(candidate["etymology"].get("summary", ""))
                 data = {}
             else:
                 data = None

@@ -21,9 +21,6 @@ services:
     depends_on:
       vocab-db:
         condition: service_healthy
-    networks:
-      - default
-      - local-ai
     environment:
       VOCAB_DB_HOST: vocab-db
       VOCAB_DB_PORT: 5432
@@ -31,12 +28,9 @@ services:
       VOCAB_DB_USER: ${VOCAB_DB_USER:-vocab}
       VOCAB_DB_PASSWORD: ${VOCAB_DB_PASSWORD:?VOCAB_DB_PASSWORD must be set}
       VOCAB_LEXICAL_ROOT: /lexical-data
-      VOCAB_OLLAMA_URL: http://ollama:11434
-      VOCAB_RUNTIME_ROOT: /vocab-runtime
       NLTK_DATA: /nltk-data
     volumes:
       - /home/chuck/.local/share/vocab-lexical:/lexical-data:ro
-      - /home/chuck/.local/share/vocab-app/runtime:/vocab-runtime:rw
       - /home/chuck/nltk_data:/nltk-data:ro
     ports:
       - "192.168.1.173:8501:8501"
@@ -49,8 +43,3 @@ services:
 volumes:
   vocab_postgres_data:
     name: vocab_postgres_data
-
-networks:
-  local-ai:
-    external: true
-    name: local-ai

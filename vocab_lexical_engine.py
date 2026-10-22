@@ -218,6 +218,30 @@ def resolve_active_database(lexical_data_root: str | Path) -> Path:
     return root / "versions" / version / "lexical.sqlite"
 
 
+def active_dataset_status(lexical_data_root: str | Path) -> dict[str, Any]:
+    """Read identity metadata for the installed active dataset without changing it."""
+    root = Path(lexical_data_root)
+    active = root / "active"
+    if active.is_symlink():
+        version_dir = active.resolve()
+        version = version_dir.name
+    else:
+        version = active.read_text(encoding="utf-8").strip()
+        if not version or Path(version).name != version:
+            raise ValueError("Invalid active lexical version")
+        version_dir = root / "versions" / version
+    manifest_path = version_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("dataset_version") != version:
+        raise ValueError(f"Active lexical manifest does not match dataset {version}")
+    return {
+        "dataset_version": version,
+        "dump_date": manifest.get("dump_date"),
+        "source_snapshot": manifest.get("source_snapshot"),
+        "manifest_identity": manifest.get("normalized_evidence_sha256"),
+    }
+
+
 def build_sqlite(records: Iterable[dict[str, Any]], database_path: str | Path) -> None:
     connection = sqlite3.connect(database_path)
     connection.executescript("""
@@ -277,7 +301,9 @@ def build_sqlite(records: Iterable[dict[str, Any]], database_path: str | Path) -
     connection.close()
 
 
-def lookup(database_path: str | Path, word: str) -> dict[str, Any]:
+def lookup(
+    database_path: str | Path, word: str, *, include_wordnet: bool = True
+) -> dict[str, Any]:
     connection = sqlite3.connect(f"file:{Path(database_path).resolve()}?immutable=1", uri=True)
     rows = connection.execute("SELECT * FROM entries WHERE normalized_lemma = ? ORDER BY entry_key", (word.casefold(),)).fetchall()
     entries = []
@@ -287,7 +313,8 @@ def lookup(database_path: str | Path, word: str) -> dict[str, Any]:
         entry["senses"] = [{"sense_id": s[0], "source_order": s[1], "glosses": json.loads(s[2]), "tags": json.loads(s[3]), "examples": json.loads(s[4])} for s in senses]
         entries.append(entry)
     connection.close()
-    return {"word": word, "entries": entries, "wordnet": wordnet_evidence(word)}
+    wordnet = wordnet_evidence(word) if include_wordnet else []
+    return {"word": word, "entries": entries, "wordnet": wordnet}
 
 
 def wordnet_evidence(word: str) -> list[dict[str, Any]]:

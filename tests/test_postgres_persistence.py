@@ -129,77 +129,97 @@ class IsolatedConnectionLifecycleTests(unittest.TestCase):
             self.assertEqual(cursor.fetchone()["n"], 0)
         self.assertFalse(independent.word_exists(self.word))
 
-    def test_pending_retry_and_refresh_save_preserve_immutable_history(self):
+    def test_explicit_refresh_save_preserves_immutable_history(self):
         from vocab_lexical_engine import evidence_set_hash
-        from vocab_workflow import LexicalState, LexicalWorkflow, candidate_provenance
+        from vocab_workflow import LexicalState, reconcile_saved_state
 
         evidence = {
-            "normalized_lemma": self.word, "schema_version": "synthesis-evidence-v1",
-            "entries": [], "wordnet_version": "test-only",
+            "normalized_lemma": self.word,
+            "schema_version": "deterministic-lexical-evidence-v1",
+            "wiktionary_versions": ["wiktionary-20260901"],
+            "entries": [],
         }
-        self.candidate["evidence_snapshot"] = evidence
-        self.candidate["evidence_set_hash"] = evidence_set_hash(evidence)
-        self.persistence.save_accepted_version(self.candidate, "search")
+        legacy_candidate = deepcopy(self.candidate)
+        legacy_candidate["schema_version"] = "historical-ai-candidate-fixture"
+        legacy_candidate["model"] = "historical-model-fixture"
+        legacy_candidate["model_digest"] = "historical-digest-fixture"
+        legacy_candidate["prompt_version"] = "historical-prompt-fixture"
+        legacy_candidate["evidence_snapshot"] = evidence
+        legacy_candidate["evidence_set_hash"] = evidence_set_hash(evidence)
+        self.persistence.save_accepted_version(legacy_candidate, "historical")
         independent = PostgresPersistence.from_env()
         self.addCleanup(independent.connection.close)
         first = independent.load_active_version(self.word)
-        workflow = LexicalWorkflow("unused", self.persistence, Mock())
-        with patch("vocab_workflow.lookup", return_value={"entries": [1]}), \
-             patch("vocab_workflow.project_synthesis_evidence", return_value=evidence):
-            accepted = workflow.search(self.word)
-            retry_candidate = deepcopy(self.candidate)
-            retry_candidate["content"]["pos_sections"][0]["core_meanings"][0]["definition"] = "retry definition"
-            with patch("vocab_workflow.synthesize_word", return_value={"result": retry_candidate}) as synth:
-                pending = workflow.retry_saved(accepted)
-            self.assertEqual(synth.call_args.kwargs["evidence_snapshot"], first["evidence_snapshot"])
-            pending = workflow.reconcile_authoritative_state(self.word, pending)
-            self.assertEqual(pending.origin, "retry")
-            second_result = workflow.save(pending)
-        second = independent.load_active_version(self.word)
-        self.assertEqual(second["version_number"], 2)
-        self.assertEqual(second["origin"], "retry")
-        details = candidate_provenance(LexicalState(
-            self.word, candidate=second["candidate_snapshot"], saved_version=second, origin="saved"
-        ))
-        self.assertEqual(details["Produced by"], "Retry")
-        self.assertEqual(details["Candidate identity"], second["candidate_identity"])
-        self.assertEqual(second["active_version_id"], second_result["active_version_id"])
-        self.assertNotEqual(second["candidate_identity"], first["candidate_identity"])
-        changed_evidence = dict(evidence, wordnet_version="test-only-changed")
-        refresh_candidate = deepcopy(retry_candidate)
+        refresh_candidate = deepcopy(self.candidate)
+        refresh_candidate["content"]["pos_sections"][0]["core_meanings"][0]["definition"] = "new source-derived definition"
+        refresh_candidate["schema_version"] = "deterministic-lexical-candidate-v1"
+        refresh_candidate.pop("model", None)
+        refresh_candidate.pop("model_digest", None)
+        refresh_candidate.pop("prompt_version", None)
+        changed_evidence = {
+            **evidence,
+            "wiktionary_versions": ["wiktionary-20261001"],
+        }
         refresh_candidate["evidence_snapshot"] = changed_evidence
         refresh_candidate["evidence_set_hash"] = evidence_set_hash(changed_evidence)
-        with patch("vocab_workflow.lookup", return_value={"entries": [1]}), \
-             patch("vocab_workflow.project_synthesis_evidence", return_value=changed_evidence):
-            accepted = workflow.search(self.word)
-            self.assertTrue(accepted.actions["refresh"])
-            with patch("vocab_workflow.synthesize_word", return_value={"result": refresh_candidate}):
-                pending = workflow.refresh(accepted)
-            pending = workflow.reconcile_authoritative_state(self.word, pending)
-            self.assertEqual(pending.origin, "refresh")
-            third_result = workflow.save(pending)
-        third = independent.load_active_version(self.word)
-        self.assertEqual(third["version_number"], 3)
-        self.assertEqual(third["origin"], "refresh")
-        self.assertEqual(third["active_version_id"], third_result["active_version_id"])
-        self.assertEqual(third["candidate_snapshot"], refresh_candidate)
-        self.assertEqual(third["evidence_snapshot"], changed_evidence)
+
+        reopened = reconcile_saved_state(
+            LexicalState(self.word, candidate=refresh_candidate, origin="search"),
+            self.word,
+            independent,
+        )
+        self.assertEqual(reopened.origin, "saved")
+        self.assertEqual(reopened.candidate, first["candidate_snapshot"])
+        self.assertEqual(
+            reopened.candidate["content"]["pos_sections"][0]["core_meanings"][0]["definition"],
+            "an isolated transaction test",
+        )
+
+        refresh_state = reconcile_saved_state(
+            LexicalState(
+                self.word,
+                candidate=refresh_candidate,
+                saved_version=first,
+                origin="refresh",
+            ),
+            self.word,
+            independent,
+        )
+        self.assertEqual(refresh_state.origin, "refresh")
+        self.assertEqual(refresh_state.candidate, refresh_candidate)
+        second_result = self.persistence.save_accepted_version(refresh_candidate, "refresh")
+        second = independent.load_active_version(self.word)
+        self.assertEqual(second["version_number"], 2)
+        self.assertEqual(second["origin"], "refresh")
+        self.assertEqual(second["active_version_id"], second_result["active_version_id"])
+        self.assertNotEqual(second["candidate_identity"], first["candidate_identity"])
         with independent.connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id, version_number, candidate_snapshot, evidence_snapshot, candidate_identity, origin "
+                "SELECT id, version_number, candidate_snapshot, evidence_snapshot, candidate_identity, origin, "
+                "model_identity, prompt_identity "
                 "FROM lexical_entry_versions WHERE lexical_entry_id=%s ORDER BY version_number",
                 (first["lexical_entry_id"],),
             )
             history = cursor.fetchall()
             cursor.execute("SELECT definition FROM vocabulary WHERE word=%s", (self.word,))
-            self.assertEqual(cursor.fetchone()["definition"], "retry definition")
-        self.assertEqual([row["version_number"] for row in history], [1, 2, 3])
-        self.assertEqual([row["origin"] for row in history], ["search", "retry", "refresh"])
-        for row, original in zip(history[:2], (first, second)):
+            self.assertEqual(cursor.fetchone()["definition"], "new source-derived definition")
+        self.assertEqual([row["version_number"] for row in history], [1, 2])
+        self.assertEqual([row["origin"] for row in history], ["historical", "refresh"])
+        for row, original in zip(history, (first, second)):
             self.assertEqual(row["id"], original["id"])
             self.assertEqual(row["candidate_snapshot"], original["candidate_snapshot"])
             self.assertEqual(row["evidence_snapshot"], original["evidence_snapshot"])
             self.assertEqual(row["candidate_identity"], original["candidate_identity"])
+        self.assertEqual(
+            history[0]["model_identity"],
+            {"model": "historical-model-fixture", "digest": "historical-digest-fixture"},
+        )
+        self.assertEqual(
+            history[0]["prompt_identity"],
+            {"prompt": "historical-prompt-fixture"},
+        )
+        self.assertEqual(history[1]["model_identity"], {})
+        self.assertEqual(history[1]["prompt_identity"], {})
 
     def test_flag_is_idempotent_without_changing_accepted_version(self):
         self.addCleanup(self.remove_test_flags)
