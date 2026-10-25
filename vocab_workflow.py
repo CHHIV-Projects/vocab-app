@@ -131,7 +131,16 @@ def _source_meanings(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     for entry in evidence["entries"]:
         for sense in entry["senses"]:
             glosses = sense.get("glosses") or sense.get("raw_glosses") or []
-            definition = "; ".join(str(gloss).strip() for gloss in glosses if str(gloss).strip())
+            components = [str(gloss).strip() for gloss in glosses if str(gloss).strip()]
+            definition = ""
+            for component in components:
+                if not definition:
+                    separator = ""
+                elif definition.endswith((".", "!", "?")):
+                    separator = " "
+                else:
+                    separator = "; "
+                definition += separator + component
             synonyms: dict[str, tuple[str, list[str]]] = {}
             for relation in sense["relations"]:
                 if relation["type"] == "synonyms":

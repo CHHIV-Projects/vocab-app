@@ -117,6 +117,32 @@ class WorkflowTests(unittest.TestCase):
             {meaning["source_sense_ids"][0] for meaning in meanings},
         )
 
+    def test_sentence_punctuated_gloss_components_do_not_gain_broken_separator(self):
+        source = normalize_record({
+            "word": "punctuated",
+            "lang": "English",
+            "lang_code": "en",
+            "pos": "verb",
+            "senses": [{
+                "glosses": ["To create.", "To build, construct, produce, or originate."]
+            }],
+        }, "fixture-20260901", "punctuated.jsonl#line=1")
+        database = self.root / "punctuated.sqlite"
+        build_sqlite([source], database)
+
+        candidate = build_lexical_candidate(
+            __import__("vocab_lexical_engine").lookup(
+                database, "punctuated", include_wordnet=False
+            )
+        )
+
+        definition = candidate["content"]["pos_sections"][0]["core_meanings"][0]["definition"]
+        self.assertEqual(
+            definition,
+            "To create. To build, construct, produce, or originate.",
+        )
+        self.assertNotIn(".;", definition)
+
     def test_core_policy_caps_total_at_five_and_represents_each_pos_first(self):
         result = __import__("vocab_lexical_engine").lookup(
             self.database, "fixture", include_wordnet=False

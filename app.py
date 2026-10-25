@@ -178,8 +178,12 @@ def render_learner_meaning(candidate, meaning, pos):
     st.markdown(f"**{definition}**")
     if meaning.get("labels"):
         st.caption(" · ".join(meaning["labels"]))
-    if meaning.get("synonyms"):
-        st.caption("Synonyms: " + ", ".join(item["term"] for item in meaning["synonyms"]))
+    synonyms = meaning.get("synonyms", [])
+    if len(synonyms) <= 5 and synonyms:
+        st.caption("Synonyms: " + ", ".join(item["term"] for item in synonyms))
+    elif synonyms:
+        with st.expander(f"{len(synonyms)} synonyms"):
+            st.write(", ".join(item["term"] for item in synonyms))
     sources = meaning_source_rows(candidate, meaning, pos)
     if not sources:
         st.caption("Source mapping is unavailable for this saved historical meaning.")

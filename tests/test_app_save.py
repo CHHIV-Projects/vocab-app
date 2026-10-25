@@ -93,7 +93,7 @@ class LearnerRenderingTests(unittest.TestCase):
             }),
         ):
             self.stack.enter_context(patch(target, return_value=value))
-        self.stack.enter_context(patch("gtts.gTTS"))
+        self.tts = self.stack.enter_context(patch("gtts.gTTS"))
 
     def launch(self):
         return self.AppTest.from_file(
@@ -121,6 +121,53 @@ class LearnerRenderingTests(unittest.TestCase):
         self.assertTrue(self.button(app, "Refresh from newer dataset").disabled)
         self.assertFalse(any("GPT-OSS" in item.value for item in app.caption))
         self.assertFalse(any("Advanced Details" == item.label for item in app.expander))
+
+    def test_short_synonym_lists_remain_visible_with_their_meaning(self):
+        self.candidate["content"]["pos_sections"][0]["core_meanings"][0]["synonyms"] = [
+            {"term": term} for term in ("term one", "term two", "term three")
+        ]
+
+        app = self.search(self.launch())
+
+        self.assertTrue(any(
+            item.value == "Synonyms: term one, term two, term three"
+            for item in app.caption
+        ))
+        self.assertFalse(any(item.label == "3 synonyms" for item in app.expander))
+
+    def test_long_synonym_lists_are_collapsed_per_meaning(self):
+        terms = [f"term {index}" for index in range(12)]
+        self.candidate["content"]["pos_sections"][0]["core_meanings"][0]["synonyms"] = [
+            {"term": term} for term in terms
+        ]
+
+        app = self.search(self.launch())
+
+        self.assertTrue(any(item.label == "12 synonyms" for item in app.expander))
+        self.assertFalse(any(
+            item.value.startswith("Synonyms: ") for item in app.caption
+        ))
+
+    def test_missing_us_ipa_keeps_requested_audio_fallback_available(self):
+        self.tts.return_value.write_to_fp.side_effect = lambda target: target.write(b"audio")
+
+        app = self.search(self.launch())
+        self.assertFalse(any("U.S. IPA:" in item.value for item in app.caption))
+        self.button(app, "Play pronunciation").click().run()
+
+        self.tts.assert_called_once_with(text="fixture", lang="en")
+        self.assertEqual(len(app.exception), 0)
+
+    def test_us_ipa_is_shown_without_non_us_pronunciation(self):
+        self.candidate["deterministic"]["us_pronunciations"] = [
+            {"ipa": "/ˈfɪkstʃɚ/", "tags": ["US"]}
+        ]
+
+        app = self.search(self.launch())
+
+        self.assertTrue(any(
+            item.value == "U.S. IPA: /ˈfɪkstʃɚ/" for item in app.caption
+        ))
 
     def test_save_failure_is_visible_and_leaves_entry_unsaved(self):
         app = self.search(self.launch())
