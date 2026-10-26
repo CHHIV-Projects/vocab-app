@@ -30,6 +30,7 @@ Choose only checks relevant to the authorized change. PostgreSQL tests may requi
 
 ## Runtime and data safety
 
+- The canonical private-LAN deployment identity and app-only operational procedure are documented in [lan_deployment_runbook.md](lan_deployment_runbook.md). Follow it for authorized Compose deployment/restart work.
 - Database or persistence validation must use an explicitly scoped test database and safe disposable learner data, never production records.
 - Runtime checks involving Docker Compose, Streamlit health, migrations, mounted lexical data, Ollama, translation, or other external services require milestone-specific scope.
 - Treat Compose and runtime configuration as evidence of intended setup, not proof that deployed code matches reviewed source.
