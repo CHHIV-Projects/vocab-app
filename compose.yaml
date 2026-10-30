@@ -34,6 +34,7 @@ services:
       - /home/chuck/nltk_data:/nltk-data:ro
     ports:
       - "192.168.1.173:8501:8501"
+      - "127.0.0.1:8501:8501"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health')"]
       interval: 10s

@@ -1,6 +1,6 @@
 # Vocab App LAN Deployment Runbook
 
-This runbook is for the accepted Vocab App deployment on the private LAN. It is not a product-data update procedure and does not authorize public exposure.
+This runbook describes the accepted Vocab App deployment on the private LAN and the approved private tailnet access path. It is not a product-data update procedure and does not authorize public exposure.
 
 Run command blocks in one Bash session; later blocks reuse `ENV_FILE`, `APP_ID`, `DB_ID_BEFORE`, and `ROLLBACK_TAG`. If starting a new session, redefine/recapture those variables as shown. Do not `source` the runtime env file.
 
@@ -14,11 +14,20 @@ Run command blocks in one Bash session; later blocks reuse `ENV_FILE`, `APP_ID`,
 | Database service | `vocab-db` |
 | Learner endpoint | `http://192.168.1.173:8501/` |
 | Health endpoint | `http://192.168.1.173:8501/_stcore/health` |
+| Local Serve backend | `http://127.0.0.1:8501/` |
 | Runtime environment file | `/home/chuck/.config/vocab-app/runtime.env` |
 | Database storage | Persistent Docker volume `vocab_postgres_data` |
 | Lexical/WordNet mounts | Host data mounted read-only in the app container |
 
 Ports 8502, 8503, and 8504 have been used by temporary acceptance instances. They are not canonical production endpoints. Do not confuse a healthy test instance with the Compose project or container serving port 8501.
+
+Private mobile access uses the server's Tailscale Serve HTTPS name reported by `tailscale serve status`:
+
+```text
+https://henderson-server1.tailba8d47.ts.net/
+```
+
+Serve proxies only to `http://127.0.0.1:8501/` and is tailnet-only. Do not infer accessibility from the hostname alone; the Product Owner must verify the same URL on the physical iPhone over Wi-Fi and cellular with Tailscale enabled, then verify it is unreachable with Tailscale disabled.
 
 ## Safety boundaries
 
@@ -26,7 +35,9 @@ Ports 8502, 8503, and 8504 have been used by temporary acceptance instances. The
 - Never use `docker compose down`, `down -v`, volume deletion, PostgreSQL recreation/reinitialization, or direct writes to the mounted lexical data.
 - Deployment and controlled restart commands below target only `vocab-app`, with `--no-deps` where applicable. Do not rebuild, recreate, or restart `vocab-db`.
 - If the repository, bind address, services, environment file, or production topology differs from this runbook, stop and resolve the discrepancy before deployment.
-- LAN-only access is intentional. Do not add a public bind address, port forwarding, tunnel, reverse proxy, or other external exposure as part of this procedure.
+- The Compose app is bound explicitly to `192.168.1.173:8501` for LAN use and `127.0.0.1:8501` for the Tailscale Serve backend. Never replace these with `0.0.0.0:8501`.
+- Tailscale Serve is the specifically approved private tailnet access layer for Vocab. Tailscale Funnel remains prohibited. Public reverse proxies, router port forwarding, and other public exposure remain prohibited.
+- Tailnet access controls remain authoritative. Do not alter Tailscale ACLs, configure an exit node, change the iPhone's general Internet routing, or enable unrelated services.
 
 ## Pre-deployment checks
 
@@ -64,7 +75,7 @@ docker inspect --format '{{.Name}} image={{.Image}} restart={{.HostConfig.Restar
   vocab-app-vocab-app-1 vocab-app-vocab-db-1
 ```
 
-Confirm the application is bound only to `192.168.1.173:8501`, both Compose services are the expected project/services, and PostgreSQL is healthy. The app initializes the migration runner at startup, so verify that all committed migration filenames are already recorded before proceeding; this milestone does not authorize schema changes:
+Confirm the application is bound only to the explicit approved addresses `192.168.1.173:8501` and `127.0.0.1:8501`, both Compose services are the expected project/services, and PostgreSQL is healthy. The app initializes the migration runner at startup, so verify that all committed migration filenames are already recorded before proceeding; this milestone does not authorize schema changes:
 
 ```bash
 set -euo pipefail
@@ -125,6 +136,14 @@ curl --fail --silent --show-error --max-time 5 \
 
 If health does not converge, inspect the bounded app logs and current Compose state, then stop. Do not restart PostgreSQL, remove volumes, or modify lexical data as a recovery shortcut.
 
+Both explicitly published host paths must respond:
+
+```bash
+set -euo pipefail
+curl --fail --silent --show-error --max-time 5 http://127.0.0.1:8501/_stcore/health
+curl --fail --silent --show-error --max-time 5 http://192.168.1.173:8501/_stcore/health
+```
+
 ## Source parity
 
 Health alone does not establish which source is running. Compare the checked-out runtime files with their deployed copies. The list covers every Python module copied by the current Dockerfile and the SQL migrations used by the app. Each mismatch must fail the check:
@@ -165,6 +184,42 @@ Use the health-check procedure above. Then confirm the `vocab-db` container ID s
 ## Browser smoke
 
 At `http://192.168.1.173:8501/`, verify that the learner page loads, search a representative word (for example, `make`), confirm the result renders and the installed dataset identity is visible, and observe no obvious runtime error. This is a deployment smoke check, not the full lexical acceptance corpus. Do not use 8502/8503/8504 as proof for the canonical service.
+
+## Private Tailscale Serve access
+
+The approved mobile access is Tailscale Serve, which is tailnet-only. Funnel, public reverse proxies, router forwarding, wildcard `0.0.0.0:8501` binds, and exit-node configuration are not part of this setup. Tailnet ACLs and device access policies continue to govern access.
+
+Confirm the app's local health endpoint works before configuring Serve:
+
+```bash
+curl --fail --silent --show-error --max-time 5 http://127.0.0.1:8501/_stcore/health
+tailscale serve status
+tailscale funnel status
+```
+
+Inspect the existing Serve configuration before changing or disabling anything. If there is no conflicting Serve configuration and Tailscale HTTPS/Serve has already been enabled for the tailnet by the Product Owner, configure the persistent proxy:
+
+```bash
+tailscale serve --bg 8501
+tailscale serve status
+tailscale funnel status
+```
+
+`--bg` stores the Serve configuration in the Tailscale daemon for persistence across daemon restarts. Confirm status reports the exact `https://<server>.<tailnet>.ts.net` URL, marks it `(tailnet only)`, and shows proxy `http://127.0.0.1:8501`. `tailscale funnel status` must not report a public Funnel listener. If Serve is not enabled and the CLI asks for admin consent, stop and request the Product Owner to complete that action; do not capture or include consent URLs/tokens in documentation or logs. If Tailscale warns that the DNS name will appear in certificate-transparency logs, record the warning but do not treat that name visibility as public application access.
+
+Test the HTTPS URL from a separate authenticated tailnet client. A same-host request to its own Tailscale address may not be a valid proxy/TLS test. Confirm the Vocab page loads, `make` lookup renders, the dataset identity is visible, and there is no obvious Streamlit/WebSocket proxy error. The physical iPhone acceptance remains required: use the same exact Serve URL on home Wi-Fi and cellular with Tailscale enabled, then disable Tailscale and verify the URL cannot be reached; re-enable Tailscale after the privacy check. Do not claim these checks based only on Serve status or a host-local health check.
+
+To disable Vocab Serve, first inspect both status commands and confirm the active Serve configuration is only the Vocab proxy. Then use the installed CLI's Serve reset operation and verify the result:
+
+```bash
+tailscale serve status
+tailscale funnel status
+tailscale serve reset
+tailscale serve status
+tailscale funnel status
+```
+
+`tailscale serve reset` clears this node's Serve configuration; do not use it if any unrelated Serve service is present. It does not disable Tailscale, remove the node from the tailnet, or roll back the database. After disabling Serve, verify that the LAN endpoint still works and that the tailnet HTTPS URL is no longer served.
 
 ## Rollback boundary
 
