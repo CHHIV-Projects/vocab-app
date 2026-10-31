@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "/home/chuck/projects/repo-control-ii/.venv/bin/python -m repoctl.copilot_bootstrap --repository-root /home/chuck/projects/vocab-app --repository-key vocab-app --repository-id vocab-app--0d81efec80ef",
+        "cwd": ".",
+        "timeoutSec": 15
+      }
+    ]
+  }
+}

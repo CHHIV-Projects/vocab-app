@@ -15,6 +15,24 @@ From this checkout, use the canonical Repo Control II CLI:
 
 The central resolver must identify the exact managed repository as `vocab-app`, with repository ID `vocab-app--0d81efec80ef` and milestone root `docs/milestones/`. Stop if the returned identity or path does not match this checkout; do not proceed under a synthetic `default` identity. Do not install a project-local Repo Control package or pass a manual `--milestone-root` override during normal use.
 
+## Coding-agent bootstrap registrations
+
+Vocab's repository-local SessionStart registrations are:
+
+- GitHub Copilot: `.github/hooks/repo_control_context.json`
+- Codex: `.codex/hooks.json`
+
+Both registrations invoke the centrally maintained adapters in `/home/chuck/projects/repo-control-ii` with the trusted Repo Control II virtualenv. The adapters resolve current authority through `coder-context` and bind each event to this repository's expected root, key, and ID; registrations do not cache milestone state. Inspect the proposed or installed registration shapes with the read-only `coder-bootstrap-preview` command:
+
+```bash
+/home/chuck/projects/repo-control-ii/.venv/bin/python -m repoctl.cli coder-bootstrap-preview \
+  --repository-key vocab-app \
+  --repository-id vocab-app--0d81efec80ef \
+  --repository-root /home/chuck/projects/vocab-app
+```
+
+Preview output is not installation, trust, or proof of host delivery. Repository-local hook files do not themselves authorize host execution. Copilot hook activation and Codex project trust require Product Owner approval and the host's supported trust flow; never bypass trust or manually edit Codex global trust configuration. In a fresh authorized session, use only the ordinary handoff notice and let the hook resolve current context; do not copy milestone prompts, authority, or prior transcripts between sessions. Registrations are Vocab-specific and must fail closed rather than resolve another managed repository. See the [central multi-repository Coder bootstrap guide](../../../repo-control-ii/docs/guides/multi_repository_coder_bootstrap.md) for the shared design and limitations.
+
 ## Focused application validation
 
 Use existing focused tests where they cover the change. Tests use Python `unittest`; representative selectors include:

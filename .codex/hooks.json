@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/chuck/projects/repo-control-ii/.venv/bin/python -m repoctl.codex_bootstrap --repository-root /home/chuck/projects/vocab-app --repository-key vocab-app --repository-id vocab-app--0d81efec80ef",
+            "timeout": 20,
+            "async": false
+          }
+        ]
+      }
+    ]
+  }
+}
